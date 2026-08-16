@@ -610,11 +610,34 @@ function openStyleMenu(opts) {
         <b>Select Bid Style</b>
         <button type="button" class="style-close" aria-label="Close">×</button>
       </div>
+      <div class="style-market" id="style-market"></div>
       <div class="style-grid" id="style-grid"></div>
     </div>`;
   document.body.appendChild(panel);
   panel.querySelector(".style-close").onclick = () => panel.remove();
   panel.addEventListener("click", (e) => { if (e.target === panel) panel.remove(); });
+
+  let market = opts && opts.market ? opts.market : (MARKETS[0] || {}).id;
+  const mBox = panel.querySelector("#style-market");
+  if (opts && opts.market) {
+    const m = MARKETS.find((x) => x.id === opts.market);
+    const lock = document.createElement("div");
+    lock.className = "style-market-locked";
+    lock.innerHTML = `<span>Market:</span><b>${m ? m.name : ""}</b>`;
+    mBox.appendChild(lock);
+  } else {
+    for (const m of MARKETS) {
+      const c = document.createElement("button");
+      c.type = "button";
+      c.className = "chip" + (m.id === market ? " active" : "");
+      c.textContent = m.name;
+      c.onclick = () => {
+        market = m.id;
+        for (const x of mBox.querySelectorAll(".chip")) x.classList.toggle("active", x === c);
+      };
+      mBox.appendChild(c);
+    }
+  }
 
   const grid = panel.querySelector("#style-grid");
   const styles = opts && opts.game ? BID_STYLES.filter((s) => s.game === opts.game) : BID_STYLES;
@@ -625,7 +648,6 @@ function openStyleMenu(opts) {
     b.className = "style-btn";
     b.innerHTML = `<b>${s.label}</b><small>${g.odds}</small>`;
     b.onclick = () => {
-      const market = opts.market || (MARKETS[0] || {}).id;
       panel.remove();
       location.hash = "#/bid/" + s.id + "/" + market;
     };
@@ -670,12 +692,8 @@ function renderBidPage(page, styleId, marketId) {
     <section class="page-head">
       <div class="panel-badge"><span class="dot"></span> Place Bid</div>
       <h1>${style.label}</h1>
-      <p>Market → digit → point. Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
+      <p><span class="chip" id="bid-market-name">${(MARKETS.find((m) => m.id === selMarket) || {}).name}</span> · Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
     </section>
-    <div class="card panel-card">
-      <h3>Select Market</h3>
-      <div class="market-nav" id="bid-markets"></div>
-    </div>
     <div class="card panel-card">
       <h3>Enter ${style.label === "Jodi Digit" || style.label === "Jodi Digit Bulk" || style.label === "Motor" || style.label === "Motor Bulk" || style.label === "Jodi Close" || style.label === "Jodi Close Bulk" ? "Jodi Digit" : "Digit"}</h3>
       <p class="hint" id="bid-odds">Odds: ${g.odds} · Success payout on bid value.</p>
@@ -701,19 +719,6 @@ function renderBidPage(page, styleId, marketId) {
       <p class="hint">Bids resolve automatically once the market result is announced.</p>
       <div class="bet-list" id="bid-list"></div>
     </div>`;
-
-  const marketsBox = $("#bid-markets");
-  for (const m of MARKETS) {
-    const c = document.createElement("button");
-    c.type = "button";
-    c.className = "chip" + (m.id === selMarket ? " active" : "");
-    c.textContent = m.name;
-    c.onclick = () => {
-      selMarket = m.id;
-      for (const x of marketsBox.querySelectorAll(".chip")) x.classList.toggle("active", x === c);
-    };
-    marketsBox.appendChild(c);
-  }
 
   function renderFields() {
     const f = style.game;

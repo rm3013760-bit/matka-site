@@ -593,6 +593,23 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   margin-bottom: 12px;
 }
 
+.style-market { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+.style-market-locked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, rgba(185, 144, 82, 0.18), rgba(185, 144, 82, 0.06));
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.style-market-locked span { color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem; }
+
+.style-market-locked b { color: var(--gold-light); font-family: "Orbitron", sans-serif; letter-spacing: 0.5px; }
+
 .style-head b { font-family: "Orbitron", sans-serif; color: var(--gold-light); }
 
 .style-close {
