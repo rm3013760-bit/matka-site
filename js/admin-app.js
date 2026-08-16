@@ -93,6 +93,17 @@ function renderLogin() {
     </form>`;
   $("#admin-login").onsubmit = (e) => {
     e.preventDefault();
+    ensureAdmin();
+    const fd = new FormData(e.target);
+    const users = store.get("matka.users", []);
+    const u = users.find((x) => x.username === fd.get("username") && x.password === fd.get("password") && x.role === "admin");
+    if (!u) { alert("Invalid admin credentials."); return; }
+    adminUser = { username: u.username, name: u.name, email: u.email || "" };
+    store.set("matka.admin", adminUser);
+    renderDashboard();
+  };
+}
+
 function renderTabApi() {
   const eps = API.endpoints;
   $("#tab-api").innerHTML = `
@@ -174,16 +185,6 @@ function renderWalletWithdrawals() {
   });
 }
 
-ensureAdmin();
-    const fd = new FormData(e.target);
-    const users = store.get("matka.users", []);
-    const u = users.find((x) => x.username === fd.get("username") && x.password === fd.get("password") && x.role === "admin");
-    if (!u) { alert("Invalid admin credentials."); return; }
-    adminUser = { username: u.username, name: u.name, email: u.email || "" };
-    store.set("matka.admin", adminUser);
-    renderDashboard();
-  };
-}
 
 function renderDashboard() {
   if (!adminUser) { renderLogin(); return; }
