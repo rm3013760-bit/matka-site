@@ -116,7 +116,7 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "profile") renderProfile(page);
-  else if (route === "play") renderHome(page, { game: parts[1], market: parts[2], focus: true });
+  else if (route === "play") renderBid(page, { game: parts[1], market: parts[2] });
   else if (route === "market") renderMarketDetail(page, parts[1]);
   else if (route === "about") renderAbout(page);
   else if (route === "faq") renderFaq(page);
@@ -139,6 +139,7 @@ function buildNav() {
   if (!nav) return;
   const items = [
     ["Home", "#/"],
+    ["Play", "#/play"],
     ["Games", "#/games"],
     ["History", "#/history"],
     ["Charts", "#/charts"],
@@ -193,11 +194,11 @@ function renderHome(page, opts) {
       </div>
       <div class="board-grid" id="board"></div>
     </div>
-    <div id="bet-section"></div>
     <section class="quick-links">
       <a href="#/charts">Jodi Chart</a>
       <a href="#/history">Full History</a>
       <a href="#/games">How to Play</a>
+      <a href="#/play">Place a Bid</a>
       <a href="#/login">User Panel</a>
     </section>`;
 
@@ -251,8 +252,6 @@ function renderHome(page, opts) {
     tick();
     setInterval(tick, 1000);
   }
-
-  mountBetSection($("#bet-section"), opts || {});
 }
 
 function renderGames(page) {
@@ -572,13 +571,17 @@ function walletTx(phone, limit) {
   return tx.filter((t) => t.phone === phone).slice(0, limit || 15);
 }
 
-function mountBetSection(betRoot, opts) {
-  if (!betRoot) return;
+function renderBid(page, opts) {
   if (!currentUser) {
-    betRoot.innerHTML = `
+    page.innerHTML = `
+      <section class="page-head">
+        <div class="panel-badge"><span class="dot"></span> User Panel</div>
+        <h1>Place a Bid</h1>
+        <p>Sign in to play with your demo wallet — no real money involved.</p>
+      </section>
       <div class="card panel-card" style="max-width:none">
-        <h3>Place a Bet</h3>
-        <p class="hint">Sign in to play with your demo wallet — no real money involved.</p>
+        <h3>Sign in required</h3>
+        <p class="hint">Create an account or sign in to start placing bids.</p>
         <div class="card-actions">
           <a class="btn btn-green" href="#/login">Sign In</a>
           <a class="btn ghost" href="#/register">Register</a>
@@ -589,7 +592,7 @@ function mountBetSection(betRoot, opts) {
   const users = store.get("matka.users", []);
   const u = users.find((x) => x.phone === currentUser.phone && x.phone) || users.find((x) => x.username === currentUser.username);
   if (!u) {
-    betRoot.innerHTML = `<p class="hint">Account not found. Please sign in again.</p>`;
+    page.innerHTML = `<section class="page-head"><h1>Place a Bid</h1><p>Account not found. Please sign in again.</p></section>`;
     return;
   }
 
@@ -598,115 +601,149 @@ function mountBetSection(betRoot, opts) {
   const balance = walletBalance(u.phone);
   const myBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
 
-  betRoot.innerHTML = `
-    <div class="live-board">
-      <div class="board-header">
-        <h2>Place a Bet</h2>
-        <span class="live-badge"><span class="dot"></span> DEMO WALLET</span>
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> User Panel</div>
+      <h1>Place a Bid</h1>
+      <p>Select market → game → number → stake. Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
+    </section>
+    <div class="card panel-card">
+      <h3>1 · Select Market</h3>
+      <div class="market-nav" id="bid-markets"></div>
+    </div>
+    <div class="card panel-card">
+      <h3>2 · Select Game</h3>
+      <div class="game-pick-grid" id="bid-games"></div>
+    </div>
+    <div class="card panel-card">
+      <h3>3 · Enter Number</h3>
+      <div id="bid-fields"></div>
+    </div>
+    <div class="card panel-card">
+      <h3>4 · Stake (Demo)</h3>
+      <p class="hint" id="bid-odds">—</p>
+      <div class="amt-chips" id="bid-amts">
+        <button type="button" class="amt-chip active" data-v="10">10</button>
+        <button type="button" class="amt-chip" data-v="50">50</button>
+        <button type="button" class="amt-chip" data-v="100">100</button>
+        <button type="button" class="amt-chip" data-v="500">500</button>
+        <button type="button" class="amt-chip" data-v="1000">1000</button>
       </div>
-      <div class="play-grid" style="padding:16px">
-        <div class="card panel-card">
-          <h3>New Bet</h3>
-          <p class="hint">Wallet balance: <span class="wallet-chip" id="play-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
-          <form class="form" id="bet-form">
-            <label>Market <select name="market" id="bet-market" required></select></label>
-            <label>Game <select name="game" id="bet-game" required></select></label>
-            <div id="bet-fields"></div>
-            <label>Stake (demo) <input name="stake" type="number" min="1" step="1" placeholder="10" required></label>
-            <p class="hint" id="bet-odds">—</p>
-            <button class="btn btn-green" type="submit">Place Bet</button>
-          </form>
-        </div>
-        <div class="card panel-card">
-          <h3>My Bets</h3>
-          <p class="hint">Bets resolve automatically once the market result is announced.</p>
-          <div class="bet-list" id="bet-list"></div>
-        </div>
+      <label class="form-label">Amount <input id="bid-stake" class="bid-stake" type="number" min="1" step="1" value="10" inputmode="numeric"></label>
+      <div class="card-actions">
+        <button class="btn btn-green" id="bid-submit">Place Bid</button>
       </div>
+    </div>
+    <div class="card panel-card">
+      <h3>My Bets</h3>
+      <p class="hint">Bets resolve automatically once the market result is announced.</p>
+      <div class="bet-list" id="bid-list"></div>
     </div>`;
 
-  const marketSel = $("#bet-market");
+  let selMarket = (opts.market && MARKETS.find((m) => m.id === opts.market)) ? opts.market : (MARKETS[0] || {}).id;
+  let selGame = opts.game && GAMES.find((g) => g.id === opts.game) ? opts.game : "single";
 
-  API.call("get_balance", { mobile: u.phone }).then((res) => {
-    const el = $("#play-balance");
-    if (el && res.success) el.textContent = "₹ " + Number(res.data.balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
-  });
-
+  const marketsBox = $("#bid-markets");
   for (const m of MARKETS) {
-    const opt = document.createElement("option");
-    opt.value = m.id;
-    opt.textContent = m.name;
-    marketSel.appendChild(opt);
+    const c = document.createElement("button");
+    c.type = "button";
+    c.className = "chip" + (m.id === selMarket ? " active" : "");
+    c.textContent = m.name;
+    c.onclick = () => { selMarket = m.id; renderMarkets(); };
+    marketsBox.appendChild(c);
   }
-  const gameSel = $("#bet-game");
-  for (const g of GAMES) {
-    const opt = document.createElement("option");
-    opt.value = g.id;
-    opt.textContent = g.name + " (odds " + g.odds + ")";
-    gameSel.appendChild(opt);
+  function renderMarkets() {
+    for (const c of marketsBox.querySelectorAll(".chip")) c.classList.toggle("active", c.textContent === MARKETS.find((m) => m.id === selMarket).name);
   }
 
-  function renderBetFields() {
-    const g = GAMES.find((x) => x.id === gameSel.value);
-    if (!g) return;
-    $("#bet-odds").textContent = "Odds: " + g.odds;
+  const gamesBox = $("#bid-games");
+  for (const g of GAMES) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "game-pick" + (g.id === selGame ? " active" : "");
+    b.innerHTML = `<b>${g.code}</b><span>${g.name}</span><small>${g.odds}</small>`;
+    b.onclick = () => { selGame = g.id; renderGames(); renderFields(); };
+    gamesBox.appendChild(b);
+  }
+  function renderGames() {
+    for (const b of gamesBox.querySelectorAll(".game-pick")) b.classList.remove("active");
+    const target = [...gamesBox.children].find((b) => b.querySelector("b").textContent === GAMES.find((g) => g.id === selGame).code);
+    if (target) target.classList.add("active");
+  }
+
+  function renderFields() {
+    const g = GAMES.find((x) => x.id === selGame);
+    $("#bid-odds").textContent = "Odds: " + g.odds + " · Bid ₹10 → Win ₹" + (10 * parseFloat(g.odds)).toFixed(2);
     if (g.id === "single" || g.id === "pana-family") {
-      $("#bet-fields").innerHTML = `<label>${g.id === "pana-family" ? "Your digit (0-9)" : "Your number (0-9)"} <input name="num" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="5" required></label>`;
+      $("#bid-fields").innerHTML = `<label>${g.id === "pana-family" ? "Your digit (0-9)" : "Your number (0-9)"} <input id="bnum" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="5" required></label>`;
     } else if (g.id === "jodi" || g.id === "motor" || g.id === "jodi-close") {
-      $("#bet-fields").innerHTML = `<label>Your number (00-99) <input name="num" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>`;
+      $("#bid-fields").innerHTML = `<label>Your number (00-99) <input id="bnum" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>`;
     } else if (g.id === "single-patti" || g.id === "double-patti" || g.id === "triple-patti") {
-      $("#bet-fields").innerHTML = `<label>Your Pana (000-999) <input name="num" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
+      $("#bid-fields").innerHTML = `<label>Your Pana (000-999) <input id="bnum" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
         <p class="hint">Win if the open panel matches exactly.</p>`;
     } else if (g.id === "family-pair") {
-      $("#bet-fields").innerHTML = `<label>Family (1-11)
-        <select name="num">
+      $("#bid-fields").innerHTML = `<label>Family (1-11)
+        <select id="bnum">
           ${FAMILY_PAIRS.map((f, i) => `<option value="${i + 1}">Family ${i + 1}: ${f[0]} & ${f[1]}</option>`).join("")}
         </select></label>`;
     } else if (g.id === "half-sangam" || g.id === "half-sangam-b") {
-      $("#bet-fields").innerHTML = `
+      $("#bid-fields").innerHTML = `
         <div class="form-row">
-          <label>Jodi (00-99) <input name="jodi" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>
-          <label>Pana (000-999) <input name="patti" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
+          <label>Jodi (00-99) <input id="bjodi" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>
+          <label>Pana (000-999) <input id="bpatti" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
         </div>
         <p class="hint">${g.id === "half-sangam-b" ? "Win if Jodi matches AND the pana equals the close panel." : "Win if Jodi matches AND the pana equals the open panel."}</p>`;
     } else if (g.id === "full-sangam") {
-      $("#bet-fields").innerHTML = `
+      $("#bid-fields").innerHTML = `
         <div class="form-row">
-          <label>Open Pana (000-999) <input name="patti1" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
-          <label>Close Pana (000-999) <input name="patti2" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="789" required></label>
+          <label>Open Pana (000-999) <input id="bp1" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
+          <label>Close Pana (000-999) <input id="bp2" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="789" required></label>
         </div>
         <p class="hint">Win if both panels match exactly.</p>`;
     }
   }
+  renderFields();
 
-  gameSel.onchange = renderBetFields;
-  if (opts.game) gameSel.value = opts.game;
-  if (opts.market) marketSel.value = opts.market;
-  renderBetFields();
+  const amts = $("#bid-amts");
+  for (const c of amts.querySelectorAll(".amt-chip")) {
+    c.onclick = () => {
+      for (const x of amts.querySelectorAll(".amt-chip")) x.classList.remove("active");
+      c.classList.add("active");
+      $("#bid-stake").value = c.dataset.v;
+    };
+  }
+  $("#bid-stake").oninput = () => {
+    for (const x of amts.querySelectorAll(".amt-chip")) x.classList.toggle("active", x.dataset.v === $("#bid-stake").value);
+  };
 
-  $("#bet-form").onsubmit = (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const g = GAMES.find((x) => x.id === gameSel.value);
-    const m = MARKETS.find((x) => x.id === fd.get("market"));
-    const stake = parseFloat(fd.get("stake"));
+  API.call("get_balance", { mobile: u.phone }).then((res) => {
+    const el = $("#bid-balance");
+    if (el && res.success) el.textContent = "₹ " + Number(res.data.balance || 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
+  });
+
+  $("#bid-submit").onclick = () => {
+    const g = GAMES.find((x) => x.id === selGame);
+    const m = MARKETS.find((x) => x.id === selMarket);
+    const stake = parseFloat($("#bid-stake").value);
     if (!stake || stake <= 0) { alert("Enter a valid stake."); return; }
+    const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
     const numbers = {};
-    if (g.id === "family-pair") numbers.family = fd.get("num");
-    else if (g.id === "half-sangam" || g.id === "half-sangam-b") { numbers.jodi = fd.get("jodi"); numbers.patti = fd.get("patti"); }
-    else if (g.id === "full-sangam") { numbers.patti1 = fd.get("patti1"); numbers.patti2 = fd.get("patti2"); }
-    else numbers.num = fd.get("num");
+    if (g.id === "family-pair") numbers.family = val("bnum");
+    else if (g.id === "half-sangam" || g.id === "half-sangam-b") { numbers.jodi = val("bjodi"); numbers.patti = val("bpatti"); }
+    else if (g.id === "full-sangam") { numbers.patti1 = val("bp1"); numbers.patti2 = val("bp2"); }
+    else numbers.num = val("bnum");
     const numberStr = numbers.family ? "F" + numbers.family : numbers.jodi ? numbers.jodi + numbers.patti : numbers.patti1 ? numbers.patti1 + numbers.patti2 : numbers.num;
+    if (!numberStr) { alert("Enter your number."); return; }
     API.call("place_bid_atomicv1", { mobile: u.phone, market_id: m.id, game_type: g.id, number: numberStr, amount: stake }).then((res) => {
       if (!res.success) { alert(res.message); return; }
-      logActivity(u, "Placed " + g.name + " bet of " + stake.toFixed(2) + " (API)");
+      logActivity(u, "Placed " + g.name + " bid of " + stake.toFixed(2) + " (API)");
       alert("Bid placed via API (" + res.data.bet_id + "). It resolves when the market result is announced.");
-      mountBetSection(betRoot, {});
+      renderBid(page, {});
     });
   };
 
-  const betList = $("#bet-list");
-  betList.innerHTML = myBets.length ? myBets.map((b) => {
+  const bidList = $("#bid-list");
+  bidList.innerHTML = myBets.length ? myBets.map((b) => {
     const numLabel = b.game === "half-sangam" || b.game === "half-sangam-b" ? b.numbers.jodi + " / " + b.numbers.patti : b.game === "full-sangam" ? b.numbers.patti1 + " / " + b.numbers.patti2 : b.game === "family-pair" ? "Family " + b.numbers.family : b.numbers.num;
     const statusClass = b.status === "won" ? "req-confirmed" : b.status === "lost" ? "req-rejected" : "req-pending";
     return `<div class="bet-row">
@@ -717,12 +754,7 @@ function mountBetSection(betRoot, opts) {
       </div>
       <span class="req-status ${statusClass}">${b.status.toUpperCase()}</span>
     </div>`;
-  }).join("") : `<p class="hint">No bets placed yet.</p>`;
-
-  if (opts.focus) {
-    const target = document.getElementById("bet-market");
-    if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
+  }).join("") : `<p class="hint">No bids placed yet.</p>`;
 }
 
 function resolveBets() {

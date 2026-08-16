@@ -459,6 +459,74 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .market-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 
+.game-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.game-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--tr);
+}
+
+.game-pick:hover { border-color: var(--gold); transform: translateY(-1px); }
+
+.game-pick.active {
+  border-color: var(--gold);
+  background: linear-gradient(180deg, rgba(185, 144, 82, 0.18), rgba(185, 144, 82, 0.06));
+  box-shadow: 0 0 0 1px rgba(185, 144, 82, 0.35), var(--glow-gold);
+}
+
+.game-pick b { font-family: "Orbitron", sans-serif; color: var(--gold-light); letter-spacing: 0.5px; }
+
+.game-pick span { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+
+.game-pick small { font-size: 0.75rem; color: var(--gold); font-weight: 700; }
+
+.amt-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+.amt-chip {
+  flex: 1;
+  min-width: 52px;
+  padding: 10px 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: var(--tr);
+}
+
+.amt-chip:hover { border-color: var(--gold); color: var(--gold-light); }
+
+.amt-chip.active {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: linear-gradient(180deg, rgba(185, 144, 82, 0.25), rgba(185, 144, 82, 0.08));
+  box-shadow: var(--glow-gold);
+}
+
+.bid-stake {
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
 .chip {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--border);
