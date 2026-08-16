@@ -59,6 +59,15 @@ function ensureAdmin() {
     adminUserRow.password = "112233";
     adminUserRow.role = "admin";
   }
+  if (!users.some((x) => x.role === "user")) {
+    users.push(
+      { username: "demo1", password: "123456", name: "Rahul Sharma", phone: "9876500001", email: "rahul@demo.com", role: "user", joined: todayKey() },
+      { username: "demo2", password: "123456", name: "Priya Patel", phone: "9876500002", email: "priya@demo.com", role: "user", joined: todayKey() },
+      { username: "demo3", password: "123456", name: "Amit Verma", phone: "9876500003", email: "amit@demo.com", role: "user", joined: todayKey() },
+      { username: "demo4", password: "123456", name: "Sneha Gupta", phone: "9876500004", email: "sneha@demo.com", role: "user", joined: todayKey() },
+      { username: "demo5", password: "123456", name: "Vikram Singh", phone: "9876500005", email: "vikram@demo.com", role: "user", joined: todayKey() }
+    );
+  }
   store.set("matka.users", users);
 }
 
