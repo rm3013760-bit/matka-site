@@ -1084,10 +1084,24 @@ function renderProfile(page) {
       <div class="profile-grid">
         <div class="card panel-card">
           <h3>Withdraw (Demo)</h3>
-          <p class="hint">Request a payout to your UPI — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
+          <p class="hint">Request a payout via UPI or bank transfer — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
           <form class="form" id="wd-form">
             <label>Amount <input name="amount" type="number" min="100" step="1" placeholder="100" required></label>
-            <label>UPI ID <input name="upi" placeholder="yourname@upi" required></label>
+            <label class="form-label">Payout method
+              <div class="seg-row">
+                <button type="button" class="seg active" id="m-upi">UPI</button>
+                <button type="button" class="seg" id="m-bank">Bank Transfer</button>
+              </div>
+            </label>
+            <div id="upi-fields">
+              <label>UPI ID <input name="upi" placeholder="yourname@upi" required></label>
+            </div>
+            <div id="bank-fields" style="display:none">
+              <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank"></label>
+              <label>Account Holder Name <input name="accName" placeholder="Name on account"></label>
+              <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890"></label>
+              <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123"></label>
+            </div>
             <button class="btn btn-green" type="submit">Request Withdrawal</button>
           </form>
         </div>
@@ -1098,11 +1112,25 @@ function renderProfile(page) {
         </div>
       </div>`;
 
+    const wdMethod = { upi: true };
+    const showMethod = (upi) => {
+      wdMethod.upi = upi;
+      $("#m-upi").classList.toggle("active", upi);
+      $("#m-bank").classList.toggle("active", !upi);
+      $("#upi-fields").style.display = upi ? "" : "none";
+      $("#bank-fields").style.display = upi ? "none" : "";
+      const f = $("#upi-fields").querySelector("input"), b = $("#bank-fields").querySelector("input");
+      if (f) f.required = upi;
+      if (b) b.required = !upi;
+    };
+    $("#m-upi").onclick = () => showMethod(true);
+    $("#m-bank").onclick = () => showMethod(false);
+
     const wdList = $("#wd-list");
     const myWds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
     wdList.innerHTML = myWds.length ? myWds.map((w) => `
       <div class="activity-row">
-        <span>${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.upi || "—"}</span>
+        <span>${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method === "bank" ? (w.bankName || "Bank") + " ·••• " + String(w.accNo || "").slice(-4) : w.upi || "UPI"}</span>
         <small class="req-status req-${w.status}">${w.status.toUpperCase()}</small>
       </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`;
 
@@ -1110,16 +1138,30 @@ function renderProfile(page) {
       e.preventDefault();
       const fd = new FormData(e.target);
       const amount = parseFloat(fd.get("amount"));
-      const upi = String(fd.get("upi") || "").trim();
       if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
       if (amount < 100) { alert("Minimum withdrawal is ₹ 100."); return; }
-      if (!upi) { alert("Enter your UPI ID."); return; }
-      API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, upi_id: upi }).then((res) => {
-        if (!res.success) { alert(res.message); return; }
-        logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted (pending approval)");
-        alert("Withdrawal request submitted. The administrator will approve it.");
-        renderProfile(page);
-      });
+      if (wdMethod.upi) {
+        const upi = String(fd.get("upi") || "").trim();
+        if (!upi) { alert("Enter your UPI ID."); return; }
+        API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "upi", upi_id: upi }).then((res) => {
+          if (!res.success) { alert(res.message); return; }
+          logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via UPI (pending approval)");
+          alert("Withdrawal request submitted. The administrator will approve it.");
+          renderProfile(page);
+        });
+      } else {
+        const bankName = String(fd.get("bankName") || "").trim();
+        const accName = String(fd.get("accName") || "").trim();
+        const accNo = String(fd.get("accNo") || "").replace(/\s/g, "");
+        const ifsc = String(fd.get("ifsc") || "").trim().toUpperCase();
+        if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in all bank details."); return; }
+        API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc }).then((res) => {
+          if (!res.success) { alert(res.message); return; }
+          logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via bank transfer (pending approval)");
+          alert("Withdrawal request submitted. The administrator will approve it.");
+          renderProfile(page);
+        });
+      }
     };
   }
 

@@ -212,14 +212,22 @@
       const balance = ENDPOINTS.get_balance(p).data.balance;
       if (!amount || amount <= 0) return fail("Invalid amount");
       if (amount > balance) return fail("Insufficient balance");
+      const method = p.method === "bank" ? "bank" : "upi";
+      if (method === "bank" && !(p.bank_name && p.acc_name && p.acc_no && p.ifsc)) return fail("Bank details required");
+      if (method === "upi" && !p.upi_id) return fail("UPI ID required");
       const wd = store.get("matka.withdrawals", []);
-      wd.push({ phone: u.phone, userName: u.name, amount, upi: p.upi_id || "", status: "pending", date: new Date().toISOString() });
+      wd.push({
+        phone: u.phone, userName: u.name, amount, method,
+        upi: p.upi_id || "",
+        bankName: p.bank_name || "", accName: p.acc_name || "", accNo: p.acc_no || "", ifsc: p.ifsc || "",
+        status: "pending", date: new Date().toISOString()
+      });
       store.set("matka.withdrawals", wd);
       return ok({ request_id: wd.length }, "Withdrawal request submitted");
     },
     withdrawal_history_new: (p) => {
       const phone = String(p.mobile || "").replace(/\D/g, "");
-      return ok({ transactions: store.get("matka.withdrawals", []).filter((r) => getPhone(r) === phone).map((r) => ({ amount: r.amount, upi: r.upi, status: r.status, date: r.date })) });
+      return ok({ transactions: store.get("matka.withdrawals", []).filter((r) => getPhone(r) === phone).map((r) => ({ amount: r.amount, upi: r.upi, method: r.method, bank_name: r.bankName, acc_no: r.accNo, status: r.status, date: r.date })) });
     },
     combined_transaction_history_v2: (p) => {
       const phone = String(p.mobile || "").replace(/\D/g, "");

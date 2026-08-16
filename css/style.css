@@ -1281,3 +1281,34 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   .board-grid { grid-template-columns: 1fr; }
   .hero-stats { gap: 18px; }
 }
+.seg-row {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.seg {
+  flex: 1;
+  padding: 10px 0;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--tr);
+}
+
+.seg:hover { border-color: var(--gold); color: var(--gold-light); }
+
+.seg.active {
+  color: var(--navy);
+  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  border-color: var(--gold);
+  box-shadow: var(--glow-gold);
+}
+
+.wd-row small { color: var(--muted); font-size: 0.75rem; }

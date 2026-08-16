@@ -170,6 +170,13 @@ function renderTabApi() {
   }
 }
 
+function wdDetail(w) {
+  if (w.method === "bank") {
+    return `BANK · ${w.bankName || "—"} · ${w.accName || "—"} · •••• ${String(w.accNo || "").slice(-4)} · ${w.ifsc || ""}`;
+  }
+  return `UPI · ${w.upi || "—"}`;
+}
+
 function renderWithdrawalsInto(el) {
   const wds = store.get("matka.withdrawals", []);
   const pending = wds.filter((w) => w.status === "pending");
@@ -181,8 +188,8 @@ function renderWithdrawalsInto(el) {
       <p class="hint">Approve = payout marked done (demonstration only — no real transfer).</p>
       ${pending.length ? `<div class="activity-list">
         ${pending.map((w, i) => `
-          <div class="activity-row">
-            <span>${w.userName} · ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.upi || "—"}</span>
+          <div class="activity-row wd-row">
+            <span><b>${w.userName}</b> · ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}<br><small>${wdDetail(w)}</small></span>
             <span>
               <button type="button" class="mini-del req-ok" id="wd-ok-${i}">Approve</button>
               <button type="button" class="mini-del req-no" id="wd-no-${i}">Reject</button>
@@ -191,8 +198,8 @@ function renderWithdrawalsInto(el) {
       </div>` : `<p class="hint">No pending withdrawals.</p>`}
       ${all.length ? `<h3 style="margin-top:18px">All Requests</h3>
       <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>UPI</th><th>Status</th></tr></thead>
-        <tbody>${all.map((w) => `<tr><td>${String(w.date || "").slice(0, 16) || "—"}</td><td>${w.userName}</td><td>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td><td>${w.upi || "—"}</td><td><span class="req-status ${w.status === "confirmed" ? "req-confirmed" : w.status === "rejected" ? "req-rejected" : "req-pending"}">${w.status.toUpperCase()}</span></td></tr>`).join("")}</tbody>
+        <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Method & Details</th><th>Status</th></tr></thead>
+        <tbody>${all.map((w) => `<tr><td>${String(w.date || "").slice(0, 16) || "—"}</td><td>${w.userName}</td><td>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td><td>${wdDetail(w)}</td><td><span class="req-status ${w.status === "confirmed" ? "req-confirmed" : w.status === "rejected" ? "req-rejected" : "req-pending"}">${w.status.toUpperCase()}</span></td></tr>`).join("")}</tbody>
       </table></div>` : ""}
     </div>`;
   pending.forEach((w, i) => {
