@@ -254,17 +254,21 @@ function renderHome(page, opts) {
       ? `<span class="s5-tag t-open">OPEN</span>`
       : `<span class="s5-tag t-closed">PENDING</span>`;
     row.innerHTML = `
-      <div class="s5-mkt">
-        <b>${market.name}</b>
-        <small>OPEN ${market.open} \u00b7 CLOSE ${market.close}</small>
+      <div class="s5-top">
+        <div class="s5-mkt">
+          <b>${market.name}</b>
+          <small>OPEN ${market.open} \u00b7 CLOSE ${market.close}</small>
+        </div>
+        ${tag}
       </div>
-      ${tag}
-      <div class="s5-jodi"><em>JODI</em><b>${jodi}</b></div>
-      <div class="s5-oc">
-        <span class="s5-open">${pan1}</span>
-        <span class="s5-close">${pan2}</span>
-      </div>
-      <button type="button" class="s5-bid" data-play-market="${market.id}">BID</button>`;
+      <div class="s5-btm">
+        <div class="s5-jodi"><em>JODI</em><b>${jodi}</b></div>
+        <div class="s5-oc">
+          <span class="s5-open">${pan1}</span>
+          <span class="s5-close">${pan2}</span>
+        </div>
+        <button type="button" class="s5-bid" data-play-market="${market.id}">BID</button>
+      </div>`;
     row.addEventListener("click", () => (location.hash = "#/market/" + market.id));
     const bidBtn = row.querySelector(".s5-bid");
     bidBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: bidBtn }); });
