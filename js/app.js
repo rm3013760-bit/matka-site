@@ -342,6 +342,29 @@ function renderGames(page) {
   }
 }
 
+function fmtDateNice(dateStr) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function histRowHTML(r, withMarket, isToday) {
+  const jodi2 = r.jodi2 ? " · " + r.jodi2 : "";
+  return `<div class="hist-row${isToday ? " today" : ""}">
+    <div class="hist-date">
+      <span class="hd-day">${isToday ? "Today" : new Date(r.date + "T00:00:00").toLocaleDateString("en-IN", { weekday: "short" })}</span>
+      <span class="hd-date">${fmtDateNice(r.date)}</span>
+    </div>
+    ${withMarket ? `<span class="hist-market">${r.market}</span>` : ""}
+    <div class="hist-panels">
+      <div class="hpanel"><span class="hpanel-label">Open</span><span class="hpanel-digits">${r.panel}</span></div>
+      <span class="hpanel-arrow">→</span>
+      <div class="hpanel"><span class="hpanel-label">Close</span><span class="hpanel-digits">${r.panel2 || "---"}</span></div>
+    </div>
+    <div class="hist-jodi"><span class="hpanel-label">Jodi</span><span class="jodi-pill">${r.jodi}${jodi2}</span></div>
+  </div>`;
+}
+
 function renderMarketDetail(page, id) {
   const market = MARKETS.find((m) => m.id === id);
   if (!market) {
@@ -355,23 +378,15 @@ function renderMarketDetail(page, id) {
       <h1>${market.name}</h1>
       <p>Open ${market.open} · Close ${market.close} · Result ${market.result} · ${market.days}</p>
     </section>
+    <div class="hist-stats">
+      <div class="hist-stat"><b>${days.length}</b><span>Results</span></div>
+      <div class="hist-stat"><b>${days.length ? fmtDateNice(days[0].split("|").pop()) : "—"}</b><span>Latest</span></div>
+      <div class="hist-stat"><b>${days.some((k) => results[k].announced && results[k].date === todayKey()) ? "LIVE" : "AWAIT"}</b><span>Today</span></div>
+    </div>
     <div class="hist-card">
       <h3>Recent Results</h3>
-      <table class="result-table">
-        <thead><tr><th>Date</th><th>Panel 1</th><th>Panel 2</th><th>Jodi</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table>
+      <div class="hist-list" id="rows">${days.length ? days.map((k, i) => histRowHTML(results[k], false, results[k].date === todayKey())).join("") : `<p class="empty">No results recorded yet.</p>`}</div>
     </div>`;
-  const tbody = $("#rows");
-  if (!days.length) {
-    tbody.innerHTML = `<tr><td colspan="4" class="empty">No results recorded yet.</td></tr>`;
-  }
-  for (const key of days) {
-    const r = results[key];
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${r.date}</td><td>${r.panel}</td><td>${r.panel2}</td><td class="jodi-cell">${r.jodi} ${r.jodi2}</td>`;
-    tbody.appendChild(tr);
-  }
 }
 
 function renderHistory(page, marketId) {
@@ -384,11 +399,11 @@ function renderHistory(page, marketId) {
     </section>
     <div class="market-nav" id="mnav"></div>
     <div class="hist-card">
-      <h3 id="hist-title">All Markets</h3>
-      <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>Date</th><th>Market</th><th>Panel 1</th><th>Panel 2</th><th>Jodi</th></tr></thead>
-        <tbody id="rows"></tbody>
-      </table></div>
+      <div class="hist-head">
+        <h3 id="hist-title">All Markets</h3>
+        <span class="hist-count" id="hist-count"></span>
+      </div>
+      <div class="hist-list" id="rows"></div>
     </div>`;
 
   const nav = $("#mnav");
@@ -414,13 +429,22 @@ function renderHistory(page, marketId) {
     rows.push({ date, market: m ? m.name : mid, r: results[key] });
   }
   rows.sort((a, b) => (a.date < b.date ? 1 : -1));
-  if (marketId) $("#hist-title").textContent = MARKETS.find((m) => m.id === marketId).name;
-  if (!rows.length) tbody.innerHTML = `<tr><td colspan="5" class="empty">No results recorded yet.</td></tr>`;
+  if (marketId) {
+    $("#hist-title").textContent = MARKETS.find((m) => m.id === marketId).name;
+    $("#hist-count").textContent = rows.length + " results";
+  } else {
+    $("#hist-count").textContent = rows.length + " results · " + new Set(rows.map((x) => x.market)).size + " markets";
+  }
+  const list = $("#rows");
+  if (!rows.length) {
+    list.innerHTML = `<p class="empty">No results recorded yet.</p>`;
+    return;
+  }
   const slice = rows.slice(0, 200);
   for (const row of slice) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.date}</td><td>${row.market}</td><td>${row.r.panel}</td><td>${row.r.panel2}</td><td class="jodi-cell">${row.r.jodi} ${row.r.jodi2}</td>`;
-    tbody.appendChild(tr);
+    const div = document.createElement("div");
+    div.innerHTML = histRowHTML(row.r, !marketId, row.r.date === todayKey());
+    list.appendChild(div.firstElementChild);
   }
 }
 
