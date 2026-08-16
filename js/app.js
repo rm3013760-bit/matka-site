@@ -938,6 +938,7 @@ function renderProfile(page) {
     <div class="panel-tabs">
       <button class="chip active" data-tab="profile">Profile</button>
       <button class="chip" data-tab="wallet">Wallet</button>
+      <button class="chip" data-tab="withdraw">Withdraw</button>
       <button class="chip" data-tab="bets">My Bets</button>
       <button class="chip" data-tab="pay">Payments</button>
     </div>
@@ -949,6 +950,7 @@ function renderProfile(page) {
     for (const c of page.querySelectorAll(".panel-tabs .chip")) c.classList.toggle("active", c.dataset.tab === name);
     if (name === "profile") renderProfileTab();
     else if (name === "wallet") renderWalletTab();
+    else if (name === "withdraw") renderWithdrawTab();
     else if (name === "bets") renderBetsTab();
     else renderPayTab();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1050,17 +1052,6 @@ function renderProfile(page) {
             </div>`).join("")}</div>` : `<p class="hint">No top-up requests yet.</p>`}
         </div>
         <div class="card panel-card">
-          <h3>Withdraw (Demo)</h3>
-          <p class="hint">Request a payout to your UPI — the administrator approves it.</p>
-          <form class="form" id="wd-form">
-            <label>Amount <input name="amount" type="number" min="1" step="1" placeholder="100" required></label>
-            <label>UPI ID <input name="upi" placeholder="yourname@upi" required></label>
-            <button class="btn btn-green" type="submit">Request Withdrawal</button>
-          </form>
-          <h4 class="sub-title">Withdrawal Requests</h4>
-          <div class="activity-list" id="wd-list"></div>
-        </div>
-        <div class="card panel-card">
           <h3>Wallet Activity</h3>
           ${wallet.length ? `<div class="activity-list">${wallet.map((t) => `
             <div class="activity-row">
@@ -1086,6 +1077,26 @@ function renderProfile(page) {
         renderProfile(page);
       });
     };
+  }
+
+  function renderWithdrawTab() {
+    body.innerHTML = `
+      <div class="profile-grid">
+        <div class="card panel-card">
+          <h3>Withdraw (Demo)</h3>
+          <p class="hint">Request a payout to your UPI — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
+          <form class="form" id="wd-form">
+            <label>Amount <input name="amount" type="number" min="100" step="1" placeholder="100" required></label>
+            <label>UPI ID <input name="upi" placeholder="yourname@upi" required></label>
+            <button class="btn btn-green" type="submit">Request Withdrawal</button>
+          </form>
+        </div>
+        <div class="card panel-card">
+          <h3>Withdrawal Requests</h3>
+          <p class="hint">Track the status of your requests here.</p>
+          <div class="activity-list" id="wd-list"></div>
+        </div>
+      </div>`;
 
     const wdList = $("#wd-list");
     const myWds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
@@ -1101,6 +1112,7 @@ function renderProfile(page) {
       const amount = parseFloat(fd.get("amount"));
       const upi = String(fd.get("upi") || "").trim();
       if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
+      if (amount < 100) { alert("Minimum withdrawal is ₹ 100."); return; }
       if (!upi) { alert("Enter your UPI ID."); return; }
       API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, upi_id: upi }).then((res) => {
         if (!res.success) { alert(res.message); return; }
