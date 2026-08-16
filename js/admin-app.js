@@ -496,6 +496,7 @@ function renderTabWallet() {
   const users = store.get("matka.users", []);
   const tx = store.get("matka.wallet", []);
   const requests = store.get("matka.requests", []);
+  const qr = store.get("matka.qr", null);
   $("#tab-wallet").innerHTML = `
     <div class="card wide">
       <h3>Pending Top-Up Requests</h3>
@@ -646,7 +647,6 @@ function renderTabWallet() {
     };
   }
 
-  const qr = store.get("matka.qr", null);
   const qrCurrent = $("#qr-current");
   qrCurrent.innerHTML = qr
     ? `<img class="qr-img" src="${qr.data}" alt="Demo QR"><p class="hint">Saved ${new Date(qr.date).toLocaleString()} · ${qr.name || ""}${qr.upi ? " · UPI " + qr.upi : ""}</p>`
