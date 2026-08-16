@@ -203,10 +203,6 @@ function renderWithdrawalsInto(el) {
   });
 }
 
-function renderWalletWithdrawals() {
-  renderWithdrawalsInto(document.getElementById("tab-withdraw"));
-}
-
 function renderTabWithdrawals() {
   $("#tab-withdrawals").innerHTML = `<div class="card wide" id="wd-list"></div>`;
   renderWithdrawalsInto(document.getElementById("wd-list"));
@@ -231,7 +227,8 @@ function renderDashboard() {
           <button type="button" class="side-btn" data-tab="users">Users</button>
           <span class="side-group">Wallet</span>
           <button type="button" class="side-btn" data-tab="wallet">Wallet & Top-Ups</button>
-          <button type="button" class="side-btn" data-tab="withdrawals">Withdrawals</button>
+          <span class="side-group">Withdrawals</span>
+          <button type="button" class="side-btn" data-tab="withdrawals">Withdrawal Requests</button>
           <span class="side-group">System</span>
           <button type="button" class="side-btn" data-tab="api">API Console</button>
           <div class="side-foot">
