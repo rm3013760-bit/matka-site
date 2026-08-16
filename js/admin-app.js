@@ -480,6 +480,14 @@ function renderTabJson() {
   };
 }
 
+function renderPayRows() {
+  const pays = store.get("matka.payments", []);
+  return pays.slice().reverse().map((p) => {
+    const detail = p.type === "upi" ? p.upiId : p.type === "card" ? `•••• ${p.cardLast4} · ${p.cardName || ""} · exp ${p.cardExpiry || ""}` : `${p.bankName || ""} · •••• ${p.accLast4} · ${p.ifsc || ""}`;
+    return `<tr><td>${new Date(p.date).toLocaleString()}</td><td>${p.userName || p.phone}</td><td>${p.type.toUpperCase()}</td><td>${detail}</td></tr>`;
+  }).join("");
+}
+
 function renderTabWallet() {
   const users = store.get("matka.users", []);
   const tx = store.get("matka.wallet", []);
@@ -493,41 +501,43 @@ function renderTabWallet() {
         <tbody id="req-rows"></tbody>
       </table></div>
     </div>
-    <div class="card wide" id="tab-withdraw"></div>
-    <div class="card">
-      <h3>Credit / Debit Wallet</h3>
-      <p class="hint">Demo currency only — no real value.</p>
-      <form id="wallet-form">
-        <label>User
-          <select id="wallet-user" required>
-            <option value="">Select user…</option>
-            ${users.map((x) => `<option value="${x.phone || x.username}">${x.name} (${x.phone || x.username})</option>`).join("")}
-          </select>
-        </label>
-        <div class="form-row">
-          <label>Action
-            <select id="wallet-action">
-              <option value="credit">Credit (+)</option>
-              <option value="debit">Debit (−)</option>
+    <div class="wallet-cols">
+      <div class="card">
+        <h3>Adjust Wallet</h3>
+        <p class="hint">Demo currency only — no real value.</p>
+        <form id="wallet-form">
+          <label>User
+            <select id="wallet-user" required>
+              <option value="">Select user…</option>
+              ${users.map((x) => `<option value="${x.phone || x.username}">${x.name} (${x.phone || x.username})</option>`).join("")}
             </select>
           </label>
-          <label>Amount <input id="wallet-amount" type="number" min="0.01" step="0.01" placeholder="100.00" required></label>
-        </div>
-        <label>Note <input id="wallet-note" placeholder="e.g. Bonus, correction…"></label>
-        <button class="btn" type="submit">Apply</button>
-      </form>
-    </div>
-    <div class="card wide">
-      <h3>Wallet Balances</h3>
-      <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>User</th><th>Phone</th><th>Balance</th></tr></thead>
-        <tbody>
-          ${users.map((x) => {
-            const bal = tx.filter((t) => t.phone === (x.phone || x.username)).reduce((s, t) => s + (t.amount || 0), 0);
-            return `<tr><td>${x.name}</td><td>${x.phone || x.username}</td><td class="${bal >= 0 ? "wallet-plus" : "wallet-minus"}">${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td></tr>`;
-          }).join("") || `<tr><td colspan="3" class="empty">No users yet.</td></tr>`}
-        </tbody>
-      </table></div>
+          <div class="form-row">
+            <label>Action
+              <select id="wallet-action">
+                <option value="credit">Credit (+)</option>
+                <option value="debit">Debit (−)</option>
+              </select>
+            </label>
+            <label>Amount <input id="wallet-amount" type="number" min="0.01" step="0.01" placeholder="100.00" required></label>
+          </div>
+          <label>Note <input id="wallet-note" placeholder="e.g. Bonus, correction…"></label>
+          <button class="btn" type="submit">Apply</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>User Balances</h3>
+        <p class="hint">Live balances from wallet entries.</p>
+        <div class="table-wrap"><table class="result-table">
+          <thead><tr><th>User</th><th>Phone</th><th>Balance</th></tr></thead>
+          <tbody>
+            ${users.map((x) => {
+              const bal = tx.filter((t) => t.phone === (x.phone || x.username)).reduce((s, t) => s + (t.amount || 0), 0);
+              return `<tr><td>${x.name}</td><td>${x.phone || x.username}</td><td class="${bal >= 0 ? "wallet-plus" : "wallet-minus"}">${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td></tr>`;
+            }).join("") || `<tr><td colspan="3" class="empty">No users yet.</td></tr>`}
+          </tbody>
+        </table></div>
+      </div>
     </div>
     <div class="card wide">
       <h3>Transaction History</h3>
@@ -538,34 +548,29 @@ function renderTabWallet() {
         </tbody>
       </table></div>
     </div>
-    <div class="card wide">
-      <h3>Demo Payment Methods</h3>
-      <p class="hint">Entered by users for simulation only.</p>
-      <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Details</th></tr></thead>
-        <tbody>
-          ${renderPayRows() || `<tr><td colspan="4" class="empty">No payment methods saved yet.</td></tr>`}
-        </tbody>
-      </table></div>
-    </div>
-    <div class="card">
-      <h3>Demo QR Code</h3>
-      <p class="hint">Shown inside the user's Add Money box during top-up. Demo only.</p>
-      <div id="qr-current"></div>
-      <input type="file" id="qr-upload" accept="image/*">
-      <div class="card-actions">
-        <button class="btn" id="qr-save">Save QR</button>
-        <button class="btn ghost" id="qr-remove">Remove QR</button>
+    <div class="wallet-cols">
+      <div class="card">
+        <h3>Demo QR Code</h3>
+        <p class="hint">Shown inside the user's Add Money box during top-up. Demo only.</p>
+        <div id="qr-current"></div>
+        <input type="file" id="qr-upload" accept="image/*">
+        <div class="card-actions">
+          <button class="btn" id="qr-save">Save QR</button>
+          <button class="btn ghost" id="qr-remove">Remove QR</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Demo Payment Methods</h3>
+        <p class="hint">Entered by users for simulation only.</p>
+        <div class="table-wrap"><table class="result-table">
+          <thead><tr><th>Date</th><th>User</th><th>Type</th><th>Details</th></tr></thead>
+          <tbody>
+            ${renderPayRows() || `<tr><td colspan="4" class="empty">No payment methods saved yet.</td></tr>`}
+          </tbody>
+        </table></div>
       </div>
     </div>`;
 
-  function renderPayRows() {
-    const pays = store.get("matka.payments", []);
-    return pays.slice().reverse().map((p) => {
-      const detail = p.type === "upi" ? p.upiId : p.type === "card" ? `•••• ${p.cardLast4} · ${p.cardName || ""} · exp ${p.cardExpiry || ""}` : `${p.bankName || ""} · •••• ${p.accLast4} · ${p.ifsc || ""}`;
-      return `<tr><td>${new Date(p.date).toLocaleString()}</td><td>${p.userName || p.phone}</td><td>${p.type.toUpperCase()}</td><td>${detail}</td></tr>`;
-    }).join("");
-  }
 
   $("#wallet-form").onsubmit = (e) => {
     e.preventDefault();
@@ -659,8 +664,6 @@ function renderTabWallet() {
       renderDashboard();
     }
   };
-
-  renderWalletWithdrawals();
 }
 
 function renderTabMarkets() {

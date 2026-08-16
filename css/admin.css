@@ -282,3 +282,16 @@
   .admin-grid { grid-template-columns: 1fr; }
   .admin-main .card.wide { max-width: none; }
 }
+
+.wallet-cols {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.wallet-cols .card { margin: 0; }
+
+@media (max-width: 880px) {
+  .wallet-cols { grid-template-columns: 1fr; }
+}
