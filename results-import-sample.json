@@ -1,0 +1,542 @@
+[
+  {
+    "market": "kalyan-main",
+    "date": "2026-08-15",
+    "panel": "404",
+    "panel2": "106"
+  },
+  {
+    "market": "kalyan-main",
+    "date": "2026-08-14",
+    "panel": "226",
+    "panel2": "922"
+  },
+  {
+    "market": "kalyan-main",
+    "date": "2026-08-13",
+    "panel": "825",
+    "panel2": "182"
+  },
+  {
+    "market": "kalyan-night",
+    "date": "2026-08-15",
+    "panel": "202",
+    "panel2": "411"
+  },
+  {
+    "market": "kalyan-night",
+    "date": "2026-08-14",
+    "panel": "929",
+    "panel2": "650"
+  },
+  {
+    "market": "kalyan-night",
+    "date": "2026-08-13",
+    "panel": "018",
+    "panel2": "305"
+  },
+  {
+    "market": "sridevi-morning",
+    "date": "2026-08-15",
+    "panel": "282",
+    "panel2": "721"
+  },
+  {
+    "market": "sridevi-morning",
+    "date": "2026-08-14",
+    "panel": "575",
+    "panel2": "493"
+  },
+  {
+    "market": "sridevi-morning",
+    "date": "2026-08-13",
+    "panel": "327",
+    "panel2": "898"
+  },
+  {
+    "market": "sridevi-night",
+    "date": "2026-08-15",
+    "panel": "145",
+    "panel2": "318"
+  },
+  {
+    "market": "sridevi-night",
+    "date": "2026-08-14",
+    "panel": "643",
+    "panel2": "440"
+  },
+  {
+    "market": "sridevi-night",
+    "date": "2026-08-13",
+    "panel": "689",
+    "panel2": "260"
+  },
+  {
+    "market": "milan-day",
+    "date": "2026-08-15",
+    "panel": "194",
+    "panel2": "415"
+  },
+  {
+    "market": "milan-day",
+    "date": "2026-08-14",
+    "panel": "831",
+    "panel2": "863"
+  },
+  {
+    "market": "milan-day",
+    "date": "2026-08-13",
+    "panel": "542",
+    "panel2": "289"
+  },
+  {
+    "market": "milan-night",
+    "date": "2026-08-15",
+    "panel": "366",
+    "panel2": "129"
+  },
+  {
+    "market": "milan-night",
+    "date": "2026-08-14",
+    "panel": "079",
+    "panel2": "349"
+  },
+  {
+    "market": "milan-night",
+    "date": "2026-08-13",
+    "panel": "459",
+    "panel2": "535"
+  },
+  {
+    "market": "rajdhani-day",
+    "date": "2026-08-15",
+    "panel": "417",
+    "panel2": "482"
+  },
+  {
+    "market": "rajdhani-day",
+    "date": "2026-08-14",
+    "panel": "966",
+    "panel2": "413"
+  },
+  {
+    "market": "rajdhani-day",
+    "date": "2026-08-13",
+    "panel": "206",
+    "panel2": "103"
+  },
+  {
+    "market": "rajdhani-night",
+    "date": "2026-08-15",
+    "panel": "189",
+    "panel2": "903"
+  },
+  {
+    "market": "rajdhani-night",
+    "date": "2026-08-14",
+    "panel": "762",
+    "panel2": "021"
+  },
+  {
+    "market": "rajdhani-night",
+    "date": "2026-08-13",
+    "panel": "487",
+    "panel2": "473"
+  },
+  {
+    "market": "time-bazar",
+    "date": "2026-08-15",
+    "panel": "498",
+    "panel2": "316"
+  },
+  {
+    "market": "time-bazar",
+    "date": "2026-08-14",
+    "panel": "198",
+    "panel2": "996"
+  },
+  {
+    "market": "time-bazar",
+    "date": "2026-08-13",
+    "panel": "721",
+    "panel2": "455"
+  },
+  {
+    "market": "king-line",
+    "date": "2026-08-15",
+    "panel": "136",
+    "panel2": "390"
+  },
+  {
+    "market": "king-line",
+    "date": "2026-08-14",
+    "panel": "042",
+    "panel2": "288"
+  },
+  {
+    "market": "king-line",
+    "date": "2026-08-13",
+    "panel": "494",
+    "panel2": "052"
+  },
+  {
+    "market": "supreme-day",
+    "date": "2026-08-15",
+    "panel": "873",
+    "panel2": "970"
+  },
+  {
+    "market": "supreme-day",
+    "date": "2026-08-14",
+    "panel": "644",
+    "panel2": "687"
+  },
+  {
+    "market": "supreme-day",
+    "date": "2026-08-13",
+    "panel": "176",
+    "panel2": "773"
+  },
+  {
+    "market": "supreme-night",
+    "date": "2026-08-15",
+    "panel": "016",
+    "panel2": "435"
+  },
+  {
+    "market": "supreme-night",
+    "date": "2026-08-14",
+    "panel": "630",
+    "panel2": "969"
+  },
+  {
+    "market": "supreme-night",
+    "date": "2026-08-13",
+    "panel": "430",
+    "panel2": "127"
+  },
+  {
+    "market": "star-line",
+    "date": "2026-08-15",
+    "panel": "800",
+    "panel2": "009"
+  },
+  {
+    "market": "star-line",
+    "date": "2026-08-14",
+    "panel": "036",
+    "panel2": "880"
+  },
+  {
+    "market": "star-line",
+    "date": "2026-08-13",
+    "panel": "132",
+    "panel2": "805"
+  },
+  {
+    "market": "madhur-day",
+    "date": "2026-08-15",
+    "panel": "328",
+    "panel2": "081"
+  },
+  {
+    "market": "madhur-day",
+    "date": "2026-08-14",
+    "panel": "487",
+    "panel2": "197"
+  },
+  {
+    "market": "madhur-day",
+    "date": "2026-08-13",
+    "panel": "046",
+    "panel2": "974"
+  },
+  {
+    "market": "madhur-night",
+    "date": "2026-08-15",
+    "panel": "861",
+    "panel2": "358"
+  },
+  {
+    "market": "madhur-night",
+    "date": "2026-08-14",
+    "panel": "028",
+    "panel2": "462"
+  },
+  {
+    "market": "madhur-night",
+    "date": "2026-08-13",
+    "panel": "958",
+    "panel2": "839"
+  },
+  {
+    "market": "golden-morning",
+    "date": "2026-08-15",
+    "panel": "210",
+    "panel2": "529"
+  },
+  {
+    "market": "golden-morning",
+    "date": "2026-08-14",
+    "panel": "345",
+    "panel2": "344"
+  },
+  {
+    "market": "golden-morning",
+    "date": "2026-08-13",
+    "panel": "885",
+    "panel2": "875"
+  },
+  {
+    "market": "golden-night",
+    "date": "2026-08-15",
+    "panel": "636",
+    "panel2": "767"
+  },
+  {
+    "market": "golden-night",
+    "date": "2026-08-14",
+    "panel": "072",
+    "panel2": "037"
+  },
+  {
+    "market": "golden-night",
+    "date": "2026-08-13",
+    "panel": "192",
+    "panel2": "764"
+  },
+  {
+    "market": "new-padmini-day",
+    "date": "2026-08-15",
+    "panel": "309",
+    "panel2": "667"
+  },
+  {
+    "market": "new-padmini-day",
+    "date": "2026-08-14",
+    "panel": "824",
+    "panel2": "905"
+  },
+  {
+    "market": "new-padmini-day",
+    "date": "2026-08-13",
+    "panel": "946",
+    "panel2": "861"
+  },
+  {
+    "market": "new-padmini-night",
+    "date": "2026-08-15",
+    "panel": "057",
+    "panel2": "631"
+  },
+  {
+    "market": "new-padmini-night",
+    "date": "2026-08-14",
+    "panel": "076",
+    "panel2": "587"
+  },
+  {
+    "market": "new-padmini-night",
+    "date": "2026-08-13",
+    "panel": "372",
+    "panel2": "942"
+  },
+  {
+    "market": "padmini-day",
+    "date": "2026-08-15",
+    "panel": "464",
+    "panel2": "598"
+  },
+  {
+    "market": "padmini-day",
+    "date": "2026-08-14",
+    "panel": "300",
+    "panel2": "870"
+  },
+  {
+    "market": "padmini-day",
+    "date": "2026-08-13",
+    "panel": "732",
+    "panel2": "430"
+  },
+  {
+    "market": "padmini-night",
+    "date": "2026-08-15",
+    "panel": "104",
+    "panel2": "353"
+  },
+  {
+    "market": "padmini-night",
+    "date": "2026-08-14",
+    "panel": "819",
+    "panel2": "984"
+  },
+  {
+    "market": "padmini-night",
+    "date": "2026-08-13",
+    "panel": "406",
+    "panel2": "286"
+  },
+  {
+    "market": "gali",
+    "date": "2026-08-15",
+    "panel": "820",
+    "panel2": "011"
+  },
+  {
+    "market": "gali",
+    "date": "2026-08-14",
+    "panel": "187",
+    "panel2": "779"
+  },
+  {
+    "market": "gali",
+    "date": "2026-08-13",
+    "panel": "963",
+    "panel2": "701"
+  },
+  {
+    "market": "disawar",
+    "date": "2026-08-15",
+    "panel": "264",
+    "panel2": "300"
+  },
+  {
+    "market": "disawar",
+    "date": "2026-08-14",
+    "panel": "044",
+    "panel2": "967"
+  },
+  {
+    "market": "disawar",
+    "date": "2026-08-13",
+    "panel": "041",
+    "panel2": "540"
+  },
+  {
+    "market": "ghaziabad",
+    "date": "2026-08-15",
+    "panel": "928",
+    "panel2": "592"
+  },
+  {
+    "market": "ghaziabad",
+    "date": "2026-08-14",
+    "panel": "466",
+    "panel2": "906"
+  },
+  {
+    "market": "ghaziabad",
+    "date": "2026-08-13",
+    "panel": "517",
+    "panel2": "185"
+  },
+  {
+    "market": "faridabad",
+    "date": "2026-08-15",
+    "panel": "665",
+    "panel2": "451"
+  },
+  {
+    "market": "faridabad",
+    "date": "2026-08-14",
+    "panel": "734",
+    "panel2": "161"
+  },
+  {
+    "market": "faridabad",
+    "date": "2026-08-13",
+    "panel": "825",
+    "panel2": "340"
+  },
+  {
+    "market": "ratan-line",
+    "date": "2026-08-15",
+    "panel": "008",
+    "panel2": "883"
+  },
+  {
+    "market": "ratan-line",
+    "date": "2026-08-14",
+    "panel": "663",
+    "panel2": "644"
+  },
+  {
+    "market": "ratan-line",
+    "date": "2026-08-13",
+    "panel": "233",
+    "panel2": "327"
+  },
+  {
+    "market": "bhamru",
+    "date": "2026-08-15",
+    "panel": "398",
+    "panel2": "659"
+  },
+  {
+    "market": "bhamru",
+    "date": "2026-08-14",
+    "panel": "454",
+    "panel2": "567"
+  },
+  {
+    "market": "bhamru",
+    "date": "2026-08-13",
+    "panel": "546",
+    "panel2": "634"
+  },
+  {
+    "market": "madhuban",
+    "date": "2026-08-15",
+    "panel": "332",
+    "panel2": "077"
+  },
+  {
+    "market": "madhuban",
+    "date": "2026-08-14",
+    "panel": "451",
+    "panel2": "612"
+  },
+  {
+    "market": "madhuban",
+    "date": "2026-08-13",
+    "panel": "903",
+    "panel2": "347"
+  },
+  {
+    "market": "super-fast",
+    "date": "2026-08-15",
+    "panel": "647",
+    "panel2": "507"
+  },
+  {
+    "market": "super-fast",
+    "date": "2026-08-14",
+    "panel": "133",
+    "panel2": "288"
+  },
+  {
+    "market": "super-fast",
+    "date": "2026-08-13",
+    "panel": "829",
+    "panel2": "418"
+  },
+  {
+    "market": "taj-mumbai",
+    "date": "2026-08-15",
+    "panel": "121",
+    "panel2": "778"
+  },
+  {
+    "market": "taj-mumbai",
+    "date": "2026-08-14",
+    "panel": "265",
+    "panel2": "515"
+  },
+  {
+    "market": "taj-mumbai",
+    "date": "2026-08-13",
+    "panel": "585",
+    "panel2": "251"
+  }
+]
