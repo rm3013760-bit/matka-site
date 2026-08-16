@@ -1022,21 +1022,32 @@ function renderProfile(page) {
               <label>Amount
                 <input name="amount" type="number" min="1" step="1" placeholder="100" required>
               </label>
-              <label>Payment method
-                <select name="method">
-                  <option>UPI / QR</option>
-                  <option>Card</option>
-                  <option>Net Banking</option>
-                </select>
+              <label class="form-label">Payment method
+                <div class="seg-row">
+                  <button type="button" class="seg active" id="am-upi">UPI</button>
+                  <button type="button" class="seg" id="am-bank">Bank Transfer</button>
+                </div>
               </label>
-              ${demoQr ? `
-                <div class="qr-demo-box">
-                  <p>Pay to this QR, then enter the reference below:</p>
-                  <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
-                </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
-              <label>UTR / Transaction reference number
-                <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
-              </label>
+              <div id="am-upi-fields">
+                ${demoQr ? `
+                  <div class="qr-demo-box">
+                    <p>Pay to this QR, then enter the reference below:</p>
+                    <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
+                  </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
+                <label>UTR / Transaction reference number
+                  <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
+                </label>
+              </div>
+              <div id="am-bank-fields" style="display:none">
+                <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank"></label>
+                <label>Account Holder Name <input name="accName" placeholder="Name on account"></label>
+                <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890"></label>
+                <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123"></label>
+                <label>UTR / Transaction reference number
+                  <input name="bankRef" maxlength="30" placeholder="e.g. 4123876541">
+                </label>
+                <p class="hint">Deposit to the account shown above, then enter the transaction reference.</p>
+              </div>
               <button class="btn btn-green" type="submit">Submit Payment Proof</button>
               <button class="btn ghost" type="button" id="add-money-cancel">Cancel</button>
               <p class="form-hint">Balance is credited only after the administrator confirms your payment.</p>
@@ -1063,19 +1074,49 @@ function renderProfile(page) {
 
     $("#add-money-btn").onclick = () => { $("#add-money-box").style.display = ""; };
     $("#add-money-cancel").onclick = () => { $("#add-money-box").style.display = "none"; };
+
+    const amMethod = { upi: true };
+    const showAmMethod = (upi) => {
+      amMethod.upi = upi;
+      $("#am-upi").classList.toggle("active", upi);
+      $("#am-bank").classList.toggle("active", !upi);
+      $("#am-upi-fields").style.display = upi ? "" : "none";
+      $("#am-bank-fields").style.display = upi ? "none" : "";
+      const r = $("#am-upi-fields").querySelector("input[name=ref]");
+      if (r) r.required = upi;
+    };
+    $("#am-upi").onclick = () => showAmMethod(true);
+    $("#am-bank").onclick = () => showAmMethod(false);
+
     $("#add-money-form").onsubmit = (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const amount = parseFloat(fd.get("amount"));
-      const ref = String(fd.get("ref") || "").trim();
       if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
-      if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
-      API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: fd.get("method"), ref: ref }).then((res) => {
-        if (!res.success) { alert(res.message); return; }
-        logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted (pending confirmation)");
-        alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
-        renderProfile(page);
-      });
+      if (amMethod.upi) {
+        const ref = String(fd.get("ref") || "").trim();
+        if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
+        API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: "upi", ref: ref }).then((res) => {
+          if (!res.success) { alert(res.message); return; }
+          logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via UPI (pending confirmation)");
+          alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
+          renderProfile(page);
+        });
+      } else {
+        const bankName = String(fd.get("bankName") || "").trim();
+        const accName = String(fd.get("accName") || "").trim();
+        const accNo = String(fd.get("accNo") || "").replace(/\s/g, "");
+        const ifsc = String(fd.get("ifsc") || "").trim().toUpperCase();
+        const ref = String(fd.get("bankRef") || "").trim();
+        if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in the bank account details."); return; }
+        if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
+        API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc, ref: ref }).then((res) => {
+          if (!res.success) { alert(res.message); return; }
+          logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via bank transfer (pending confirmation)");
+          alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
+          renderProfile(page);
+        });
+      }
     };
   }
 

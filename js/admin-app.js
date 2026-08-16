@@ -599,11 +599,14 @@ function renderTabWallet() {
 
   const reqRows = $("#req-rows");
   const pending = requests.filter((r) => r.status === "pending");
+  const fmtReq = (r) => r.method === "Bank Transfer"
+    ? `${r.bankName || "Bank"} · ${r.accName || ""} · ${r.accNo ? "•••• " + String(r.accNo).slice(-4) : ""} · ${r.ifsc || ""}`
+    : r.method;
   reqRows.innerHTML = pending.length ? pending.map((r, i) => `<tr>
     <td>${new Date(r.date).toLocaleString()}</td>
     <td>${r.userName} (${r.phone})</td>
     <td class="wallet-plus">${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-    <td>${r.method}</td>
+    <td>${fmtReq(r)}</td>
     <td>${r.ref}</td>
     <td><button class="mini-del req-ok" data-i="${i}">Confirm</button> <button class="mini-del req-no" data-i="${i}">Reject</button></td>
   </tr>`).join("") : `<tr><td colspan="6" class="empty">No pending requests.</td></tr>`;

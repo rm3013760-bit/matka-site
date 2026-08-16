@@ -195,7 +195,12 @@
       if (!amount || amount <= 0) return fail("Invalid amount");
       const requests = store.get("matka.requests", []);
       if (requests.some((r) => String(r.ref).toLowerCase() === String(p.ref || "").toLowerCase() && getPhone(r) === phone)) return fail("Reference already submitted");
-      requests.push({ phone: u.phone, userName: u.name, amount, method: p.method || "UPI / QR", ref: p.ref || "", status: "pending", date: new Date().toISOString() });
+      const method = p.method === "bank" ? "Bank Transfer" : "UPI";
+      requests.push({
+        phone: u.phone, userName: u.name, amount, method,
+        bankName: p.bank_name || "", accName: p.acc_name || "", accNo: p.acc_no || "", ifsc: p.ifsc || "",
+        ref: p.ref || "", status: "pending", date: new Date().toISOString()
+      });
       store.set("matka.requests", requests);
       return ok({ request_id: requests.length }, "Payment proof submitted");
     },
