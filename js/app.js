@@ -116,7 +116,8 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "profile") renderProfile(page);
-  else if (route === "play") renderBid(page, { game: parts[1], market: parts[2] });
+  else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
+  else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "market") renderMarketDetail(page, parts[1]);
   else if (route === "about") renderAbout(page);
   else if (route === "faq") renderFaq(page);
@@ -130,7 +131,7 @@ function updateBottomNav(route) {
   if (!bn) return;
   for (const a of bn.querySelectorAll("a")) {
     const key = a.dataset.active;
-    a.classList.toggle("active", route === key || (key === "funds" && route === "profile"));
+    a.classList.toggle("active", route === key || (key === "play" && (route === "bid" || route === "play")) || (key === "funds" && route === "profile"));
   }
 }
 
@@ -139,7 +140,7 @@ function buildNav() {
   if (!nav) return;
   const items = [
     ["Home", "#/"],
-    ["Play", "#/play"],
+    ["Play", "#/bid/single"],
     ["Games", "#/games"],
     ["History", "#/history"],
     ["Charts", "#/charts"],
@@ -194,11 +195,18 @@ function renderHome(page, opts) {
       </div>
       <div class="board-grid" id="board"></div>
     </div>
+    <div class="live-board games-play">
+      <div class="board-header">
+        <h2>Play Games</h2>
+        <span class="live-badge"><span class="dot"></span> BID STYLES</span>
+      </div>
+      <div class="game-cards" id="home-games"></div>
+    </div>
     <section class="quick-links">
       <a href="#/charts">Jodi Chart</a>
       <a href="#/history">Full History</a>
       <a href="#/games">How to Play</a>
-      <a href="#/play">Place a Bid</a>
+      <a href="#/bid/single">Place a Bid</a>
       <a href="#/login">User Panel</a>
     </section>`;
 
@@ -233,13 +241,31 @@ function renderHome(page, opts) {
         <div class="mc-pending"><span class="pulse"></span> Result pending</div>
         <div class="mc-count" data-target="${nextResultTime(market)}">Result in 00:00:00</div>`}
       <div class="mc-actions">
-        <a class="btn play-link" href="#/play/single/${market.id}">Play</a>
+        <button type="button" class="btn play-link" data-play-market="${market.id}">Play</button>
         ${hasResult ? `<a class="mc-more" href="#/history/${market.id}">View history →</a>` : ""}
       </div>`;
     card.addEventListener("click", () => (location.hash = "#/market/" + market.id));
     const playBtn = card.querySelector(".play-link");
-    if (playBtn) playBtn.addEventListener("click", (e) => e.stopPropagation());
+    if (playBtn) {
+      playBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: playBtn }); });
+    }
     grid.appendChild(card);
+  }
+
+  const homeGames = $("#home-games");
+  if (homeGames) {
+    for (const g of GAMES) {
+      const c = document.createElement("div");
+      c.className = "game-card";
+      c.innerHTML = `
+        <b>${g.code}</b>
+        <strong>${g.name}</strong>
+        <small>Win up to ${g.odds}</small>
+        <button type="button" class="btn btn-green play-btn" data-play-game="${g.id}">Play</button>`;
+      const pb = c.querySelector(".play-btn");
+      pb.addEventListener("click", () => openStyleMenu({ game: g.id, anchor: pb }));
+      homeGames.appendChild(c);
+    }
   }
 
   if (grid.querySelector(".mc-count")) {
@@ -272,7 +298,7 @@ function renderGames(page) {
               <td class="dimmed">${g.range}</td>
               <td class="rate-amount">₹ 10.00</td>
               <td class="rate-cell"><b>KA ${(10 * parseFloat(g.odds)).toFixed(2)}</b></td>
-              <td><a class="btn play-link" href="#/play/${g.id}">Play</a></td>
+              <td><button type="button" class="btn play-link" data-play-game="${g.id}">Play</button></td>
             </tr>`).join("")}
           </tbody>
         </table>
@@ -310,6 +336,10 @@ function renderGames(page) {
         ${FAMILY_PAIRS.map((f, i) => `<div class="family-card"><b>${i + 1}</b><span>${f[0]} & ${f[1]}</span></div>`).join("")}
       </div>
     </section>`;
+
+  for (const b of page.querySelectorAll("[data-play-game]")) {
+    b.addEventListener("click", () => openStyleMenu({ game: b.dataset.playGame, anchor: b }));
+  }
 }
 
 function renderMarketDetail(page, id) {
@@ -571,12 +601,45 @@ function walletTx(phone, limit) {
   return tx.filter((t) => t.phone === phone).slice(0, limit || 15);
 }
 
-function renderBid(page, opts) {
+function openStyleMenu(opts) {
+  const panel = document.createElement("div");
+  panel.className = "style-backdrop";
+  panel.innerHTML = `
+    <div class="style-panel">
+      <div class="style-head">
+        <b>Select Bid Style</b>
+        <button type="button" class="style-close" aria-label="Close">×</button>
+      </div>
+      <div class="style-grid" id="style-grid"></div>
+    </div>`;
+  document.body.appendChild(panel);
+  panel.querySelector(".style-close").onclick = () => panel.remove();
+  panel.addEventListener("click", (e) => { if (e.target === panel) panel.remove(); });
+
+  const grid = panel.querySelector("#style-grid");
+  const styles = opts && opts.game ? BID_STYLES.filter((s) => s.game === opts.game) : BID_STYLES;
+  for (const s of styles) {
+    const g = GAMES.find((x) => x.id === s.game);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "style-btn";
+    b.innerHTML = `<b>${s.label}</b><small>${g.odds}</small>`;
+    b.onclick = () => {
+      const market = opts.market || (MARKETS[0] || {}).id;
+      panel.remove();
+      location.hash = "#/bid/" + s.id + "/" + market;
+    };
+    grid.appendChild(b);
+  }
+}
+
+function renderBidPage(page, styleId, marketId) {
+  const style = BID_STYLES.find((s) => s.id === styleId) || BID_STYLES[0];
   if (!currentUser) {
     page.innerHTML = `
       <section class="page-head">
         <div class="panel-badge"><span class="dot"></span> User Panel</div>
-        <h1>Place a Bid</h1>
+        <h1>${style.label}</h1>
         <p>Sign in to play with your demo wallet — no real money involved.</p>
       </section>
       <div class="card panel-card" style="max-width:none">
@@ -592,36 +655,34 @@ function renderBid(page, opts) {
   const users = store.get("matka.users", []);
   const u = users.find((x) => x.phone === currentUser.phone && x.phone) || users.find((x) => x.username === currentUser.username);
   if (!u) {
-    page.innerHTML = `<section class="page-head"><h1>Place a Bid</h1><p>Account not found. Please sign in again.</p></section>`;
+    page.innerHTML = `<section class="page-head"><h1>${style.label}</h1><p>Account not found. Please sign in again.</p></section>`;
     return;
   }
 
   resolveBets();
 
+  const g = GAMES.find((x) => x.id === style.game);
+  let selMarket = marketId && MARKETS.find((m) => m.id === marketId) ? marketId : (MARKETS[0] || {}).id;
   const balance = walletBalance(u.phone);
   const myBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
 
   page.innerHTML = `
     <section class="page-head">
-      <div class="panel-badge"><span class="dot"></span> User Panel</div>
-      <h1>Place a Bid</h1>
-      <p>Select market → game → number → stake. Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
+      <div class="panel-badge"><span class="dot"></span> Place Bid</div>
+      <h1>${style.label}</h1>
+      <p>Market → digit → point. Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
     </section>
     <div class="card panel-card">
-      <h3>1 · Select Market</h3>
+      <h3>Select Market</h3>
       <div class="market-nav" id="bid-markets"></div>
     </div>
     <div class="card panel-card">
-      <h3>2 · Select Game</h3>
-      <div class="game-pick-grid" id="bid-games"></div>
-    </div>
-    <div class="card panel-card">
-      <h3>3 · Enter Number</h3>
+      <h3>Enter ${style.label === "Jodi Digit" || style.label === "Jodi Digit Bulk" || style.label === "Motor" || style.label === "Motor Bulk" || style.label === "Jodi Close" || style.label === "Jodi Close Bulk" ? "Jodi Digit" : "Digit"}</h3>
+      <p class="hint" id="bid-odds">Odds: ${g.odds} · Success payout on bid value.</p>
       <div id="bid-fields"></div>
     </div>
     <div class="card panel-card">
-      <h3>4 · Stake (Demo)</h3>
-      <p class="hint" id="bid-odds">—</p>
+      <h3>Enter Point (Amount)</h3>
       <div class="amt-chips" id="bid-amts">
         <button type="button" class="amt-chip active" data-v="10">10</button>
         <button type="button" class="amt-chip" data-v="50">50</button>
@@ -629,19 +690,17 @@ function renderBid(page, opts) {
         <button type="button" class="amt-chip" data-v="500">500</button>
         <button type="button" class="amt-chip" data-v="1000">1000</button>
       </div>
-      <label class="form-label">Amount <input id="bid-stake" class="bid-stake" type="number" min="1" step="1" value="10" inputmode="numeric"></label>
-      <div class="card-actions">
-        <button class="btn btn-green" id="bid-submit">Place Bid</button>
-      </div>
+      <label class="form-label">Point ₹ <input id="bid-stake" class="bid-stake" type="number" min="1" step="1" value="10" inputmode="numeric"></label>
+      <p class="hint" id="bid-win">Win = ${g.odds} × point</p>
+    </div>
+    <div class="card-actions">
+      <button class="btn btn-green btn-big" id="bid-submit">Add</button>
     </div>
     <div class="card panel-card">
       <h3>My Bets</h3>
-      <p class="hint">Bets resolve automatically once the market result is announced.</p>
+      <p class="hint">Bids resolve automatically once the market result is announced.</p>
       <div class="bet-list" id="bid-list"></div>
     </div>`;
-
-  let selMarket = (opts.market && MARKETS.find((m) => m.id === opts.market)) ? opts.market : (MARKETS[0] || {}).id;
-  let selGame = opts.game && GAMES.find((g) => g.id === opts.game) ? opts.game : "single";
 
   const marketsBox = $("#bid-markets");
   for (const m of MARKETS) {
@@ -649,51 +708,35 @@ function renderBid(page, opts) {
     c.type = "button";
     c.className = "chip" + (m.id === selMarket ? " active" : "");
     c.textContent = m.name;
-    c.onclick = () => { selMarket = m.id; renderMarkets(); };
+    c.onclick = () => {
+      selMarket = m.id;
+      for (const x of marketsBox.querySelectorAll(".chip")) x.classList.toggle("active", x === c);
+    };
     marketsBox.appendChild(c);
-  }
-  function renderMarkets() {
-    for (const c of marketsBox.querySelectorAll(".chip")) c.classList.toggle("active", c.textContent === MARKETS.find((m) => m.id === selMarket).name);
-  }
-
-  const gamesBox = $("#bid-games");
-  for (const g of GAMES) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "game-pick" + (g.id === selGame ? " active" : "");
-    b.innerHTML = `<b>${g.code}</b><span>${g.name}</span><small>${g.odds}</small>`;
-    b.onclick = () => { selGame = g.id; renderGames(); renderFields(); };
-    gamesBox.appendChild(b);
-  }
-  function renderGames() {
-    for (const b of gamesBox.querySelectorAll(".game-pick")) b.classList.remove("active");
-    const target = [...gamesBox.children].find((b) => b.querySelector("b").textContent === GAMES.find((g) => g.id === selGame).code);
-    if (target) target.classList.add("active");
   }
 
   function renderFields() {
-    const g = GAMES.find((x) => x.id === selGame);
-    $("#bid-odds").textContent = "Odds: " + g.odds + " · Bid ₹10 → Win ₹" + (10 * parseFloat(g.odds)).toFixed(2);
-    if (g.id === "single" || g.id === "pana-family") {
-      $("#bid-fields").innerHTML = `<label>${g.id === "pana-family" ? "Your digit (0-9)" : "Your number (0-9)"} <input id="bnum" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="5" required></label>`;
-    } else if (g.id === "jodi" || g.id === "motor" || g.id === "jodi-close") {
-      $("#bid-fields").innerHTML = `<label>Your number (00-99) <input id="bnum" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>`;
-    } else if (g.id === "single-patti" || g.id === "double-patti" || g.id === "triple-patti") {
+    const f = style.game;
+    if (f === "single" || f === "pana-family") {
+      $("#bid-fields").innerHTML = `<label>${f === "pana-family" ? "Your digit (0-9)" : "Your digit (0-9)"} <input id="bnum" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="5" required></label>`;
+    } else if (f === "jodi" || f === "motor" || f === "jodi-close") {
+      $("#bid-fields").innerHTML = `<label>Jodi / number (00-99) <input id="bnum" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>`;
+    } else if (f === "single-patti" || f === "double-patti" || f === "triple-patti") {
       $("#bid-fields").innerHTML = `<label>Your Pana (000-999) <input id="bnum" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
         <p class="hint">Win if the open panel matches exactly.</p>`;
-    } else if (g.id === "family-pair") {
+    } else if (f === "family-pair") {
       $("#bid-fields").innerHTML = `<label>Family (1-11)
         <select id="bnum">
-          ${FAMILY_PAIRS.map((f, i) => `<option value="${i + 1}">Family ${i + 1}: ${f[0]} & ${f[1]}</option>`).join("")}
+          ${FAMILY_PAIRS.map((fp, i) => `<option value="${i + 1}">Family ${i + 1}: ${fp[0]} & ${fp[1]}</option>`).join("")}
         </select></label>`;
-    } else if (g.id === "half-sangam" || g.id === "half-sangam-b") {
+    } else if (f === "half-sangam" || f === "half-sangam-b") {
       $("#bid-fields").innerHTML = `
         <div class="form-row">
           <label>Jodi (00-99) <input id="bjodi" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>
           <label>Pana (000-999) <input id="bpatti" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
         </div>
-        <p class="hint">${g.id === "half-sangam-b" ? "Win if Jodi matches AND the pana equals the close panel." : "Win if Jodi matches AND the pana equals the open panel."}</p>`;
-    } else if (g.id === "full-sangam") {
+        <p class="hint">${f === "half-sangam-b" ? "Win if Jodi matches AND the pana equals the close panel." : "Win if Jodi matches AND the pana equals the open panel."}</p>`;
+    } else if (f === "full-sangam") {
       $("#bid-fields").innerHTML = `
         <div class="form-row">
           <label>Open Pana (000-999) <input id="bp1" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
@@ -710,10 +753,13 @@ function renderBid(page, opts) {
       for (const x of amts.querySelectorAll(".amt-chip")) x.classList.remove("active");
       c.classList.add("active");
       $("#bid-stake").value = c.dataset.v;
+      $("#bid-win").textContent = "Win = " + g.odds.replace("x", "") + " × " + c.dataset.v + " = ₹" + (parseFloat(g.odds) * parseFloat(c.dataset.v)).toFixed(2);
     };
   }
   $("#bid-stake").oninput = () => {
     for (const x of amts.querySelectorAll(".amt-chip")) x.classList.toggle("active", x.dataset.v === $("#bid-stake").value);
+    const v = parseFloat($("#bid-stake").value) || 0;
+    $("#bid-win").textContent = "Win = " + g.odds.replace("x", "") + " × " + v + " = ₹" + (parseFloat(g.odds) * v).toFixed(2);
   };
 
   API.call("get_balance", { mobile: u.phone }).then((res) => {
@@ -722,34 +768,35 @@ function renderBid(page, opts) {
   });
 
   $("#bid-submit").onclick = () => {
-    const g = GAMES.find((x) => x.id === selGame);
+    const g2 = g;
     const m = MARKETS.find((x) => x.id === selMarket);
-    const stake = parseFloat($("#bid-stake").value);
-    if (!stake || stake <= 0) { alert("Enter a valid stake."); return; }
+    const point = parseFloat($("#bid-stake").value);
+    if (!point || point <= 0) { alert("Enter a valid point (amount)."); return; }
     const val = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
     const numbers = {};
-    if (g.id === "family-pair") numbers.family = val("bnum");
-    else if (g.id === "half-sangam" || g.id === "half-sangam-b") { numbers.jodi = val("bjodi"); numbers.patti = val("bpatti"); }
-    else if (g.id === "full-sangam") { numbers.patti1 = val("bp1"); numbers.patti2 = val("bp2"); }
+    if (g2.id === "family-pair") numbers.family = val("bnum");
+    else if (g2.id === "half-sangam" || g2.id === "half-sangam-b") { numbers.jodi = val("bjodi"); numbers.patti = val("bpatti"); }
+    else if (g2.id === "full-sangam") { numbers.patti1 = val("bp1"); numbers.patti2 = val("bp2"); }
     else numbers.num = val("bnum");
     const numberStr = numbers.family ? "F" + numbers.family : numbers.jodi ? numbers.jodi + numbers.patti : numbers.patti1 ? numbers.patti1 + numbers.patti2 : numbers.num;
-    if (!numberStr) { alert("Enter your number."); return; }
-    API.call("place_bid_atomicv1", { mobile: u.phone, market_id: m.id, game_type: g.id, number: numberStr, amount: stake }).then((res) => {
+    if (!numberStr) { alert("Enter your digit."); return; }
+    API.call("place_bid_atomicv1", { mobile: u.phone, market_id: m.id, game_type: g2.id, number: numberStr, amount: point, style: style.id }).then((res) => {
       if (!res.success) { alert(res.message); return; }
-      logActivity(u, "Placed " + g.name + " bid of " + stake.toFixed(2) + " (API)");
-      alert("Bid placed via API (" + res.data.bet_id + "). It resolves when the market result is announced.");
-      renderBid(page, {});
+      logActivity(u, "Placed " + style.label + " bid of " + point.toFixed(2) + " (API)");
+      alert("Bid added (" + res.data.bet_id + "). It resolves when the market result is announced.");
+      renderBidPage(page, style.id, selMarket);
     });
   };
 
   const bidList = $("#bid-list");
   bidList.innerHTML = myBets.length ? myBets.map((b) => {
     const numLabel = b.game === "half-sangam" || b.game === "half-sangam-b" ? b.numbers.jodi + " / " + b.numbers.patti : b.game === "full-sangam" ? b.numbers.patti1 + " / " + b.numbers.patti2 : b.game === "family-pair" ? "Family " + b.numbers.family : b.numbers.num;
+    const styleLabel = (b.style && BID_STYLES.find((s) => s.id === b.style)) ? BID_STYLES.find((s) => s.id === b.style).label : b.gameName;
     const statusClass = b.status === "won" ? "req-confirmed" : b.status === "lost" ? "req-rejected" : "req-pending";
     return `<div class="bet-row">
       <div class="bet-main">
-        <strong>${b.marketName} · ${b.gameName}</strong>
-        <span>Number: ${numLabel} · Stake: ${b.stake.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        <strong>${b.marketName} · ${styleLabel}</strong>
+        <span>Number: ${numLabel} · Point: ${b.stake.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
         ${b.status === "won" ? `<span class="wallet-plus">Won ${(b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 })} (${b.odds}x)</span>` : ""}
       </div>
       <span class="req-status ${statusClass}">${b.status.toUpperCase()}</span>

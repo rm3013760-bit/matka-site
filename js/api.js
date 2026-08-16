@@ -254,11 +254,12 @@
       if (stake > balance) return fail("Insufficient balance");
       const bets = store.get("matka.bets", []);
       const numbers = {};
+      const raw = String(p.number || "").replace(/\D/g, "");
       if (g.id === "family-pair" || g.id === "pana-family") numbers.num = p.number;
-      else if (g.id === "half-sangam" || g.id === "half-sangam-b") { numbers.jodi = String(p.number).slice(0, 2); numbers.patti = String(p.number).slice(2); }
-      else if (g.id === "full-sangam") { numbers.patti1 = String(p.number).slice(0, 3); numbers.patti2 = String(p.number).slice(3); }
+      else if (g.id === "half-sangam" || g.id === "half-sangam-b") { numbers.jodi = raw.slice(0, 2); numbers.patti = raw.slice(2, 5); }
+      else if (g.id === "full-sangam") { numbers.patti1 = raw.slice(0, 3); numbers.patti2 = raw.slice(3, 6); }
       else numbers.num = p.number;
-      bets.push({ id: Date.now(), phone: u.phone, userName: u.name, marketId: m.id, marketName: m.name, game: g.id, gameName: g.name, numbers, stake, odds: parseFloat(g.odds), status: "pending", date: new Date().toISOString() });
+      bets.push({ id: Date.now(), phone: u.phone, userName: u.name, marketId: m.id, marketName: m.name, game: g.id, gameName: g.name, numbers, stake, odds: parseFloat(g.odds), status: "pending", style: p.style || g.id, date: new Date().toISOString() });
       store.set("matka.bets", bets);
       const tx = store.get("matka.wallet", []);
       tx.push({ phone: u.phone, userName: u.name, amount: -stake, note: "Bet: " + g.name + " · " + m.name, by: u.name + " (API)", date: new Date().toISOString() });

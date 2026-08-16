@@ -61,3 +61,27 @@ const FAMILY_PAIRS = [
 ];
 
 const DEFAULT_PANEL = "456";
+
+const BID_STYLES = [
+  { id: "single",           label: "Single Digit",       game: "single" },
+  { id: "single-bulk",      label: "Single Digit Bulk",  game: "single" },
+  { id: "jodi",             label: "Jodi Digit",         game: "jodi" },
+  { id: "jodi-bulk",        label: "Jodi Digit Bulk",    game: "jodi" },
+  { id: "single-patti",     label: "Single Pana",        game: "single-patti" },
+  { id: "single-patti-bulk",label: "Single Pana Bulk",   game: "single-patti" },
+  { id: "double-patti",     label: "Double Pana",        game: "double-patti" },
+  { id: "double-patti-bulk",label: "Double Pana Bulk",   game: "double-patti" },
+  { id: "triple-patti",     label: "Triple Pana",        game: "triple-patti" },
+  { id: "triple-patti-bulk",label: "Triple Pana Bulk",   game: "triple-patti" },
+  { id: "half-sangam-a",    label: "Half Sangam (A)",    game: "half-sangam" },
+  { id: "half-sangam-b",    label: "Half Sangam (B)",    game: "half-sangam-b" },
+  { id: "full-sangam",      label: "Full Sangam",        game: "full-sangam" },
+  { id: "family-pair",      label: "Jodi Family",        game: "family-pair" },
+  { id: "family-pair-bulk", label: "Jodi Family Bulk",   game: "family-pair" },
+  { id: "pana-family",      label: "Pana Family",        game: "pana-family" },
+  { id: "pana-family-bulk", label: "Pana Family Bulk",   game: "pana-family" },
+  { id: "motor",            label: "Motor",              game: "motor" },
+  { id: "motor-bulk",       label: "Motor Bulk",         game: "motor" },
+  { id: "jodi-close",       label: "Jodi Close",         game: "jodi-close" },
+  { id: "jodi-close-bulk",  label: "Jodi Close Bulk",    game: "jodi-close" }
+];
