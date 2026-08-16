@@ -51,6 +51,18 @@ function deleteResult(marketId, date) {
 
 function ensureAdmin() {
   const users = store.get("matka.users", []);
+  const seen = new Set();
+  const deduped = users.filter((x) => {
+    const key = String(x.phone || x.username || "").toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  if (deduped.length !== users.length) {
+    users.length = 0;
+    users.push(...deduped);
+    store.set("matka.users", users);
+  }
   let adminUserRow = users.find((x) => x.username === "admin");
   if (!adminUserRow) {
     adminUserRow = { username: "admin", password: "112233", name: "Admin", role: "admin", joined: "Demo", email: "admin@demo.com" };

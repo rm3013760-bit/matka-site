@@ -886,9 +886,8 @@ function renderRegister(page) {
     API.call("signupv1", { name: fd.get("name"), mobile: phoneDigits, email: fd.get("email"), password: fd.get("password") }).then((res) => {
       if (!res.success) { alert(res.message); return; }
       const users = store.get("matka.users", []);
-      const u = { username: fd.get("name").trim(), password: fd.get("password"), name: fd.get("name").trim(), phone: phoneDigits, email: fd.get("email"), role: "user", joined: todayKey(), address: "", city: "", dob: "", idType: "", idNumber: "" };
-      users.push(u);
-      store.set("matka.users", users);
+      const u = users.find((x) => getPhone(x) === phoneDigits);
+      if (!u) { alert("Account creation failed. Please try again."); return; }
       currentUser = { username: u.username, name: u.name, role: u.role, joined: u.joined, email: u.email, phone: u.phone };
       store.set("matka.user", currentUser);
       logActivity(u, "Account registered (API)");

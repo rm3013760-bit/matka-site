@@ -135,7 +135,11 @@
       const users = store.get("matka.users", []);
       const phone = String(p.mobile || "").replace(/\D/g, "");
       if (phone.length < 10) return fail("Valid mobile number required");
+      const email = String(p.email || "").toLowerCase();
+      const username = String(p.name || "").toLowerCase();
       if (users.some((x) => getPhone(x) === phone)) return fail("Mobile number already registered");
+      if (email && users.some((x) => String(x.email || "").toLowerCase() === email)) return fail("Email already registered");
+      if (username && users.some((x) => String(x.username || x.name || "").toLowerCase() === username)) return fail("Username/name already taken");
       const u = { username: p.name, password: p.password, name: p.name, phone: p.mobile, email: p.email || "", role: "user", joined: todayKey(), dob: "", address: "", city: "" };
       users.push(u);
       store.set("matka.users", users);
