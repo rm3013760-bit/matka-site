@@ -170,10 +170,10 @@ function renderTabApi() {
   }
 }
 
-function renderWalletWithdrawals() {
+function renderWithdrawalsInto(el) {
   const wds = store.get("matka.withdrawals", []);
   const pending = wds.filter((w) => w.status === "pending");
-  const el = document.getElementById("tab-withdraw");
+  const all = wds.slice().reverse();
   if (!el) return;
   el.innerHTML = `
     <div class="card wide">
@@ -184,82 +184,156 @@ function renderWalletWithdrawals() {
           <div class="activity-row">
             <span>${w.userName} · ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.upi || "—"}</span>
             <span>
-              <button class="mini-del req-ok" id="wd-ok-${i}">Approve</button>
-              <button class="mini-del req-no" id="wd-no-${i}">Reject</button>
+              <button type="button" class="mini-del req-ok" id="wd-ok-${i}">Approve</button>
+              <button type="button" class="mini-del req-no" id="wd-no-${i}">Reject</button>
             </span>
           </div>`).join("")}
-      </div>` : `<p class="hint">No pending withdrawals.</p>`}`;
+      </div>` : `<p class="hint">No pending withdrawals.</p>`}
+      ${all.length ? `<h3 style="margin-top:18px">All Requests</h3>
+      <div class="table-wrap"><table class="result-table">
+        <thead><tr><th>Date</th><th>User</th><th>Amount</th><th>UPI</th><th>Status</th></tr></thead>
+        <tbody>${all.map((w) => `<tr><td>${String(w.date || "").slice(0, 16) || "—"}</td><td>${w.userName}</td><td>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td><td>${w.upi || "—"}</td><td><span class="req-status ${w.status === "confirmed" ? "req-confirmed" : w.status === "rejected" ? "req-rejected" : "req-pending"}">${w.status.toUpperCase()}</span></td></tr>`).join("")}</tbody>
+      </table></div>` : ""}
+    </div>`;
   pending.forEach((w, i) => {
     const ok = document.getElementById("wd-ok-" + i);
     const no = document.getElementById("wd-no-" + i);
-    if (ok) ok.onclick = () => { w.status = "confirmed"; store.set("matka.withdrawals", wds); renderWalletWithdrawals(); };
-    if (no) no.onclick = () => { w.status = "rejected"; store.set("matka.withdrawals", wds); renderWalletWithdrawals(); };
+    if (ok) ok.onclick = () => { w.status = "confirmed"; store.set("matka.withdrawals", wds); renderWithdrawalsInto(el); };
+    if (no) no.onclick = () => { w.status = "rejected"; store.set("matka.withdrawals", wds); renderWithdrawalsInto(el); };
   });
+}
+
+function renderWalletWithdrawals() {
+  renderWithdrawalsInto(document.getElementById("tab-withdraw"));
+}
+
+function renderTabWithdrawals() {
+  $("#tab-withdrawals").innerHTML = `<div class="card wide" id="wd-list"></div>`;
+  renderWithdrawalsInto(document.getElementById("wd-list"));
 }
 
 
 function renderDashboard() {
   if (!adminUser) { renderLogin(); return; }
-  const results = getResults();
-  const users = store.get("matka.users", []);
-  const requests = store.get("matka.requests", []);
-  const tx = store.get("matka.wallet", []);
-  const pendingCount = requests.filter((r) => r.status === "pending").length;
-  const announcedToday = Object.keys(results).filter((k) => {
-    const r = results[k];
-    return r.announced && r.date === todayKey();
-  }).length;
-  const totalWallet = tx.reduce((s, t) => s + (t.amount || 0), 0);
   page().innerHTML = `
-    <section class="page-head">
-      <h1>Admin Panel</h1>
-      <p>Signed in as ${adminUser.name} · <button class="chip" id="logout">Log out</button></p>
-    </section>
-    <div class="admin-stats">
-      <div class="stat-card"><div class="stat-num">${MARKETS.length}</div><div class="stat-label">Markets</div></div>
-      <div class="stat-card stat-green"><div class="stat-num">${announcedToday}</div><div class="stat-label">Announced Today</div></div>
-      <div class="stat-card stat-blue"><div class="stat-num">${users.length}</div><div class="stat-label">Users</div></div>
-      <div class="stat-card stat-red"><div class="stat-num">${pendingCount}</div><div class="stat-label">Pending Top-Ups</div></div>
-      <div class="stat-card stat-green"><div class="stat-num">${totalWallet.toLocaleString(undefined, { minimumFractionDigits: 0 })}</div><div class="stat-label">Total Wallet</div></div>
-    </div>
-    <div class="admin-tabs" id="tabs">
-      <button class="chip active" data-tab="update">Update Result</button>
-      <button class="chip" data-tab="bulk">Bulk Entry</button>
-      <button class="chip" data-tab="json">JSON Import</button>
-      <button class="chip" data-tab="wallet">Wallet</button>
-      <button class="chip" data-tab="markets">Add Market</button>
-      <button class="chip" data-tab="users">Users</button>
-      <button class="chip" data-tab="api">API Console</button>
-    </div>
-    <div class="admin-grid" id="tab-update"></div>
-    <div class="admin-grid" id="tab-bulk" style="display:none"></div>
-    <div class="admin-grid" id="tab-json" style="display:none"></div>
-    <div class="admin-grid wallet-grid" id="tab-wallet" style="display:none"></div>
-    <div class="admin-grid" id="tab-markets" style="display:none"></div>
-    <div class="admin-grid" id="tab-users" style="display:none"></div>
-    <div class="admin-grid" id="tab-api" style="display:none"></div>`;
+    <section class="admin-shell">
+      <aside class="admin-side">
+        <nav class="side-nav" id="side-nav">
+          <span class="side-group">Overview</span>
+          <button type="button" class="side-btn active" data-tab="dashboard">Dashboard</button>
+          <span class="side-group">Results</span>
+          <button type="button" class="side-btn" data-tab="update">Update Result</button>
+          <button type="button" class="side-btn" data-tab="bulk">Bulk Entry</button>
+          <button type="button" class="side-btn" data-tab="json">JSON Import</button>
+          <span class="side-group">Markets</span>
+          <button type="button" class="side-btn" data-tab="markets">Add Market</button>
+          <span class="side-group">Users</span>
+          <button type="button" class="side-btn" data-tab="users">Users</button>
+          <span class="side-group">Wallet</span>
+          <button type="button" class="side-btn" data-tab="wallet">Wallet & Top-Ups</button>
+          <button type="button" class="side-btn" data-tab="withdrawals">Withdrawals</button>
+          <span class="side-group">System</span>
+          <button type="button" class="side-btn" data-tab="api">API Console</button>
+          <div class="side-foot">
+            <span>${adminUser.name}</span>
+            <button type="button" class="chip" id="logout">Log out</button>
+          </div>
+        </nav>
+      </aside>
+      <main class="admin-main">
+        <div class="admin-grid" id="tab-dashboard"></div>
+        <div class="admin-grid" id="tab-update" style="display:none"></div>
+        <div class="admin-grid" id="tab-bulk" style="display:none"></div>
+        <div class="admin-grid" id="tab-json" style="display:none"></div>
+        <div class="admin-grid" id="tab-markets" style="display:none"></div>
+        <div class="admin-grid" id="tab-users" style="display:none"></div>
+        <div class="admin-grid wallet-grid" id="tab-wallet" style="display:none"></div>
+        <div class="admin-grid" id="tab-withdrawals" style="display:none"></div>
+        <div class="admin-grid" id="tab-api" style="display:none"></div>
+      </main>
+    </section>`;
 
   $("#logout").onclick = () => { localStorage.removeItem("matka.admin"); adminUser = null; renderLogin(); };
 
-  const tabs = $("#tabs");
-  for (const btn of tabs.querySelectorAll(".chip")) {
-    btn.onclick = () => {
-      for (const b of tabs.querySelectorAll(".chip")) b.classList.remove("active");
-      btn.classList.add("active");
-      const tab = btn.dataset.tab;
-      for (const t of ["update", "bulk", "json", "wallet", "markets", "users", "api"]) {
-        $("#tab-" + t).style.display = t === tab ? "" : "none";
-      }
-    };
+  const ALL_TABS = ["dashboard", "update", "bulk", "json", "markets", "users", "wallet", "withdrawals", "api"];
+  window.switchTab = (tab) => {
+    for (const t of ALL_TABS) {
+      const el = $("#tab-" + t);
+      if (el) el.style.display = t === tab ? "" : "none";
+    }
+    for (const b of document.querySelectorAll("#side-nav .side-btn")) b.classList.toggle("active", b.dataset.tab === tab);
+  };
+  for (const b of document.querySelectorAll("#side-nav .side-btn")) {
+    b.onclick = () => switchTab(b.dataset.tab);
   }
 
+  renderTabDashboard();
   renderTabUpdate();
   renderTabBulk();
   renderTabJson();
   renderTabWallet();
   renderTabMarkets();
-  renderTabUsers(results);
+  renderTabUsers();
+  renderTabWithdrawals();
   renderTabApi();
+}
+
+function renderTabDashboard() {
+  const users = store.get("matka.users", []);
+  const requests = store.get("matka.requests", []);
+  const withdrawals = store.get("matka.withdrawals", []);
+  const tx = store.get("matka.wallet", []);
+  const results = getResults();
+  const announcedToday = Object.keys(results).filter((k) => {
+    const r = results[k];
+    return r.announced && r.date === todayKey();
+  }).length;
+  const totalWallet = tx.reduce((s, t) => s + (t.amount || 0), 0);
+  const pendingTopups = requests.filter((r) => r.status === "pending");
+  const pendingWd = withdrawals.filter((w) => w.status === "pending");
+
+  $("#tab-dashboard").innerHTML = `
+    <div class="admin-stats">
+      <div class="stat-card"><div class="stat-num">${MARKETS.length}</div><div class="stat-label">Markets</div></div>
+      <div class="stat-card stat-green"><div class="stat-num">${announcedToday}</div><div class="stat-label">Announced Today</div></div>
+      <div class="stat-card stat-blue"><div class="stat-num">${users.length}</div><div class="stat-label">Users</div></div>
+      <div class="stat-card stat-red"><div class="stat-num">${pendingTopups.length}</div><div class="stat-label">Pending Top-Ups</div></div>
+      <div class="stat-card stat-red"><div class="stat-num">${pendingWd.length}</div><div class="stat-label">Pending Withdrawals</div></div>
+      <div class="stat-card stat-green"><div class="stat-num">${totalWallet.toLocaleString(undefined, { minimumFractionDigits: 0 })}</div><div class="stat-label">Total Wallet</div></div>
+    </div>
+    <div class="quick-actions">
+      <button type="button" class="chip" data-go="update">Update Result</button>
+      <button type="button" class="chip" data-go="bulk">Bulk Entry</button>
+      <button type="button" class="chip" data-go="json">JSON Import</button>
+      <button type="button" class="chip" data-go="markets">Add Market</button>
+      <button type="button" class="chip" data-go="wallet">Top-Up Requests</button>
+      <button type="button" class="chip" data-go="withdrawals">Withdrawals</button>
+      <button type="button" class="chip" data-go="api">API Console</button>
+    </div>
+    <div class="card wide">
+      <h3>Pending Actions</h3>
+      ${pendingTopups.length || pendingWd.length ? `<div class="activity-list">
+        ${pendingTopups.map((r) => `<div class="activity-row"><span><b>Top-Up</b> · ${r.userName} · ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span><button type="button" class="mini-del" data-go="wallet">Review</button></div>`).join("")}
+        ${pendingWd.map((w) => `<div class="activity-row"><span><b>Withdrawal</b> · ${w.userName} · ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span><button type="button" class="mini-del" data-go="withdrawals">Review</button></div>`).join("")}
+      </div>` : `<p class="hint">No pending requests. All clear.</p>`}
+    </div>
+    <div class="card wide">
+      <h3>Recent Users</h3>
+      <div class="table-wrap"><table class="result-table">
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Joined</th></tr></thead>
+        <tbody>${users.slice(-5).reverse().map((u) => `<tr><td>${u.name}</td><td>${u.phone || "—"}</td><td>${u.email || "—"}</td><td>${u.joined}</td></tr>`).join("")}</tbody>
+      </table></div>
+    </div>
+    <div class="card wide">
+      <h3>Recent Wallet Activity</h3>
+      <div class="activity-list">
+        ${tx.slice(0, 8).map((t) => `<div class="activity-row"><span>${t.date ? String(t.date).slice(0, 16) : ""} · ${t.userName}</span><span>${(t.amount || 0) >= 0 ? "+" : ""}₹ ${(t.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${t.note || ""}</span></div>`).join("") || `<p class="hint">No wallet activity yet.</p>`}
+      </div>
+    </div>`;
+
+  for (const b of document.querySelectorAll("#tab-dashboard [data-go]")) {
+    b.onclick = () => switchTab(b.dataset.go);
+  }
 }
 
 function renderTabUpdate() {

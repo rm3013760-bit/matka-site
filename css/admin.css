@@ -179,3 +179,106 @@
   .admin-grid { grid-template-columns: 1fr; }
   .form-row { grid-template-columns: 1fr; }
 }
+
+/* ---------- admin shell ---------- */
+.admin-shell {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 22px 18px 40px;
+}
+
+.admin-side {
+  flex: 0 0 224px;
+  position: sticky;
+  top: 86px;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.side-group {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 12px 10px 4px;
+}
+
+.side-group:first-child { margin-top: 4px; }
+
+.side-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  padding: 9px 12px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: var(--tr);
+}
+
+.side-btn:hover { color: var(--gold-light); background: rgba(185, 144, 82, 0.08); }
+
+.side-btn.active {
+  color: var(--gold);
+  background: linear-gradient(90deg, rgba(185, 144, 82, 0.16), rgba(185, 144, 82, 0.04));
+  font-weight: 700;
+  box-shadow: inset 2px 0 0 var(--gold);
+}
+
+.side-foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.side-foot span { font-size: 0.78rem; color: var(--muted); }
+
+.admin-main { flex: 1 1 auto; min-width: 0; }
+
+.quick-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 18px;
+}
+
+.admin-stats { margin-bottom: 18px; }
+
+@media (max-width: 880px) {
+  .admin-shell { flex-direction: column; padding: 14px 10px 30px; gap: 14px; }
+  .admin-side { flex: none; width: 100%; position: static; }
+  .side-nav {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .side-group, .side-foot { display: none; }
+  .side-btn { width: auto; white-space: nowrap; padding: 8px 12px; }
+  .side-btn.active { box-shadow: none; }
+  .admin-grid { grid-template-columns: 1fr; }
+  .admin-main .card.wide { max-width: none; }
+}
