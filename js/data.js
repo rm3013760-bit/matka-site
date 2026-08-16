@@ -61,6 +61,7 @@ const FAMILY_PAIRS = [
 ];
 
 const DEFAULT_PANEL = "456";
+const DEMO_UPI = "matkalive@upi";
 
 const BID_STYLES = [
   { id: "single",           label: "Single Digit",       game: "single" },

@@ -1025,28 +1025,27 @@ function renderProfile(page) {
               <label class="form-label">Payment method
                 <div class="seg-row">
                   <button type="button" class="seg active" id="am-upi">UPI</button>
-                  <button type="button" class="seg" id="am-bank">Bank Transfer</button>
+                  <button type="button" class="seg" id="am-qr">QR Code</button>
                 </div>
               </label>
               <div id="am-upi-fields">
+                <div class="qr-demo-box">
+                  <p>Pay to this UPI ID, then enter the reference below:</p>
+                  <p class="upi-id">${(demoQr && demoQr.upi) || DEMO_UPI}</p>
+                </div>
+                <label>UTR / Transaction reference number
+                  <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
+                </label>
+              </div>
+              <div id="am-qr-fields" style="display:none">
                 ${demoQr ? `
                   <div class="qr-demo-box">
                     <p>Pay to this QR, then enter the reference below:</p>
                     <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
                   </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
                 <label>UTR / Transaction reference number
-                  <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
+                  <input name="qrRef" maxlength="30" placeholder="e.g. 4123876541" required>
                 </label>
-              </div>
-              <div id="am-bank-fields" style="display:none">
-                <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank"></label>
-                <label>Account Holder Name <input name="accName" placeholder="Name on account"></label>
-                <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890"></label>
-                <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123"></label>
-                <label>UTR / Transaction reference number
-                  <input name="bankRef" maxlength="30" placeholder="e.g. 4123876541">
-                </label>
-                <p class="hint">Deposit to the account shown above, then enter the transaction reference.</p>
               </div>
               <button class="btn btn-green" type="submit">Submit Payment Proof</button>
               <button class="btn ghost" type="button" id="add-money-cancel">Cancel</button>
@@ -1079,44 +1078,26 @@ function renderProfile(page) {
     const showAmMethod = (upi) => {
       amMethod.upi = upi;
       $("#am-upi").classList.toggle("active", upi);
-      $("#am-bank").classList.toggle("active", !upi);
+      $("#am-qr").classList.toggle("active", !upi);
       $("#am-upi-fields").style.display = upi ? "" : "none";
-      $("#am-bank-fields").style.display = upi ? "none" : "";
-      const r = $("#am-upi-fields").querySelector("input[name=ref]");
-      if (r) r.required = upi;
+      $("#am-qr-fields").style.display = upi ? "none" : "";
     };
     $("#am-upi").onclick = () => showAmMethod(true);
-    $("#am-bank").onclick = () => showAmMethod(false);
+    $("#am-qr").onclick = () => showAmMethod(false);
 
     $("#add-money-form").onsubmit = (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const amount = parseFloat(fd.get("amount"));
       if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
-      if (amMethod.upi) {
-        const ref = String(fd.get("ref") || "").trim();
-        if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
-        API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: "upi", ref: ref }).then((res) => {
-          if (!res.success) { alert(res.message); return; }
-          logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via UPI (pending confirmation)");
-          alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
-          renderProfile(page);
-        });
-      } else {
-        const bankName = String(fd.get("bankName") || "").trim();
-        const accName = String(fd.get("accName") || "").trim();
-        const accNo = String(fd.get("accNo") || "").replace(/\s/g, "");
-        const ifsc = String(fd.get("ifsc") || "").trim().toUpperCase();
-        const ref = String(fd.get("bankRef") || "").trim();
-        if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in the bank account details."); return; }
-        if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
-        API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc, ref: ref }).then((res) => {
-          if (!res.success) { alert(res.message); return; }
-          logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via bank transfer (pending confirmation)");
-          alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
-          renderProfile(page);
-        });
-      }
+      const ref = String(fd.get(amMethod.upi ? "ref" : "qrRef") || "").trim();
+      if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
+      API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: amMethod.upi ? "upi" : "qr", ref: ref }).then((res) => {
+        if (!res.success) { alert(res.message); return; }
+        logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via " + (amMethod.upi ? "UPI" : "QR") + " (pending confirmation)");
+        alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
+        renderProfile(page);
+      });
     };
   }
 

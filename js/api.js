@@ -195,7 +195,7 @@
       if (!amount || amount <= 0) return fail("Invalid amount");
       const requests = store.get("matka.requests", []);
       if (requests.some((r) => String(r.ref).toLowerCase() === String(p.ref || "").toLowerCase() && getPhone(r) === phone)) return fail("Reference already submitted");
-      const method = p.method === "bank" ? "Bank Transfer" : "UPI";
+      const method = p.method === "bank" ? "Bank Transfer" : p.method === "qr" ? "QR Code" : "UPI";
       requests.push({
         phone: u.phone, userName: u.name, amount, method,
         bankName: p.bank_name || "", accName: p.acc_name || "", accNo: p.acc_no || "", ifsc: p.ifsc || "",

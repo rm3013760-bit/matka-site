@@ -557,6 +557,9 @@ function renderTabWallet() {
         <h3>Demo QR Code</h3>
         <p class="hint">Shown inside the user's Add Money box during top-up. Demo only.</p>
         <div id="qr-current"></div>
+        <label>UPI ID (optional)
+          <input id="qr-upi" placeholder="e.g. matkalive@upi" value="${qr?.upi || ""}">
+        </label>
         <input type="file" id="qr-upload" accept="image/*">
         <div class="card-actions">
           <button class="btn" id="qr-save">Save QR</button>
@@ -646,7 +649,7 @@ function renderTabWallet() {
   const qr = store.get("matka.qr", null);
   const qrCurrent = $("#qr-current");
   qrCurrent.innerHTML = qr
-    ? `<img class="qr-img" src="${qr.data}" alt="Demo QR"><p class="hint">Saved ${new Date(qr.date).toLocaleString()} · ${qr.name || ""}</p>`
+    ? `<img class="qr-img" src="${qr.data}" alt="Demo QR"><p class="hint">Saved ${new Date(qr.date).toLocaleString()} · ${qr.name || ""}${qr.upi ? " · UPI " + qr.upi : ""}</p>`
     : `<p class="hint">No QR uploaded yet.</p>`;
 
   let pendingQr = null;
@@ -660,6 +663,7 @@ function renderTabWallet() {
 
   $("#qr-save").onclick = () => {
     if (!pendingQr) { alert("Choose an image first."); return; }
+    pendingQr.upi = String($("#qr-upi").value || "").trim();
     store.set("matka.qr", pendingQr);
     alert("Demo QR saved. It now shows in the user's Add Money box.");
     renderDashboard();
