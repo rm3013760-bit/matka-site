@@ -397,7 +397,12 @@ function renderHistory(page, marketId) {
       <h1>Results History</h1>
       <p>Select a market to see its full result history.</p>
     </section>
-    <div class="market-nav" id="mnav"></div>
+    <div class="market-nav" id="mnav">
+      <select id="market-select" class="market-select">
+        <option value="">All Markets</option>
+        ${MARKETS.map((m) => `<option value="${m.id}" ${marketId === m.id ? "selected" : ""}>${m.name}</option>`).join("")}
+      </select>
+    </div>
     <div class="hist-card">
       <div class="hist-head">
         <h3 id="hist-title">All Markets</h3>
@@ -406,19 +411,9 @@ function renderHistory(page, marketId) {
       <div class="hist-list" id="rows"></div>
     </div>`;
 
-  const nav = $("#mnav");
-  const allBtn = document.createElement("button");
-  allBtn.className = marketId ? "chip" : "chip active";
-  allBtn.textContent = "All Markets";
-  allBtn.onclick = () => (location.hash = "#/history");
-  nav.appendChild(allBtn);
-  for (const m of MARKETS) {
-    const btn = document.createElement("button");
-    btn.className = marketId === m.id ? "chip active" : "chip";
-    btn.textContent = m.name;
-    btn.onclick = () => (location.hash = "#/history/" + m.id);
-    nav.appendChild(btn);
-  }
+  $("#market-select").onchange = (e) => {
+    location.hash = e.target.value ? "#/history/" + e.target.value : "#/history";
+  };
 
   const tbody = $("#rows");
   const rows = [];

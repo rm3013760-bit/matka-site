@@ -1500,3 +1500,31 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   box-shadow: var(--glow-gold);
   white-space: nowrap;
 }
+
+.market-select {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--gold-light);
+  background: linear-gradient(180deg, #0d1a3d, var(--navy2));
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4af37' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.market-select option {
+  color: #0a1535;
+  background: #fff;
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 500;
+}
+
+.market-nav { margin-bottom: 14px; }
