@@ -1484,7 +1484,7 @@ function renderRegister(page) {
     API.call("signupv1", { name: fd.get("name"), mobile: phoneDigits, email: fd.get("email"), password: fd.get("password"), mpin: fd.get("mpin") }).then((res) => {
       if (!res.success) { alert(res.message); return; }
       const users = store.get("matka.users", []);
-      const u = users.find((x) => getPhone(x) === phoneDigits);
+      const u = users.find((x) => String((x && x.phone) || "").replace(/\D/g, "") === phoneDigits);
       if (!u) { alert("Account creation failed. Please try again."); return; }
       u.mpin = String(fd.get("mpin") || "0000");
       store.set("matka.users", users);

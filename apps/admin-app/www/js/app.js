@@ -1484,7 +1484,7 @@ function renderRegister(page) {
     API.call("signupv1", { name: fd.get("name"), mobile: phoneDigits, email: fd.get("email"), password: fd.get("password"), mpin: fd.get("mpin") }).then((res) => {
       if (!res.success) { alert(res.message); return; }
       const users = store.get("matka.users", []);
-      const u = users.find((x) => getPhone(x) === phoneDigits);
+      const u = users.find((x) => String((x && x.phone) || "").replace(/\D/g, "") === phoneDigits);
       if (!u) { alert("Account creation failed. Please try again."); return; }
       u.mpin = String(fd.get("mpin") || "0000");
       store.set("matka.users", users);
@@ -1949,9 +1949,18 @@ function renderPrivacy(page) {
 }
 
 window.addEventListener("hashchange", () => { buildNav(); router(); });
-(() => {
+window.addEventListener("sync-updated", () => {
+  const h = location.hash || "#/";
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
+});
+(function syncFoot() {
   const el = document.getElementById("foot-sync-url");
-  if (el) el.textContent = Sync.url();
+  if (el) {
+    const base = Sync.mode() === "local" ? (localStorage.getItem("matka.server") || "http://localhost:8777") : "github-gist";
+    const err = Sync.lastErr;
+    el.textContent = base + (err ? " · ERROR: " + err.slice(0, 40) : (Sync.lastPush ? " · synced " + new Date(Sync.lastPush).toLocaleTimeString() : " · connecting…"));
+  }
+  setTimeout(syncFoot, 5000);
 })();
 window.__syncReady.then(() => {
   fetch("live_results.json")
