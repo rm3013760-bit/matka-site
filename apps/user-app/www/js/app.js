@@ -110,22 +110,26 @@ function router() {
   const parts = hash.split("/");
   const route = parts[0] || "";
   updateBottomNav(route);
-  if (route === "games") renderGames(page);
-  else if (route === "history") renderHistory(page, parts[1]);
-  else if (route === "charts") renderCharts(page, parts[1]);
+  if (route === "charts") renderCharts(page, parts[1]);
+  else if (route === "funds") renderFunds(page, parts[1]);
+  else if (route === "history") renderMyHistory(page, parts[1] || "entries");
+  else if (route === "results") renderHistory(page, parts[1]);
+  else if (route === "settings") {
+    if (currentUser) renderSettings(page);
+    else renderLogin(page);
+  }
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
-  else if (route === "account") {
-    if (currentUser) renderProfile(page);
-    else {
-      renderLogin(page);
-    }
-  }
-  else if (route === "ledger") renderLedger(page);
+  else if (route === "games") renderGames(page);
   else if (route === "profile") renderProfile(page);
   else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "market") renderMarketDetail(page, parts[1]);
+  else if (route === "ledger") renderMyHistory(page, "entries");
+  else if (route === "account") {
+    if (currentUser) renderSettings(page);
+    else renderLogin(page);
+  }
   else if (route === "about") renderAbout(page);
   else if (route === "faq") renderFaq(page);
   else if (route === "contact") renderContact(page);
@@ -136,7 +140,7 @@ function router() {
 function updateBottomNav(route) {
   const bn = document.getElementById("bottom-nav");
   if (!bn) return;
-  const map = { "": "/", home: "/", charts: "charts", games: "games", bid: "games", play: "games", ledger: "ledger", account: "account", profile: "account", login: "account", register: "account" };
+  const map = { "": "/", home: "/", charts: "charts", market: "charts", funds: "funds", history: "history", entries: "history", deposits: "history", withdrawals: "history" };
   const activeKey = map[route] ?? "";
   for (const a of bn.querySelectorAll("a")) {
     a.classList.toggle("active", a.dataset.active === activeKey);
@@ -161,9 +165,8 @@ function buildNav() {
   const items = [
     ["Home", "#/"],
     ["Charts", "#/charts"],
-    ["Games", "#/games"],
-    ["Ledger", "#/ledger"],
-    ["Account", "#/account"]
+    ["Funds", "#/funds"],
+    ["History", "#/history"]
   ];
   nav.innerHTML = "";
   for (const [label, href] of items) {
@@ -188,20 +191,21 @@ function buildNav() {
   updateHeaderBalance();
 }
 
+function marketCategory(m) {
+  const n = m.name.toLowerCase();
+  if (n.includes("night")) return "Night";
+  if (n.includes("morning") || n.includes("day")) return "Day";
+  return "Main Bazar";
+}
+
 function renderHome(page, opts) {
   seedDemoResults();
-  const today = getTodayResults();
-  const announced = today.filter((t) => t.result && t.result.announced);
+  const cats = ["All", "Main Bazar", "Day", "Night"];
 
   page.innerHTML = `
-    <div class="s5-banners">
-      <div class="s5-banner-track">
-        <div class="s5-banner b1"><span class="s5-b-tag">DEMO</span><b>Welcome to MatkaLive</b><i>Results \u00b7 Charts \u00b7 Games</i></div>
-        <div class="s5-banner b2"><span class="s5-b-tag">PLAY</span><b>Bid &amp; Win</b><i>As per stated rates</i></div>
-        <div class="s5-banner b3"><span class="s5-b-tag">LIVE</span><b>${MARKETS.length} Markets</b><i>Updated by admin</i></div>
-      </div>
+    <div class="cat-chips" id="cat-chips">
+      ${cats.map((c) => `<button type="button" class="cat-chip ${c === "All" ? "on" : ""}" data-cat="${c}">${c}</button>`).join("")}
     </div>
-    <div class="ticker-wrap"><div class="ticker-inner" id="ticker"></div></div>
     <div class="s5-section matka-results">
       <div class="s5-head">
         <h2>MATKA RESULT</h2>
@@ -223,33 +227,44 @@ function renderHome(page, opts) {
       <p class="hint">Entertainment picks only — not predictions or advice. Demo content.</p>
     </div>
     <div class="s5-section games-play">
-      <div class="s5-head"><h2>MATKA GAMES</h2><a href="#/games">RATES</a></div>
+      <div class="s5-head"><h2>MATKA GAMES</h2><a href="#/games">GAME RATES</a></div>
       <div class="s5-games" id="home-games"></div>
     </div>
     <section class="quick-links">
       <a href="#/charts">Jodi Chart</a>
-      <a href="#/history">Full History</a>
+      <a href="#/history">My History</a>
       <a href="#/games">How to Play</a>
-      <a href="#/account">User Panel</a>
+      <a href="#/funds">Funds</a>
     </section>`;
 
-  const ticker = $("#ticker");
-  if (ticker) {
-    const items = announced
-      .slice(0, 8)
-      .map((t) => `<span class="ticker-item">${t.market.name} — <strong>${t.result.panel}-${t.result.panel2} / ${t.result.jodi}${t.result.jodi2}</strong></span>`)
-      .join("");
-    ticker.innerHTML = items + items;
+  const chips = $("#cat-chips");
+  if (chips) {
+    chips.addEventListener("click", (e) => {
+      const btn = e.target.closest(".cat-chip");
+      if (!btn) return;
+      for (const c of chips.querySelectorAll(".cat-chip")) c.classList.toggle("on", c === btn);
+      renderHomeRows(btn.dataset.cat);
+    });
   }
+  renderHomeRows("All");
+  renderHomeGames();
 
+  updateHeaderBalance();
+}
+
+function renderHomeRows(cat) {
   const homeRows = $("#home-rows");
+  if (!homeRows) return;
+  const today = getTodayResults();
+  homeRows.innerHTML = "";
   for (const { market, result } of today) {
+    if (cat !== "All" && marketCategory(market) !== cat) continue;
     const row = document.createElement("div");
     row.className = "s5-row";
     const hasResult = result && result.announced;
     const jodi = hasResult ? result.jodi + result.jodi2 : "--";
-    const pan1 = hasResult ? result.panel : "<i>---</i>";
-    const pan2 = hasResult ? result.panel2 || "--" : "<i>---</i>";
+    const pan1 = hasResult ? result.panel : "---";
+    const pan2 = hasResult ? result.panel2 || "--" : "---";
     const tag = hasResult
       ? `<span class="s5-tag t-open">OPEN</span>`
       : `<span class="s5-tag t-closed">PENDING</span>`;
@@ -262,36 +277,35 @@ function renderHome(page, opts) {
         ${tag}
       </div>
       <div class="s5-btm">
-        <div class="s5-jodi"><em>JODI</em><b>${jodi}</b></div>
+        <div class="s5-jodi"><em>JODI</em><b>${jodi}</b><small>PANNA ${pan1} - ${pan2}</small></div>
         <div class="s5-oc">
-          <span class="s5-open">${pan1}</span>
-          <span class="s5-close">${pan2}</span>
+          <span class="s5-open"><i>OPEN</i>${pan1}</span>
+          <span class="s5-close"><i>CLOSE</i>${pan2}</span>
         </div>
-        <button type="button" class="s5-bid" data-play-market="${market.id}">BID</button>
+        <button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>
       </div>`;
     row.addEventListener("click", () => (location.hash = "#/market/" + market.id));
     const bidBtn = row.querySelector(".s5-bid");
     bidBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: bidBtn }); });
     homeRows.appendChild(row);
   }
+}
 
+function renderHomeGames() {
   const homeGames = $("#home-games");
-  if (homeGames) {
-    for (const g of GAMES) {
-      const c = document.createElement("div");
-      c.className = "s5-game";
-      c.innerHTML = `
-        <b>${g.code}</b>
-        <strong>${g.name}</strong>
-        <small>${g.odds}</small>
-        <button type="button" class="s5-bid s5-bid-small" data-play-game="${g.id}">PLAY</button>`;
-      const pb = c.querySelector("[data-play-game]");
-      pb.addEventListener("click", () => openStyleMenu({ game: g.id, anchor: pb }));
-      homeGames.appendChild(c);
-    }
+  if (!homeGames) return;
+  for (const g of GAMES) {
+    const c = document.createElement("div");
+    c.className = "s5-game";
+    c.innerHTML = `
+      <b>${g.code}</b>
+      <strong>${g.name}</strong>
+      <small>${g.odds}</small>
+      <button type="button" class="s5-bid s5-bid-small" data-play-game="${g.id}">PLAY</button>`;
+    const pb = c.querySelector("[data-play-game]");
+    pb.addEventListener("click", () => openStyleMenu({ game: g.id, anchor: pb }));
+    homeGames.appendChild(c);
   }
-
-  updateHeaderBalance();
 }
 
 function renderGames(page) {
@@ -382,7 +396,7 @@ function histRowHTML(r, withMarket, isToday) {
 function renderMarketDetail(page, id) {
   const market = MARKETS.find((m) => m.id === id);
   if (!market) {
-    location.hash = "#/history";
+    location.hash = "#/";
     return;
   }
   const results = getResults();
@@ -391,6 +405,10 @@ function renderMarketDetail(page, id) {
     <section class="page-head">
       <h1>${market.name}</h1>
       <p>Open ${market.open} · Close ${market.close} · Result ${market.result} · ${market.days}</p>
+      <div class="card-actions" style="margin-top:10px">
+        <a class="btn btn-green" href="#/play/jodi/${market.id}">Play Jodi</a>
+        <a class="btn ghost" href="#/play/single/${market.id}">Play Digit</a>
+      </div>
     </section>
     <div class="hist-stats">
       <div class="hist-stat"><b>${days.length}</b><span>Results</span></div>
@@ -426,7 +444,7 @@ function renderHistory(page, marketId) {
     </div>`;
 
   $("#market-select").onchange = (e) => {
-    location.hash = e.target.value ? "#/history/" + e.target.value : "#/history";
+    location.hash = e.target.value ? "#/results/" + e.target.value : "#/results";
   };
 
   const tbody = $("#rows");
@@ -586,6 +604,381 @@ function renderLedger(page) {
   }
 }
 
+function renderMyHistory(page, tab) {
+  if (!currentUser) { renderLogin(page); return; }
+  resolveBets();
+  const u = currentUser;
+  const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const requests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
+  const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
+  const tabName = tab === "deposits" ? "deposits" : tab === "withdrawals" ? "withdrawals" : "entries";
+
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> ${u.name}</div>
+      <h1>My History</h1>
+      <p>Bids, deposits and withdrawals for ${u.phone}.</p>
+    </section>
+    <div class="panel-tabs">
+      <button type="button" class="chip ${tabName === "entries" ? "active" : ""}" data-tab="entries">My Entries</button>
+      <button type="button" class="chip ${tabName === "deposits" ? "active" : ""}" data-tab="deposits">Deposits</button>
+      <button type="button" class="chip ${tabName === "withdrawals" ? "active" : ""}" data-tab="withdrawals">Withdrawals</button>
+    </div>
+    <div id="myhist-body"></div>`;
+
+  for (const c of page.querySelectorAll(".panel-tabs .chip")) {
+    c.onclick = () => { location.hash = "#/history/" + c.dataset.tab; };
+  }
+
+  const body = $("#myhist-body");
+
+  if (tabName === "entries") {
+    const won = bets.filter((b) => b.status === "won");
+    body.innerHTML = `
+      <div class="hist-stats">
+        <div class="hist-stat"><b>${bets.length}</b><span>Total Bids</span></div>
+        <div class="hist-stat"><b>${bets.filter((b) => (b.date || "").slice(0, 10) === todayKey()).length}</b><span>Today</span></div>
+        <div class="hist-stat"><b>₹ ${bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>In Play</span></div>
+        <div class="hist-stat"><b>₹ ${won.reduce((s, b) => s + b.stake * b.odds, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Won</span></div>
+      </div>
+      <div class="hist-card"><div class="hist-list" id="myhist-rows"></div></div>`;
+    const list = $("#myhist-rows");
+    if (!bets.length) { list.innerHTML = `<p class="empty">No bids yet. Place one from the Home page.</p>`; return; }
+    for (const b of bets.slice(0, 100)) {
+      const div = document.createElement("div");
+      const num = b.game === "half-sangam" || b.game === "half-sangam-b" ? b.numbers.jodi + " - " + b.numbers.patti :
+        b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
+        b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
+      const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
+      const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
+      div.innerHTML = `
+        <div class="hist-row">
+          <div class="hist-date">
+            <span class="hd-day">${styleLabel}</span>
+            <span class="hd-date">${(b.date || "").slice(0, 10)}</span>
+          </div>
+          <span class="hist-market">${b.marketName}</span>
+          <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
+          <div class="hist-panels">
+            <div class="hpanel"><span class="hpanel-label">Stake</span><span class="hpanel-digits">₹ ${b.stake}</span></div>
+            <div class="hpanel"><span class="hpanel-label">Odds</span><span class="hpanel-digits">${b.odds}x</span></div>
+          </div>
+          <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
+        </div>`;
+      list.appendChild(div.firstElementChild);
+    }
+    return;
+  }
+
+  if (tabName === "deposits") {
+    body.innerHTML = `<div class="hist-card">
+      <div class="hist-head"><h3>Fund Deposit History</h3><span class="hist-count">${requests.length}</span></div>
+      <div class="hist-list">
+        ${requests.length ? requests.map((r) => `
+          <div class="hist-row">
+            <div class="hist-date"><span class="hd-day">${r.method}</span><span class="hd-date">${String(r.date || "").slice(0, 16)}</span></div>
+            <span class="hist-market">Ref: ${r.ref || "—"}</span>
+            <div class="hist-panels"><div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits">₹ ${Number(r.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div></div>
+            <span class="l-status ${r.status === "confirmed" ? "l-win" : r.status === "rejected" ? "l-lose" : "l-open"}">${String(r.status || "pending").toUpperCase()}</span>
+          </div>`).join("") : `<p class="empty">No deposit requests yet.</p>`}
+      </div>
+    </div>`;
+    return;
+  }
+
+  body.innerHTML = `<div class="hist-card">
+    <div class="hist-head"><h3>Withdraw Fund History</h3><span class="hist-count">${wds.length}</span></div>
+    <div class="hist-list">
+      ${wds.length ? wds.map((w) => `
+        <div class="hist-row">
+          <div class="hist-date"><span class="hd-day">${w.method === "bank" ? "BANK" : "UPI"}</span><span class="hd-date">${String(w.date || "").slice(0, 16)}</span></div>
+          <span class="hist-market">${w.method === "bank" ? (w.bankName || "—") + " · " + (w.accName || "—") : w.upi || "—"}</span>
+          <div class="hist-panels"><div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits">₹ ${Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div></div>
+          <span class="l-status ${w.status === "confirmed" ? "l-win" : w.status === "rejected" ? "l-lose" : "l-open"}">${String(w.status || "pending").toUpperCase()}</span>
+        </div>`).join("") : `<p class="empty">No withdrawal requests yet.</p>`}
+    </div>
+  </div>`;
+}
+
+function renderFunds(page, tab) {
+  if (!currentUser) { renderLogin(page); return; }
+  const users = store.get("matka.users", []);
+  const u = users.find((x) => x.phone === currentUser.phone && x.phone) || users.find((x) => x.username === currentUser.username);
+  if (!u) { renderLogin(page); return; }
+  const balance = walletBalance(u.phone);
+  const demoQr = store.get("matka.qr", null);
+  const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
+  const tabName = tab === "withdraw" ? "withdraw" : "add";
+  const savedBank = store.get("matka.bank." + u.phone, null);
+
+  page.innerHTML = `
+    <section class="page-head">
+      <h1>Funds</h1>
+      <p>Add money or request a withdrawal.</p>
+    </section>
+    <div class="funds-balance card">
+      <span>Wallet Balance</span>
+      <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
+      <small>Credited after the administrator confirms your payment.</small>
+    </div>
+    <div class="panel-tabs">
+      <button type="button" class="chip ${tabName === "add" ? "active" : ""}" data-tab="add">Deposit</button>
+      <button type="button" class="chip ${tabName === "withdraw" ? "active" : ""}" data-tab="withdraw">Withdraw</button>
+    </div>
+    <div id="funds-body"></div>`;
+
+  for (const c of page.querySelectorAll(".panel-tabs .chip")) {
+    c.onclick = () => { location.hash = "#/funds/" + c.dataset.tab; };
+  }
+
+  const body = $("#funds-body");
+
+  if (tabName === "add") {
+    body.innerHTML = `
+      <div class="card panel-card">
+        <h3>Add Fund</h3>
+        <div class="pay-icon-row">
+          <img src="assets/icons/gpay.svg" alt="GPay" title="GPay">
+          <img src="assets/icons/phonepe.svg" alt="PhonePe" title="PhonePe">
+          <img src="assets/icons/paytm.svg" alt="Paytm" title="Paytm">
+          <img src="assets/icons/bank.svg" alt="Bank" title="Bank Transfer">
+          <img src="assets/icons/whatsapp.svg" alt="WhatsApp" title="WhatsApp">
+        </div>
+        <form class="form" id="add-fund-form">
+          <label>Amount
+            <input name="amount" type="number" min="100" step="1" placeholder="100" required>
+          </label>
+          <label class="form-label">Payment method
+            <div class="seg-row">
+              <button type="button" class="seg active" id="af-upi">UPI</button>
+              <button type="button" class="seg" id="af-qr">QR Code</button>
+            </div>
+          </label>
+          <div id="af-upi-fields">
+            <div class="qr-demo-box">
+              <p>Pay to this UPI ID, then enter the reference below:</p>
+              <p class="upi-id">${(demoQr && demoQr.upi) || DEMO_UPI}</p>
+            </div>
+            <label>UTR / Transaction reference number
+              <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
+            </label>
+          </div>
+          <div id="af-qr-fields" style="display:none">
+            ${demoQr ? `
+              <div class="qr-demo-box">
+                <p>Pay to this QR, then enter the reference below:</p>
+                <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
+              </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
+            <label>UTR / Transaction reference number
+              <input name="qrRef" maxlength="30" placeholder="e.g. 4123876541" required>
+            </label>
+          </div>
+          <button class="btn btn-green" type="submit">Submit Payment Proof</button>
+          <p class="form-hint">Balance is credited only after the administrator confirms your payment.</p>
+        </form>
+      </div>
+      <div class="card panel-card">
+        <h3>Fund Deposit History</h3>
+        ${myRequests.length ? `<div class="activity-list">${myRequests.slice(0, 8).map((r) => `
+          <div class="activity-row">
+            <span>₹ ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${r.method} · Ref: ${r.ref}</span>
+            <small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small>
+          </div>`).join("")}</div>` : `<p class="hint">No top-up requests yet.</p>`}
+      </div>`;
+
+    const afMethod = { upi: true };
+    const showAf = (upi) => {
+      afMethod.upi = upi;
+      $("#af-upi").classList.toggle("active", upi);
+      $("#af-qr").classList.toggle("active", !upi);
+      $("#af-upi-fields").style.display = upi ? "" : "none";
+      $("#af-qr-fields").style.display = upi ? "none" : "";
+    };
+    $("#af-upi").onclick = () => showAf(true);
+    $("#af-qr").onclick = () => showAf(false);
+
+    $("#add-fund-form").onsubmit = (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const amount = parseFloat(fd.get("amount"));
+      if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
+      const ref = String(fd.get(afMethod.upi ? "ref" : "qrRef") || "").trim();
+      if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
+      API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: afMethod.upi ? "upi" : "qr", ref: ref }).then((res) => {
+        if (!res.success) { alert(res.message); return; }
+        logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via " + (afMethod.upi ? "UPI" : "QR") + " (pending confirmation)");
+        alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
+        renderFunds(page, "add");
+      });
+    };
+    return;
+  }
+
+  body.innerHTML = `
+    <div class="card panel-card">
+      <h3>Withdraw Fund</h3>
+      <p class="hint">Request a payout via UPI or bank transfer — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
+      <form class="form" id="wd-form">
+        <label>Amount <input name="amount" type="number" min="100" step="1" placeholder="100" required></label>
+        <label class="form-label">Payout method
+          <div class="seg-row">
+            <button type="button" class="seg active" id="m-upi">UPI</button>
+            <button type="button" class="seg" id="m-bank">Bank Transfer</button>
+          </div>
+        </label>
+        <div id="upi-fields">
+          <label>UPI ID <input name="upi" placeholder="yourname@upi" value="${(savedBank && savedBank.upi) || ""}"></label>
+        </div>
+        <div id="bank-fields" style="display:none">
+          <h4>Add Bank Details</h4>
+          <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank" value="${(savedBank && savedBank.bankName) || ""}"></label>
+          <label>Account Holder Name <input name="accName" placeholder="Name on account" value="${(savedBank && savedBank.accName) || ""}"></label>
+          <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890" value="${(savedBank && savedBank.accNo) || ""}"></label>
+          <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123" value="${(savedBank && savedBank.ifsc) || ""}"></label>
+          <label class="save-bank"><input type="checkbox" name="saveBank" checked> Save as my default bank details</label>
+        </div>
+        <button class="btn btn-green" type="submit">Request Withdrawal</button>
+      </form>
+    </div>
+    <div id="wd-list"></div>`;
+
+  const wdList = $("#wd-list");
+  const myWds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
+  wdList.innerHTML = `
+    <div class="card panel-card">
+      <h3>Withdrawal Requests</h3>
+      <p class="hint">Withdraw request submitted — track the status here; the administrator approves it.</p>
+      <div class="activity-list">
+        ${myWds.length ? myWds.slice(0, 8).map((w) => `
+          <div class="activity-row">
+            <span>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method === "bank" ? w.bankName + " · " + w.accName : "UPI · " + w.upi}</span>
+            <small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small>
+          </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`}
+      </div>
+    </div>`;
+
+  const mMethod = { upi: true };
+  const showM = (upi) => {
+    mMethod.upi = upi;
+    $("#m-upi").classList.toggle("active", upi);
+    $("#m-bank").classList.toggle("active", !upi);
+    $("#upi-fields").style.display = upi ? "" : "none";
+    $("#bank-fields").style.display = upi ? "none" : "";
+  };
+  $("#m-upi").onclick = () => showM(true);
+  $("#m-bank").onclick = () => showM(false);
+
+  $("#wd-form").onsubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const amount = parseFloat(fd.get("amount"));
+    if (!amount || amount < 100) { alert("Minimum withdrawal is ₹ 100."); return; }
+    const bal = walletBalance(u.phone);
+    if (amount > bal) { alert("Insufficient balance. Add fund first."); return; }
+    if (mMethod.upi) {
+      const upi = String(fd.get("upi") || "").trim();
+      if (!upi.includes("@")) { alert("Enter a valid UPI ID."); return; }
+      API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "upi", upi_id: upi }).then((res) => {
+        if (!res.success) { alert(res.message); return; }
+        logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via UPI (pending approval)");
+        alert("Withdraw request submitted!");
+        renderFunds(page, "withdraw");
+      });
+      return;
+    }
+    const bankName = String(fd.get("bankName") || "").trim();
+    const accName = String(fd.get("accName") || "").trim();
+    const accNo = String(fd.get("accNo") || "").trim();
+    const ifsc = String(fd.get("ifsc") || "").trim();
+    if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in the bank details (Name, Account Holder, Account Number, IFSC)."); return; }
+    if (fd.get("saveBank")) {
+      store.set("matka.bank." + u.phone, { bankName, accName, accNo, ifsc });
+    }
+    API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc }).then((res) => {
+      if (!res.success) { alert(res.message); return; }
+      logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via bank transfer (pending approval)");
+      alert("Withdraw request submitted!");
+      renderFunds(page, "withdraw");
+    });
+  };
+}
+
+function renderSettings(page) {
+  if (!currentUser) { renderLogin(page); return; }
+  const users = store.get("matka.users", []);
+  const u = users.find((x) => x.phone === currentUser.phone && x.phone) || users.find((x) => x.username === currentUser.username);
+  if (!u) { renderLogin(page); return; }
+  const initial = (u.name || "U").trim().charAt(0).toUpperCase();
+  const balance = walletBalance(u.phone);
+
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> Settings</div>
+      <h1>My Profile</h1>
+      <p>Manage your demo account.</p>
+    </section>
+    <div class="card panel-card member-head">
+      <div class="avatar">${initial}</div>
+      <div class="member-meta">
+        <h3>${u.name}</h3>
+        <p class="member-phone">${u.phone || "—"}</p>
+        <p class="profile-sub">MPIN: ${u.mpin || "0000"} · demo only</p>
+      </div>
+      <div class="member-side">
+        <span class="member-flag"><span class="dot"></span> Member</span>
+        <div class="member-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</div>
+      </div>
+    </div>
+    <div class="profile-grid">
+      <div class="card panel-card">
+        <h3>Security</h3>
+        <form class="form" id="chg-pw-form">
+          <label>Current password <input name="old" type="password" required></label>
+          <label>New password (min 8 chars) <input name="pw" type="password" minlength="8" required></label>
+          <button class="btn btn-green" type="submit">Change Password</button>
+        </form>
+        <form class="form" id="chg-mpin-form" style="margin-top:14px">
+          <label>Current MPIN (4 digits) <input name="oldmpin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></label>
+          <label>New MPIN (4 digits) <input name="newmpin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required></label>
+          <button class="btn btn-green" type="submit">Change MPIN</button>
+        </form>
+      </div>
+      <div class="card panel-card">
+        <h3>Account</h3>
+        <div class="card-actions" style="flex-direction:column;align-items:stretch">
+          <a class="btn ghost" href="#/profile">Edit Profile &amp; Activity</a>
+          <button class="btn ghost" id="settings-logout">Log out</button>
+        </div>
+        <p class="hint" style="margin-top:12px">Login info: phone + password. Reset MPIN by logging out and back in.</p>
+      </div>
+    </div>`;
+
+  $("#chg-pw-form").onsubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    if (fd.get("old") !== u.password) { alert("Current password is incorrect."); return; }
+    API.call("reset_password", { mobile: u.phone, new_password: fd.get("pw") }).then((res) => {
+      if (!res.success) { alert(res.message); return; }
+      logActivity(u, "Password changed");
+      alert("Password updated.");
+      renderSettings(page);
+    });
+  };
+  $("#chg-mpin-form").onsubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    if (fd.get("oldmpin") !== String(u.mpin || "0000")) { alert("Current MPIN is incorrect."); return; }
+    u.mpin = String(fd.get("newmpin"));
+    store.set("matka.users", users);
+    logActivity(u, "MPIN changed");
+    alert("MPIN updated.");
+    renderSettings(page);
+  };
+  $("#settings-logout").onclick = () => { localStorage.removeItem("matka.user"); currentUser = null; buildNav(); location.hash = "#/login"; };
+}
+
 function renderLogin(page) {
   if (currentUser) {
     page.innerHTML = `
@@ -621,10 +1014,11 @@ function renderLogin(page) {
       <button class="chip" id="tab-otp">Phone OTP</button>
     </div>
     <form class="card panel-card form" id="login-form">
-      <label>Email, Name or Phone <input name="loginid" required></label>
+      <label>Mobile Number <input name="loginid" inputmode="numeric" placeholder="9876543210" required></label>
       <label>Password <input name="password" type="password" required></label>
       <button class="btn btn-green" type="submit">Sign In</button>
       <p class="form-hint">No account? <a href="#/register">Register here</a></p>
+      <p class="form-hint">Demo users: demo1–demo5 · password 123456 · MPIN 0000</p>
     </form>
     <div class="card panel-card form" id="otp-form" style="display:none">
       <label>Registered phone <input id="otp-phone" type="tel" placeholder="+1 555 000 1234" required></label>
@@ -835,9 +1229,12 @@ function renderBidPage(page, styleId, marketId) {
       <p><span class="chip" id="bid-market-name">${(MARKETS.find((m) => m.id === selMarket) || {}).name}</span> · Wallet: <span class="wallet-chip" id="bid-balance">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></p>
     </section>
     <div class="card panel-card">
-      <h3>Enter ${style.label === "Jodi Digit" || style.label === "Jodi Digit Bulk" || style.label === "Motor" || style.label === "Motor Bulk" || style.label === "Jodi Close" || style.label === "Jodi Close Bulk" ? "Jodi Digit" : "Digit"}</h3>
+      <h3>Enter ${style.game === "jodi" || style.game === "motor" || style.game === "jodi-close" ? "Jodi Digit" : style.game === "single" || style.game === "pana-family" ? "Digit" : style.game === "single-patti" || style.game === "double-patti" || style.game === "triple-patti" ? "Pana" : style.game === "half-sangam" || style.game === "half-sangam-b" ? "Jodi + Pana" : style.game === "full-sangam" ? "Open + Close Pana" : "Number"}</h3>
+      ${style.id.includes("bulk") ? `<span class="s5-tag t-open" style="margin-bottom:10px">BULK PLAY</span>` : ""}
       <p class="hint" id="bid-odds">Odds: ${g.odds} · Success payout on bid value.</p>
       <div id="bid-fields"></div>
+      <div id="bid-pad"></div>
+      <div class="pad-display" id="pad-display" hidden></div>
     </div>
     <div class="card panel-card">
       <h3>Enter Point (Amount)</h3>
@@ -849,6 +1246,10 @@ function renderBidPage(page, styleId, marketId) {
         <button type="button" class="amt-chip" data-v="1000">1000</button>
       </div>
       <label class="form-label">Point ₹ <input id="bid-stake" class="bid-stake" type="number" min="1" step="1" value="10" inputmode="numeric"></label>
+      <div class="wallet-beforeafter">
+        <span>Wallet Balance Before Deduction: <b id="wb-before">₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b></span>
+        <span>Balance After Deduction: <b id="wb-after">₹ ${(balance - 10).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b></span>
+      </div>
       <p class="hint" id="bid-win">Win = ${g.odds} × point</p>
     </div>
     <div class="card-actions">
@@ -860,27 +1261,55 @@ function renderBidPage(page, styleId, marketId) {
       <div class="bet-list" id="bid-list"></div>
     </div>`;
 
+  let padVal = [];
+  let padMax = 2;
+
+  function renderPad() {
+    const pad = $("#bid-pad");
+    if (!pad) return;
+    const f = style.game;
+    const grid = f === "jodi" || f === "motor" || f === "jodi-close";
+    const fill = (n) => { padVal = String(n).split(""); showPadDisplay(); };
+    padMax = grid ? 2 : (f === "single-patti" || f === "double-patti" || f === "triple-patti" ? 3 : 1);
+    pad.innerHTML = "";
+    const d = document.createElement("div");
+    d.className = grid ? "digit-grid" : "digit-pad";
+    d.innerHTML = Array.from({ length: grid ? 100 : 10 }, (_, i) =>
+      `<button type="button" class="pad-d" data-n="${i}">${String(i).padStart(grid ? 2 : 1, "0")}</button>`).join("");
+    pad.appendChild(d);
+    for (const b of d.querySelectorAll(".pad-d")) {
+      b.onclick = () => {
+        if (grid) { fill(Number(b.dataset.n)); return; }
+        if (padVal.length >= padMax) padVal = [];
+        padVal.push(b.dataset.n);
+        showPadDisplay();
+      };
+    }
+  }
+
+  function showPadDisplay() {
+    const disp = $("#pad-display");
+    const num = padVal.join("");
+    if (!disp) return;
+    if (num) {
+      disp.hidden = false;
+      disp.innerHTML = `<b>${num}</b><button type="button" class="pad-clear" id="pad-clear">✕</button>`;
+      $("#pad-clear").onclick = () => { padVal = []; showPadDisplay(); };
+    } else disp.hidden = true;
+  }
+  renderPad();
+
   function renderFields() {
     const f = style.game;
-    if (f === "single" || f === "pana-family") {
-      $("#bid-fields").innerHTML = `<label>${f === "pana-family" ? "Your digit (0-9)" : "Your digit (0-9)"} <input id="bnum" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="5" required></label>`;
-    } else if (f === "jodi" || f === "motor" || f === "jodi-close") {
-      $("#bid-fields").innerHTML = `<label>Jodi / number (00-99) <input id="bnum" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>`;
-    } else if (f === "single-patti" || f === "double-patti" || f === "triple-patti") {
-      $("#bid-fields").innerHTML = `<label>Your Pana (000-999) <input id="bnum" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
-        <p class="hint">Win if the open panel matches exactly.</p>`;
-    } else if (f === "family-pair") {
-      $("#bid-fields").innerHTML = `<label>Family (1-11)
-        <select id="bnum">
-          ${FAMILY_PAIRS.map((fp, i) => `<option value="${i + 1}">Family ${i + 1}: ${fp[0]} & ${fp[1]}</option>`).join("")}
-        </select></label>`;
-    } else if (f === "half-sangam" || f === "half-sangam-b") {
+    if (f === "half-sangam" || f === "half-sangam-b") {
       $("#bid-fields").innerHTML = `
         <div class="form-row">
           <label>Jodi (00-99) <input id="bjodi" maxlength="2" inputmode="numeric" pattern="[0-9]{2}" placeholder="57" required></label>
           <label>Pana (000-999) <input id="bpatti" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="456" required></label>
         </div>
         <p class="hint">${f === "half-sangam-b" ? "Win if Jodi matches AND the pana equals the close panel." : "Win if Jodi matches AND the pana equals the open panel."}</p>`;
+      const padSel = $("#bid-pad");
+      padSel.style.display = "none";
     } else if (f === "full-sangam") {
       $("#bid-fields").innerHTML = `
         <div class="form-row">
@@ -888,6 +1317,20 @@ function renderBidPage(page, styleId, marketId) {
           <label>Close Pana (000-999) <input id="bp2" maxlength="3" inputmode="numeric" pattern="[0-9]{3}" placeholder="789" required></label>
         </div>
         <p class="hint">Win if both panels match exactly.</p>`;
+      const padSel2 = $("#bid-pad");
+      padSel2.style.display = "none";
+    } else if (f === "family-pair") {
+      $("#bid-fields").innerHTML = `<label>Family (1-11)
+        <select id="bnum">
+          ${FAMILY_PAIRS.map((fp, i) => `<option value="${i + 1}">Family ${i + 1}: ${fp[0]} & ${fp[1]}</option>`).join("")}
+        </select></label>`;
+      const padSel3 = $("#bid-pad");
+      padSel3.style.display = "none";
+    } else {
+      $("#bid-fields").innerHTML = "";
+      const padSel4 = $("#bid-pad");
+      if (padSel4) padSel4.style.display = "";
+      $("#pad-display").hidden = true;
     }
   }
   renderFields();
@@ -899,12 +1342,16 @@ function renderBidPage(page, styleId, marketId) {
       c.classList.add("active");
       $("#bid-stake").value = c.dataset.v;
       $("#bid-win").textContent = "Win = " + g.odds.replace("x", "") + " × " + c.dataset.v + " = ₹" + (parseFloat(g.odds) * parseFloat(c.dataset.v)).toFixed(2);
+      const after = $("#wb-after");
+      if (after) after.textContent = "₹ " + (balance - parseFloat(c.dataset.v)).toLocaleString(undefined, { minimumFractionDigits: 2 });
     };
   }
   $("#bid-stake").oninput = () => {
     for (const x of amts.querySelectorAll(".amt-chip")) x.classList.toggle("active", x.dataset.v === $("#bid-stake").value);
     const v = parseFloat($("#bid-stake").value) || 0;
     $("#bid-win").textContent = "Win = " + g.odds.replace("x", "") + " × " + v + " = ₹" + (parseFloat(g.odds) * v).toFixed(2);
+    const after = $("#wb-after");
+    if (after) after.textContent = "₹ " + (balance - v).toLocaleString(undefined, { minimumFractionDigits: 2 });
   };
 
   API.call("get_balance", { mobile: u.phone }).then((res) => {
@@ -922,7 +1369,7 @@ function renderBidPage(page, styleId, marketId) {
     if (g2.id === "family-pair") numbers.family = val("bnum");
     else if (g2.id === "half-sangam" || g2.id === "half-sangam-b") { numbers.jodi = val("bjodi"); numbers.patti = val("bpatti"); }
     else if (g2.id === "full-sangam") { numbers.patti1 = val("bp1"); numbers.patti2 = val("bp2"); }
-    else numbers.num = val("bnum");
+    else numbers.num = padVal.join("") || val("bnum");
     const numberStr = numbers.family ? "F" + numbers.family : numbers.jodi ? numbers.jodi + numbers.patti : numbers.patti1 ? numbers.patti1 + numbers.patti2 : numbers.num;
     if (!numberStr) { alert("Enter your digit."); return; }
     API.call("place_bid_atomicv1", { mobile: u.phone, market_id: m.id, game_type: g2.id, number: numberStr, amount: point, style: style.id }).then((res) => {
@@ -1012,9 +1459,10 @@ function renderRegister(page) {
     </section>
     <form class="card panel-card form" id="reg-form">
       <label>Full name <input name="name" required></label>
-      <label>Phone number (required) <input name="phone" type="tel" pattern="[0-9+ -]{10,16}" placeholder="+1 555 000 1234" required></label>
+      <label>Phone number (required) <input name="phone" type="tel" pattern="[0-9+ -]{10,16}" placeholder="9876543210" required></label>
+      <label>Create Password (minimum 8 characters) <input name="password" type="password" required minlength="8"></label>
+      <label>MPIN (4 digits, used for quick login) <input name="mpin" type="password" inputmode="numeric" pattern="[0-9]{4}" placeholder="0000" required maxlength="4"></label>
       <label>Email <input name="email" type="email" required></label>
-      <label>Password <input name="password" type="password" required minlength="6"></label>
       <button class="btn btn-green" type="submit">Create Account</button>
       <p class="form-hint">Already registered? <a href="#/login">Sign in</a></p>
     </form>`;
@@ -1023,16 +1471,18 @@ function renderRegister(page) {
     const fd = new FormData(e.target);
     const phoneDigits = String(fd.get("phone")).replace(/\D/g, "");
     if (phoneDigits.length < 10) { alert("A valid phone number (at least 10 digits) is required to create an account."); return; }
-    API.call("signupv1", { name: fd.get("name"), mobile: phoneDigits, email: fd.get("email"), password: fd.get("password") }).then((res) => {
+    API.call("signupv1", { name: fd.get("name"), mobile: phoneDigits, email: fd.get("email"), password: fd.get("password"), mpin: fd.get("mpin") }).then((res) => {
       if (!res.success) { alert(res.message); return; }
       const users = store.get("matka.users", []);
       const u = users.find((x) => getPhone(x) === phoneDigits);
       if (!u) { alert("Account creation failed. Please try again."); return; }
+      u.mpin = String(fd.get("mpin") || "0000");
+      store.set("matka.users", users);
       currentUser = { username: u.username, name: u.name, role: u.role, joined: u.joined, email: u.email, phone: u.phone };
       store.set("matka.user", currentUser);
       logActivity(u, "Account registered (API)");
       buildNav();
-      location.hash = "#/profile";
+      location.hash = "#/";
     });
   };
 }
