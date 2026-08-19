@@ -1,2 +1,4 @@
-
 server/actions/gh-token
+scripts/
+server/actions/server-url.txt
+server/actions/push.err
