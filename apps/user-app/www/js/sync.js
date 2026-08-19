@@ -30,6 +30,10 @@ const Sync = {
       const k = localStorage.key(i);
       if (k && k.startsWith("matka.") && k !== "matka.live_results") data[k] = localStorage.getItem(k);
     }
+    if (JSON.stringify(data) === JSON.stringify(this.pushedKeys)) {
+      this.busy = false;
+      return;
+    }
     const done = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; };
     const fail = () => { this.busy = false; };
     if (this.mode() === "local") {
@@ -63,7 +67,7 @@ const Sync = {
         })
         .catch(() => {});
     }
-    return fetch(GIST_URL, { headers: { "Accept": "application/vnd.github+json" } })
+    return     fetch(GIST_URL + "?t=" + Date.now(), { headers: { "Accept": "application/vnd.github+json" } })
       .then((r) => r.json())
       .then((res) => {
         const f = res && res.files && res.files["matkalive.json"];
@@ -71,7 +75,7 @@ const Sync = {
         if (!content) return;
         const data = JSON.parse(content);
         for (const k of Object.keys(data)) {
-          if (k.startsWith("matka.") && typeof data[k] === "string") {
+          if (k.startsWith("matka.") && typeof data[k] === "string" && localStorage.getItem(k) !== data[k]) {
             localStorage.setItem(k, data[k]);
           }
         }
@@ -99,3 +103,7 @@ Storage.prototype.removeItem = function (k) {
 window.__syncReady = new Promise((resolve) => {
   Sync.pull().finally(() => resolve());
 });
+
+setInterval(() => {
+  if (!Sync.busy && Sync.mode() === "gist") Sync.pull();
+}, 20000);
