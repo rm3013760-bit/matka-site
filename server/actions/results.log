@@ -26,3 +26,5 @@ auto-push failed: remote: Invalid username or token. Password authentication is 
 [live] wrote "live_results.json" (29/29 markets, 217657 bytes)
 /Users/rajkumarmeena/matka-site/server/actions/publish-url.sh: line 17: node: command not found
 publish-url: published https://responsible-displayed-her-network.trycloudflare.com
+auto-push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+publish-url: published https://responsible-displayed-her-network.trycloudflare.com
