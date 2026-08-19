@@ -3,6 +3,7 @@
 # the current public URL to git (server-url.json) whenever it changes.
 set -u
 DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+cd "$DIR"
 RAW="$DIR/server/actions/server-url.txt"
 PUB="$DIR/server-url.json"
 

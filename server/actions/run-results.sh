@@ -10,5 +10,5 @@ if [ -s "$CLOUD_FILE" ]; then
   curl -s -X PUT -H "x-sync-token: matka-demo-2026" --max-time 60 --data-binary @live_results.json "$CLOUD/api/live" >/dev/null && echo "cloud: pushed $(wc -c < live_results.json) bytes to $CLOUD"
 fi
 
-"$REPO/server/actions/tunnel.sh" 2>/dev/null || true
+"$REPO/server/actions/publish-url.sh"
 "$REPO/server/actions/commit-push.sh"
