@@ -10,8 +10,5 @@ if [ -s "$CLOUD_FILE" ]; then
   curl -s -X PUT -H "x-sync-token: matka-demo-2026" --max-time 60 --data-binary @live_results.json "$CLOUD/api/live" >/dev/null && echo "cloud: pushed $(wc -c < live_results.json) bytes to $CLOUD"
 fi
 
-if ! git diff --quiet live_results.json; then
-  git add live_results.json
-  git commit -q -m "chore: update live results"
-  git -c credential.helper= push -q "https://oauth2:$(cat "$REPO/server/actions/gh-token")@github.com/rm3013760-bit/matka-site.git" master
-fi
+"$REPO/server/actions/tunnel.sh" 2>/dev/null || true
+"$REPO/server/actions/commit-push.sh"

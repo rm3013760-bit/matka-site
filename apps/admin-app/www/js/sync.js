@@ -1,6 +1,4 @@
 const SERVER_URL = "http://localhost:8777";
-const GIST_URL = "https://api.github.com/gists/f8de0471f8b496e10cc14a46e52f3667";
-const GIST_TOKEN = "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";
 const SYNC_TOKEN = "matka-demo-2026";
 const SYNC_DEBOUNCE = 800;
 
@@ -13,16 +11,31 @@ const Sync = {
   timer: null,
   busy: false,
   pushedKeys: {},
+  base: null,
+  baseTryAt: 0,
   mode() {
     const saved = localStorage.getItem("matka.server");
     if (saved) return "local";
-    return isLocal() ? "local" : "gist";
+    return isLocal() ? "local" : "remote";
+  },
+  serverBase() {
+    if (this.mode() === "local") return (localStorage.getItem("matka.server") || SERVER_URL).replace(/\/$/, "");
+    if (this.base) return this.base;
+    return (localStorage.getItem("matka.server") || "").replace(/\/$/, "") || null;
+  },
+  discover: async () => {
+    const ok = await fetch("server-url.json?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    if (ok && ok.base) {
+      Sync.base = ok.base.replace(/\/$/, "");
+      return Sync.base;
+    }
+    return null;
   },
   schedule() {
     if (this.timer) clearTimeout(this.timer);
     this.timer = setTimeout(() => this.push(), SYNC_DEBOUNCE);
   },
-  push() {
+  async push() {
     if (this.busy) return;
     this.busy = true;
     const data = {};
@@ -34,61 +47,55 @@ const Sync = {
       this.busy = false;
       return;
     }
-    const ok = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; window.dispatchEvent(new CustomEvent("sync-updated")); };
-    const fail = (err) => { this.lastErr = String(err || "sync fail"); this.busy = false; };
-    if (this.mode() === "local") {
-      const url = localStorage.getItem("matka.server") || SERVER_URL;
-      fetch(url.replace(/\/$/, "") + "/api/state", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "x-sync-token": SYNC_TOKEN },
-        body: JSON.stringify(data)
-      }).then((r) => r.json()).then((res) => { if (res && res.ok) ok(); else fail(res && res.message || res); }).catch((e) => fail(e.message||e));
-      return;
+    let base = this.serverBase();
+    if (!base && this.mode() === "remote") {
+      base = await this.discover();
+      if (!base) {
+        this.lastErr = "no server-url";
+        this.busy = false;
+        return;
+      }
     }
-    fetch(GIST_URL, {
-      method: "PATCH",
-      headers: { "Authorization": "Bearer " + GIST_TOKEN, "Content-Type": "application/json", "Accept": "application/vnd.github+json" },
-      body: JSON.stringify({ files: { "matkalive.json": { content: JSON.stringify(data) } } })
-    }).then((r) => r.json()).then((res) => { if (res && res.id) ok(); else fail(res && res.message || "bad response"); }).catch((e) => fail(e.message||e));
+    fetch(base + "/api/state", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "x-sync-token": SYNC_TOKEN },
+      body: JSON.stringify(data)
+    }).then((r) => r.json()).then((res) => {
+      this.busy = false;
+      if (res && res.ok) { this.pushedKeys = data; this.lastPush = Date.now(); window.dispatchEvent(new CustomEvent("sync-updated")); }
+      else this.lastErr = String((res && res.message) || "push denied");
+    }).catch((e) => { this.busy = false; this.lastErr = String(e.message || e); });
   },
-  pull() {
-    if (this.mode() === "local") {
-      const url = localStorage.getItem("matka.server") || SERVER_URL;
-      return fetch(url.replace(/\/$/, "") + "/api/state")
-        .then((r) => r.json())
-        .then((res) => {
-          if (res && res.ok && res.data) {
-            for (const k of Object.keys(res.data)) {
-              if (k.startsWith("matka.") && typeof res.data[k] === "string") {
-                localStorage.setItem(k, res.data[k]);
-              }
-            }
-          }
-        })
-        .catch((e) => { this.lastErr = String(e.message || e); });
+  async pull() {
+    let base = this.serverBase();
+    if (!base && this.mode() === "remote") {
+      if (!this.base && Date.now() - this.baseTryAt < 30000) return;
+      base = await this.discover();
+      this.baseTryAt = Date.now();
+      if (!base) { this.lastErr = "no server-url"; return; }
     }
-    return     fetch(GIST_URL + "?t=" + Date.now(), { headers: { "Accept": "application/vnd.github+json", "Authorization": "Bearer " + GIST_TOKEN } })
-      .then((r) => r.json())
-      .then((res) => {
-        const f = res && res.files && res.files["matkalive.json"];
-        const content = f && f.content;
-        if (!content) return;
-        const data = JSON.parse(content);
-        for (const k of Object.keys(data)) {
-          if (k.startsWith("matka.") && typeof data[k] === "string" && localStorage.getItem(k) !== data[k]) {
-            localStorage.setItem(k, data[k]);
+    try {
+      const res = await fetch(base + "/api/state").then((r) => r.json());
+      if (res && res.ok && res.data) {
+        let changed = false;
+        for (const k of Object.keys(res.data)) {
+          if (k.startsWith("matka.") && typeof res.data[k] === "string" && localStorage.getItem(k) !== res.data[k]) {
+            localStorage.setItem(k, res.data[k]);
+            changed = true;
           }
         }
-        window.dispatchEvent(new CustomEvent("sync-updated"));
-      })
-      .catch((e) => { this.lastErr = String(e.message || e); });
+        if (changed) window.dispatchEvent(new CustomEvent("sync-updated"));
+      }
+    } catch (e) {
+      this.lastErr = String(e.message || e);
+    }
   }
 };
 
 const origSetItem = Storage.prototype.setItem;
 Storage.prototype.setItem = function (k, v) {
   origSetItem.call(this, k, v);
-  if (Sync && typeof Sync.schedule === "function" ) {
+  if (Sync && typeof Sync.schedule === "function") {
     try { Sync.schedule(); } catch (e) {}
   }
 };
@@ -106,5 +113,9 @@ window.__syncReady = new Promise((resolve) => {
 });
 
 setInterval(() => {
-  if (!Sync.busy && Sync.mode() === "gist") Sync.pull();
+  if (!Sync.busy) Sync.pull();
 }, 20000);
+
+setInterval(() => {
+  if (!Sync.base && Sync.mode() === "remote") Sync.discover().then((b) => { if (b) Sync.pull(); });
+}, 300000);
