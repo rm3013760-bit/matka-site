@@ -6,3 +6,10 @@ fatal: could not read Username for 'https://github.com': Device not configured
 [live] wrote "live_results.json" (29/29 markets, 215991 bytes)
 failed to get: -60008
 fatal: could not read Username for 'https://github.com': Device not configured
+[live] wrote "live_results.json" (29/29 markets, 216348 bytes)
+failed to get: -60008
+fatal: could not read Username for 'https://github.com': Device not configured
+[live] wrote "live_results.json" (29/29 markets, 217062 bytes)
+failed to get: -128
+fatal: could not read Username for 'https://github.com': Device not configured
+[live] wrote "live_results.json" (29/29 markets, 217300 bytes)
