@@ -147,6 +147,6 @@ server.listen(PORT, "0.0.0.0", () => {
 });
 
 const liveFetcher = require("./fetch-results.js");
-const LIVE_INTERVAL = 20 * 60 * 1000;
+const LIVE_INTERVAL = 60 * 1000;
 setTimeout(() => liveFetcher.refreshAll().catch(() => {}), 5 * 1000);
 setInterval(() => liveFetcher.refreshAll().catch(() => {}), LIVE_INTERVAL);
