@@ -12,9 +12,9 @@ if [ -z "$URL" ]; then
   exit 0
 fi
 CUR=""
-[ -f "$DIR/server-url.json" ] && CUR="$(node -e 'const j=require(process.argv[1]);process.stdout.write(j.base||"")' "$DIR/server-url.json" 2>/dev/null)"
+[ -f "$DIR/server-url.json" ] && CUR="$(/usr/local/bin/node -e 'const j=require(process.argv[1]);process.stdout.write(j.base||"")' "$DIR/server-url.json" 2>/dev/null)"
 if [ "$CUR" != "$URL" ]; then
-  node -e 'const u=process.argv[1];require("fs").writeFileSync("server-url.json", JSON.stringify({base:u,updated:new Date().toISOString()})+"\n")' "$URL"
+  /usr/local/bin/node -e 'const u=process.argv[1];require("fs").writeFileSync("server-url.json", JSON.stringify({base:u,updated:new Date().toISOString()})+"\n")' "$URL"
   cp -f server-url.json apps/user-app/www/ 2>/dev/null
   cp -f server-url.json apps/admin-app/www/ 2>/dev/null
   cp -f server-url.json cloudflare/app/ 2>/dev/null
