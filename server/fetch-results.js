@@ -159,7 +159,26 @@ async function refreshAll() {
 }
 
 if (require.main === module) {
-  refreshAll().then((ok) => process.exit(ok ? 0 : 1));
+  const toFile = process.argv.indexOf("--to-file");
+  if (toFile > -1) {
+    (async () => {
+      const live = loadLive();
+      let ok = 0;
+      for (const m of LIVE_MARKETS) {
+        const n = await refreshLiveMarket(m, live);
+        if (n) ok++;
+        await new Promise((r) => setTimeout(r, 1200));
+      }
+      const out = process.argv[toFile + 1];
+      if (out) {
+        fs.writeFileSync(path.join(__dirname, "..", out), JSON.stringify(live));
+        console.log("[live] wrote " + JSON.stringify(out) + " (" + ok + "/" + LIVE_MARKETS.length + " markets, " + JSON.stringify(live).length + " bytes)");
+      }
+      process.exit(0);
+    })();
+  } else {
+    refreshAll().then((ok) => process.exit(ok ? 0 : 1));
+  }
 }
 
 module.exports = { refreshAll, parsePanelChart, LIVE_MARKETS };

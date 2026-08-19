@@ -25,9 +25,11 @@ function jodiFromPanel(p) {
   return String(sum % 10);
 }
 
+let liveFileOverlay = null;
+
 function getResults() {
   const results = store.get("matka.results", {});
-  const live = store.get("matka.live_results", {}) || {};
+  const live = liveFileOverlay || store.get("matka.live_results", null) || {};
   for (const mid of Object.keys(live)) {
     for (const date of Object.keys(live[mid] || {})) {
       results[mid + "|" + date] = live[mid][date];
@@ -730,6 +732,17 @@ function renderTabUsers(results) {
 }
 
 ensureAdmin();
+window.__syncReady.then(() => {
+  fetch("live_results.json")
+    .then((r) => (r.ok ? r.json() : Promise.reject(new Error("no live file"))))
+    .then((d) => {
+      if (d && typeof d === "object" && Object.keys(d).length) {
+        liveFileOverlay = d;
+        if (adminUser) renderDashboard();
+      }
+    })
+    .catch(() => {});
+});
 if (window.__syncReady instanceof Promise) {
   window.__syncReady.then(() => {
     ensureAdmin();
