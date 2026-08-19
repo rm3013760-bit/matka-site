@@ -1,0 +1,15 @@
+name = "matkalive"
+main = "worker.js"
+compatibility_date = "2025-08-01"
+workers_dev = true
+
+[assets]
+directory = "./app"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "matkalive"
+# Replace with the id shown after: wrangler d1 create matkalive
+database_id = "REPLACE_AFTER_WRANGLER_D1_CREATE"

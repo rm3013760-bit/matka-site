@@ -111,7 +111,7 @@ const server = http.createServer(async (req, res) => {
       if (typeof incoming !== "object" || incoming === null) throw new Error("not object");
       const store = readStore();
       for (const k of Object.keys(incoming)) {
-        if (typeof incoming[k] === "string" && k.startsWith("matka.")) store[k] = incoming[k];
+        if (typeof incoming[k] === "string" && k.startsWith("matka.") && k !== "matka.live_results") store[k] = incoming[k];
       }
       writeStore(store);
       record("PUT /api/state keys=" + Object.keys(incoming).length);
