@@ -67,7 +67,7 @@ const Sync = {
         })
         .catch(() => {});
     }
-    return     fetch(GIST_URL + "?t=" + Date.now(), { headers: { "Accept": "application/vnd.github+json" } })
+    return     fetch(GIST_URL + "?t=" + Date.now(), { headers: { "Accept": "application/vnd.github+json", "Authorization": "Bearer " + GIST_TOKEN } })
       .then((r) => r.json())
       .then((res) => {
         const f = res && res.files && res.files["matkalive.json"];

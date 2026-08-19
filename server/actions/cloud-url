@@ -1,3 +1,0 @@
-# After deploying the worker, put its full URL on the first line, e.g.:
-# https://matkalive.raj-xyz.workers.dev
-# Used by run-results.sh to push live results to the Cloudflare D1 database.
