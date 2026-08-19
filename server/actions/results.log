@@ -21,3 +21,8 @@ fatal: could not read Username for 'https://github.com': Device not configured
 18:42:54 tunnel: new url https://facial-stakeholders-objectives-roulette.trycloudflare.com (published)
 publish-url: published https://facial-stakeholders-objectives-roulette.trycloudflare.com
 publish-url: unchanged https://facial-stakeholders-objectives-roulette.trycloudflare.com
+18:52:09 tunnel: new url https://responsible-displayed-her-network.trycloudflare.com (published)
+auto-push failed: remote: Invalid username or token. Password authentication is not supported for Git operations.
+[live] wrote "live_results.json" (29/29 markets, 217657 bytes)
+/Users/rajkumarmeena/matka-site/server/actions/publish-url.sh: line 17: node: command not found
+publish-url: published https://responsible-displayed-her-network.trycloudflare.com
