@@ -26,7 +26,14 @@ function jodiFromPanel(p) {
 }
 
 function getResults() {
-  return store.get("matka.results", {});
+  const results = store.get("matka.results", {});
+  const live = store.get("matka.live_results", {}) || {};
+  for (const mid of Object.keys(live)) {
+    for (const date of Object.keys(live[mid] || {})) {
+      results[mid + "|" + date] = live[mid][date];
+    }
+  }
+  return results;
 }
 
 function getResult(marketId, date) {
@@ -62,6 +69,7 @@ function seedDemoResults() {
     d.setDate(d.getDate() - i);
     const key = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
     for (const m of MARKETS) {
+      if (m.live) continue;
       const id = m.id + "|" + key;
       if (!results[id]) {
         const p1 = String(Math.floor(Math.random() * 1000)).padStart(3, "0");

@@ -26,7 +26,14 @@ function jodiFromPanel(p) {
 }
 
 function getResults() {
-  return store.get("matka.results", {});
+  const results = store.get("matka.results", {});
+  const live = store.get("matka.live_results", {}) || {};
+  for (const mid of Object.keys(live)) {
+    for (const date of Object.keys(live[mid] || {})) {
+      results[mid + "|" + date] = live[mid][date];
+    }
+  }
+  return results;
 }
 
 function setResult(marketId, date, panel, panel2, announce) {

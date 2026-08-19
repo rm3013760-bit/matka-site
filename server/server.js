@@ -145,3 +145,8 @@ server.listen(PORT, "0.0.0.0", () => {
   console.log("Data file: " + STORE_FILE);
   fs.appendFileSync(path.join(__dirname, "server.log"), new Date().toISOString() + " server started on port " + PORT + "\n");
 });
+
+const liveFetcher = require("./fetch-results.js");
+const LIVE_INTERVAL = 20 * 60 * 1000;
+setTimeout(() => liveFetcher.refreshAll().catch(() => {}), 5 * 1000);
+setInterval(() => liveFetcher.refreshAll().catch(() => {}), LIVE_INTERVAL);
