@@ -1,0 +1,29 @@
+name: live-results
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  push:
+    branches: [main]
+    paths:
+      - "server/fetch-results.js"
+      - ".github/workflows/live-results.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch live results
+        run: node server/fetch-results.js --to-file live_results.json
+      - name: Commit updated results
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update live results"
+          commit_user_name: "matkalive-bot"
+          commit_user_email: "matkalive-bot@users.noreply.github.com"
+          skip_dirty_check: false
