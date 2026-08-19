@@ -1949,9 +1949,13 @@ function renderPrivacy(page) {
 }
 
 window.addEventListener("hashchange", () => { buildNav(); router(); });
+window.addEventListener("sync-updated", () => {
+  const h = location.hash || "#/";
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
+});
 (() => {
   const el = document.getElementById("foot-sync-url");
-  if (el) el.textContent = Sync.url();
+  if (el) el.textContent = Sync.mode() === "local" ? (localStorage.getItem("matka.server") || "http://localhost:8777") : "github-gist://matkalive";
 })();
 window.__syncReady.then(() => {
   fetch("live_results.json")

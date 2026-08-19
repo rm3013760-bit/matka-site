@@ -289,6 +289,18 @@ function renderDashboard() {
   renderTabUsers();
   renderTabWithdrawals();
   renderTabApi();
+  window.addEventListener("sync-updated", () => {
+    if (!adminUser) return;
+    renderTabDashboard();
+    renderTabUpdate();
+    renderTabBulk();
+    renderTabJson();
+    renderTabWallet();
+    renderTabMarkets();
+    renderTabUsers();
+    renderTabWithdrawals();
+    renderTabApi();
+  });
 }
 
 function renderTabDashboard() {

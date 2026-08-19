@@ -34,7 +34,7 @@ const Sync = {
       this.busy = false;
       return;
     }
-    const done = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; };
+    const done = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; window.dispatchEvent(new CustomEvent("sync-updated")); };
     const fail = () => { this.busy = false; };
     if (this.mode() === "local") {
       const url = localStorage.getItem("matka.server") || SERVER_URL;
@@ -79,6 +79,7 @@ const Sync = {
             localStorage.setItem(k, data[k]);
           }
         }
+        window.dispatchEvent(new CustomEvent("sync-updated"));
       })
       .catch(() => {});
   }
