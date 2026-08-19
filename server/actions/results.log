@@ -1,2 +1,4 @@
 /Users/rajkumarmeena/matka-site/server/actions/run-results.sh:5: command not found: node
 [live] wrote "live_results.json" (29/29 markets, 215872 bytes)
+failed to get: -128
+fatal: could not read Username for 'https://github.com': Device not configured

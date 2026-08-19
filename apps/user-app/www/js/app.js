@@ -32,7 +32,7 @@ function getResults() {
   const live = liveFileOverlay || store.get("matka.live_results", null) || {};
   for (const mid of Object.keys(live)) {
     for (const date of Object.keys(live[mid] || {})) {
-      results[mid + "|" + date] = live[mid][date];
+      results[mid + "|" + date] = Object.assign({ date: date }, live[mid][date]);
     }
   }
   return results;
