@@ -1973,30 +1973,39 @@ window.__syncReady.then(() => {
       }
     })
     .catch(() => {});
+  refreshLiveResults();
 });
 
 function refreshLiveResults() {
   const srcs = [];
-  const base = Sync.serverBase && Sync.serverBase();
-  if (base) srcs.push(base + "/live_results.json?t=" + Date.now());
-  srcs.push("live_results.json?t=" + Date.now());
-  const tryNext = (i) => {
-    if (i >= srcs.length) return;
-    fetch(srcs[i], { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error("no live file"))))
-      .then((d) => {
-        if (d && typeof d === "object" && Object.keys(d).length) {
-          const key = JSON.stringify(d);
-          if (key !== JSON.stringify(liveFileOverlay)) {
-            liveFileOverlay = d;
-            buildNav();
-            router();
-          }
-        }
-      })
-      .catch(() => tryNext(i + 1));
+  const finish = (d) => {
+    if (d && typeof d === "object" && Object.keys(d).length) {
+      const key = JSON.stringify(d);
+      if (key !== JSON.stringify(liveFileOverlay)) {
+        liveFileOverlay = d;
+        buildNav();
+        router();
+      }
+    }
   };
-  tryNext(0);
+  Promise.resolve()
+    .then(async () => {
+      const base = Sync.serverBase && Sync.serverBase();
+      if (!base && Sync.discover) return Sync.discover();
+      return base;
+    })
+    .then((base) => {
+      if (base) srcs.push(base + "/live_results.json?t=" + Date.now());
+      srcs.push("live_results.json?t=" + Date.now());
+      const tryNext = (i) => {
+        if (i >= srcs.length) return;
+        fetch(srcs[i], { cache: "no-store" })
+          .then((r) => (r.ok ? r.json() : Promise.reject(new Error("no live file"))))
+          .then(finish)
+          .catch(() => tryNext(i + 1));
+      };
+      tryNext(0);
+    });
 }
 setInterval(refreshLiveResults, 60000);
 window.addEventListener("load", () => {
