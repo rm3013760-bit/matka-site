@@ -1,0 +1,12 @@
+{
+  "name": "matkalive",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MatkaLive demo: user app, admin panel, sync server, live-results fetcher",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

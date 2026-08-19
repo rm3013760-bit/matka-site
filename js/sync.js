@@ -1,4 +1,5 @@
 const SERVER_URL = "http://localhost:8777";
+const FALLBACK_URL = "https://matkalive.onrender.com";
 const SYNC_TOKEN = "matka-demo-2026";
 const SYNC_DEBOUNCE = 800;
 
@@ -8,7 +9,13 @@ const Sync = {
   pushedKeys: {},
   url() {
     const saved = localStorage.getItem("matka.server");
-    return (saved ? saved.replace(/\/$/, "") : SERVER_URL).replace(/\/$/, "");
+    if (saved) return saved.replace(/\/$/, "");
+    const h = location.hostname;
+    if (location.protocol === "https:" && h !== "localhost" && !h.endsWith("github.io")) {
+      return location.origin;
+    }
+    if (h.endsWith("github.io")) return FALLBACK_URL;
+    return SERVER_URL;
   },
   schedule() {
     if (this.timer) clearTimeout(this.timer);

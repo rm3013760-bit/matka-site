@@ -1717,3 +1717,6 @@ body { padding-bottom: 64px; }
 .save-bank { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
 .save-bank input { width: auto; }
 #bank-fields h4 { margin: 4px 0 8px; color: var(--gold-light); font-family: "Orbitron", sans-serif; font-size: 0.75rem; letter-spacing: 1px; }
+
+.foot-sync { font-size: 0.68rem; color: var(--muted); }
+.foot-sync span { color: var(--gold-light); word-break: break-all; }

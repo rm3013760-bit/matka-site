@@ -1947,6 +1947,10 @@ function renderPrivacy(page) {
 }
 
 window.addEventListener("hashchange", () => { buildNav(); router(); });
+(() => {
+  const el = document.getElementById("foot-sync-url");
+  if (el) el.textContent = Sync.url();
+})();
 window.addEventListener("load", () => {
   buildNav();
   if (window.__syncReady instanceof Promise) {
