@@ -13,5 +13,5 @@ fi
 if ! git diff --quiet live_results.json; then
   git add live_results.json
   git commit -q -m "chore: update live results"
-  git push -q
+  git -c credential.helper= push -q "https://oauth2:$(cat "$REPO/server/actions/gh-token")@github.com/rm3013760-bit/matka-site.git" master
 fi
