@@ -72,7 +72,8 @@ function serveStatic(req, res, urlPath) {
       return;
     }
     res.writeHead(200, {
-      "Content-Type": MIME[path.extname(filePath)] || "application/octet-stream"
+      "Content-Type": MIME[path.extname(filePath)] || "application/octet-stream",
+      "Access-Control-Allow-Origin": "*"
     });
     res.end(buf);
   });
