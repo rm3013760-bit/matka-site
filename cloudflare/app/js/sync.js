@@ -1,21 +1,22 @@
-const SERVER_URL = "https://matkalive.YOUR-SUBDOMAIN.workers.dev";
-const FALLBACK_URL = "https://matkalive.YOUR-SUBDOMAIN.workers.dev";
+const SERVER_URL = "http://localhost:8777";
+const GIST_URL = "https://api.github.com/gists/f8de0471f8b496e10cc14a46e52f3667";
+const GIST_TOKEN = "gho_m2ymEjY1fqkmYXbKigT4Z62ip4ou02FzLx4R";
 const SYNC_TOKEN = "matka-demo-2026";
 const SYNC_DEBOUNCE = 800;
+
+function isLocal() {
+  const h = location.hostname;
+  return h === "localhost" || h === "127.0.0.1" || /^192\.168\.|^10\.|^172\.(1[6-9]|2\d|3[01])\./.test(h);
+}
 
 const Sync = {
   timer: null,
   busy: false,
   pushedKeys: {},
-  url() {
+  mode() {
     const saved = localStorage.getItem("matka.server");
-    if (saved) return saved.replace(/\/$/, "");
-    const h = location.hostname;
-    if (location.protocol === "https:" && h !== "localhost" && !h.endsWith("github.io")) {
-      return location.origin;
-    }
-    if (h.endsWith("github.io")) return FALLBACK_URL;
-    return SERVER_URL;
+    if (saved) return "local";
+    return isLocal() ? "local" : "gist";
   },
   schedule() {
     if (this.timer) clearTimeout(this.timer);
@@ -23,38 +24,55 @@ const Sync = {
   },
   push() {
     if (this.busy) return;
-    const url = this.url();
-    if (!url) return;
     this.busy = true;
     const data = {};
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.startsWith("matka.")) data[k] = localStorage.getItem(k);
+      if (k && k.startsWith("matka.") && k !== "matka.live_results") data[k] = localStorage.getItem(k);
     }
-    fetch(url + "/api/state", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "x-sync-token": SYNC_TOKEN },
-      body: JSON.stringify(data)
-    })
-      .then((r) => r.json())
-      .then((res) => {
-        this.pushedKeys = data;
-        if (res && res.ok) this.lastPush = Date.now();
-      })
-      .catch(() => {})
-      .finally(() => { this.busy = false; });
+    const done = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; };
+    const fail = () => { this.busy = false; };
+    if (this.mode() === "local") {
+      const url = localStorage.getItem("matka.server") || SERVER_URL;
+      fetch(url.replace(/\/$/, "") + "/api/state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "x-sync-token": SYNC_TOKEN },
+        body: JSON.stringify(data)
+      }).then((r) => r.json()).then((res) => { if (res && res.ok) done(); else fail(); }).catch(fail);
+      return;
+    }
+    fetch(GIST_URL, {
+      method: "PATCH",
+      headers: { "Authorization": "Bearer " + GIST_TOKEN, "Content-Type": "application/json", "Accept": "application/vnd.github+json" },
+      body: JSON.stringify({ files: { "matkalive.json": { content: JSON.stringify(data) } } })
+    }).then((r) => r.json()).then((res) => { if (res && res.id) done(); else fail(); }).catch(fail);
   },
   pull() {
-    const url = this.url();
-    if (!url) return Promise.resolve();
-    return fetch(url + "/api/state")
+    if (this.mode() === "local") {
+      const url = localStorage.getItem("matka.server") || SERVER_URL;
+      return fetch(url.replace(/\/$/, "") + "/api/state")
+        .then((r) => r.json())
+        .then((res) => {
+          if (res && res.ok && res.data) {
+            for (const k of Object.keys(res.data)) {
+              if (k.startsWith("matka.") && typeof res.data[k] === "string") {
+                localStorage.setItem(k, res.data[k]);
+              }
+            }
+          }
+        })
+        .catch(() => {});
+    }
+    return fetch(GIST_URL, { headers: { "Accept": "application/vnd.github+json" } })
       .then((r) => r.json())
       .then((res) => {
-        if (res && res.ok && res.data) {
-          for (const k of Object.keys(res.data)) {
-            if (k.startsWith("matka.") && typeof res.data[k] === "string") {
-              localStorage.setItem(k, res.data[k]);
-            }
+        const f = res && res.files && res.files["matkalive.json"];
+        const content = f && f.content;
+        if (!content) return;
+        const data = JSON.parse(content);
+        for (const k of Object.keys(data)) {
+          if (k.startsWith("matka.") && typeof data[k] === "string") {
+            localStorage.setItem(k, data[k]);
           }
         }
       })
