@@ -1,6 +1,6 @@
 const SERVER_URL = "http://localhost:8777";
 const GIST_URL = "https://api.github.com/gists/f8de0471f8b496e10cc14a46e52f3667";
-const GIST_TOKEN = "gho_m2ymEjY1fqkmYXbKigT4Z62ip4ou02FzLx4R";
+const GIST_TOKEN = "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";
 const SYNC_TOKEN = "matka-demo-2026";
 const SYNC_DEBOUNCE = 800;
 
@@ -34,22 +34,22 @@ const Sync = {
       this.busy = false;
       return;
     }
-    const done = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; window.dispatchEvent(new CustomEvent("sync-updated")); };
-    const fail = () => { this.busy = false; };
+    const ok = () => { this.pushedKeys = data; this.lastPush = Date.now(); this.busy = false; window.dispatchEvent(new CustomEvent("sync-updated")); };
+    const fail = (err) => { this.lastErr = String(err || "sync fail"); this.busy = false; };
     if (this.mode() === "local") {
       const url = localStorage.getItem("matka.server") || SERVER_URL;
       fetch(url.replace(/\/$/, "") + "/api/state", {
         method: "PUT",
         headers: { "Content-Type": "application/json", "x-sync-token": SYNC_TOKEN },
         body: JSON.stringify(data)
-      }).then((r) => r.json()).then((res) => { if (res && res.ok) done(); else fail(); }).catch(fail);
+      }).then((r) => r.json()).then((res) => { if (res && res.ok) ok(); else fail(res && res.message || res); }).catch((e) => fail(e.message||e));
       return;
     }
     fetch(GIST_URL, {
       method: "PATCH",
       headers: { "Authorization": "Bearer " + GIST_TOKEN, "Content-Type": "application/json", "Accept": "application/vnd.github+json" },
       body: JSON.stringify({ files: { "matkalive.json": { content: JSON.stringify(data) } } })
-    }).then((r) => r.json()).then((res) => { if (res && res.id) done(); else fail(); }).catch(fail);
+    }).then((r) => r.json()).then((res) => { if (res && res.id) ok(); else fail(res && res.message || "bad response"); }).catch((e) => fail(e.message||e));
   },
   pull() {
     if (this.mode() === "local") {
@@ -65,7 +65,7 @@ const Sync = {
             }
           }
         })
-        .catch(() => {});
+        .catch((e) => { this.lastErr = String(e.message || e); });
     }
     return     fetch(GIST_URL + "?t=" + Date.now(), { headers: { "Accept": "application/vnd.github+json", "Authorization": "Bearer " + GIST_TOKEN } })
       .then((r) => r.json())
@@ -81,7 +81,7 @@ const Sync = {
         }
         window.dispatchEvent(new CustomEvent("sync-updated"));
       })
-      .catch(() => {});
+      .catch((e) => { this.lastErr = String(e.message || e); });
   }
 };
 

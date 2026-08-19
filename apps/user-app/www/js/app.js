@@ -1953,9 +1953,14 @@ window.addEventListener("sync-updated", () => {
   const h = location.hash || "#/";
   if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
 });
-(() => {
+(function syncFoot() {
   const el = document.getElementById("foot-sync-url");
-  if (el) el.textContent = Sync.mode() === "local" ? (localStorage.getItem("matka.server") || "http://localhost:8777") : "github-gist://matkalive";
+  if (el) {
+    const base = Sync.mode() === "local" ? (localStorage.getItem("matka.server") || "http://localhost:8777") : "github-gist";
+    const err = Sync.lastErr;
+    el.textContent = base + (err ? " · ERROR: " + err.slice(0, 40) : (Sync.lastPush ? " · synced " + new Date(Sync.lastPush).toLocaleTimeString() : " · connecting…"));
+  }
+  setTimeout(syncFoot, 5000);
 })();
 window.__syncReady.then(() => {
   fetch("live_results.json")
