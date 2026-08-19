@@ -8,11 +8,29 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/style.css?v=27">
+  <link rel="stylesheet" href="css/admin.css?v=27">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='18' y='18' width='64' height='64' rx='14' fill='none' stroke='%23B99052' stroke-width='8'/><circle cx='38' cy='38' r='8' fill='%23B99052'/><circle cx='62' cy='38' r='8' fill='%23B99052'/><circle cx='38' cy='62' r='8' fill='%23B99052'/><circle cx='62' cy='62' r='8' fill='%23B99052'/></svg>">
 </head>
 <body>
+<script>
+(function () {
+  function boom(msg, src) {
+    if (document.getElementById("boot-err")) return;
+    var d = document.createElement("div");
+    d.id = "boot-err";
+    d.style.cssText = "position:fixed;inset:0;z-index:99999;background:#1a120b;color:#ff5f5f;font:600 13px/1.5 monospace;padding:20px;white-space:pre-wrap;overflow:auto";
+    d.textContent = "MATKALIVE LOAD ERROR\n\n" + msg + "\n\n(from " + src + ")\n\nReload: Cmd+Shift+R";
+    document.body.appendChild(d);
+  }
+  window.addEventListener("error", function (e) {
+    boom((e.message || "script error") + "\n" + (e.filename || "") + ":" + (e.lineno || ""));
+  });
+  window.addEventListener("unhandledrejection", function (e) {
+    boom("Unhandled promise rejection: " + (e.reason && e.reason.message ? e.reason.message : e.reason || e));
+  });
+})();
+</script>
   <header class="topbar">
     <div class="topbar-inner">
       <div class="logo">MATKALIVE<small>ADMIN CONTROL</small> <span class="admin-tag">ADMIN</span></div>
@@ -36,9 +54,9 @@
   <footer class="site-foot">
     <strong>MatkaLive Admin</strong> — restricted area. No real-money gambling, betting or wagering is offered or facilitated.
   </footer>
-  <script src="js/sync.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/admin-app.js"></script>
+  <script src="js/sync.js?v=27"></script>
+  <script src="js/data.js?v=27"></script>
+  <script src="js/api.js?v=27"></script>
+  <script src="js/admin-app.js?v=27"></script>
 </body>
 </html>
