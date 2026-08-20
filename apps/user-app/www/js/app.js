@@ -2004,7 +2004,7 @@ function refreshLiveResults() {
           .then(finish)
           .catch(() => tryNext(i + 1));
       };
-      tryNext(0);
+      tryNext(srcs.length > 1 && base ? 1 : 0);
     });
 }
 setInterval(refreshLiveResults, 60000);
