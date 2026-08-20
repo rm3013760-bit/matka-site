@@ -41,14 +41,24 @@ if ! pgrep -f "cloudflared tunnel --no-autoupdate --url" >/dev/null 2>&1; then
   start
 fi
 
-while true; do
-  if ! pgrep -f "cloudflared tunnel --no-autoupdate --url" >/dev/null 2>&1; then
-    start
-    log "restarted"
+pub() {
+  local U
+  if [ -f "$RAW" ]; then
+    U="$(cat "$RAW")"
+    [ "$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$U/api/health" 2>/dev/null)" = "200" ] && return 0
   fi
+  return 1
+}
+
+while true; do
   URL="$(new_url)"
   if [ -n "$URL" ] && { [ ! -f "$RAW" ] || [ "$(cat "$RAW" 2>/dev/null)" != "$URL" ]; }; then
     publish "$URL"
   fi
-  sleep 60
+  if ! pgrep -f "cloudflared tunnel --no-autoupdate --url" >/dev/null 2>&1 || ! pub; then
+    start
+    log "restarted (public check failed)"
+    continue
+  fi
+  sleep 20
 done
