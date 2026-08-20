@@ -99,13 +99,15 @@ function parseCell(cellHtml) {
 }
 
 function fetchChart(slug) {
-  return fetch(BASE + slug + "-panel-chart", {
-    headers: { "User-Agent": UA, Referer: "https://sara567.net/" },
-    signal: AbortSignal.timeout(25000)
-  }).then((r) => {
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    return r.text();
-  });
+  const attempt = () =>
+    fetch(BASE + slug + "-panel-chart", {
+      headers: { "User-Agent": UA, Referer: "https://sara567.net/" },
+      signal: AbortSignal.timeout(12000)
+    }).then((r) => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.text();
+    });
+  return attempt().catch(() => attempt());
 }
 
 function loadLive() {
@@ -143,14 +145,22 @@ async function refreshLiveMarket(market, live) {
   }
 }
 
-async function refreshAll() {
+async function refreshMarkets() {
   const live = loadLive();
-  let ok = 0;
-  for (const m of LIVE_MARKETS) {
-    const n = await refreshLiveMarket(m, live);
-    if (n) ok++;
-    await new Promise((r) => setTimeout(r, 1200));
-  }
+  const results = new Array(LIVE_MARKETS.length).fill(0);
+  let idx = 0;
+  const worker = async () => {
+    while (idx < LIVE_MARKETS.length) {
+      const i = idx++;
+      results[i] = await refreshLiveMarket(LIVE_MARKETS[i], live);
+    }
+  };
+  await Promise.all(Array.from({ length: 5 }, worker));
+  return { live, ok: results.filter(Boolean).length };
+}
+
+async function refreshAll() {
+  const { live, ok } = await refreshMarkets();
   const store = readStore();
   store["matka.live_results"] = JSON.stringify(live);
   writeStore(store);
@@ -162,13 +172,7 @@ if (require.main === module) {
   const toFile = process.argv.indexOf("--to-file");
   if (toFile > -1) {
     (async () => {
-      const live = loadLive();
-      let ok = 0;
-      for (const m of LIVE_MARKETS) {
-        const n = await refreshLiveMarket(m, live);
-        if (n) ok++;
-        await new Promise((r) => setTimeout(r, 1200));
-      }
+      const { live, ok } = await refreshMarkets();
       const out = process.argv[toFile + 1];
       if (out) {
         fs.writeFileSync(path.join(__dirname, "..", out), JSON.stringify(live));
