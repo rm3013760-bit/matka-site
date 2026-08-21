@@ -459,3 +459,37 @@ auto-push failed: fatal: unable to access 'https://github.com/rm3013760-bit/matk
 [live] time-bazar failed: fetch failed
 [live] wrote "live_results.json" (0/29 markets, 218728 bytes)
 publish-url: unchanged https://api.trycloudflare.com
+auto-push failed: fatal: unable to access 'https://github.com/rm3013760-bit/matka-site.git/': Could not resolve host: github.com
+18:40:00 tunnel: new url https://api.trycloudflare.com (published)
+18:40:10 tunnel: public check failed, backing off 10min
+[live] sita-morning failed: fetch failed
+[live] star-tara-morning failed: fetch failed
+[live] milan-morning failed: fetch failed
+[live] sridevi failed: fetch failed
+[live] kalyan-morning failed: fetch failed
+[live] sita-day failed: fetch failed
+[live] star-tara-day failed: fetch failed
+[live] milan-day failed: fetch failed
+[live] kalyan-main failed: fetch failed
+[live] sita-night failed: fetch failed
+[live] sridevi-night failed: fetch failed
+[live] star-tara-night failed: fetch failed
+[live] milan-night failed: fetch failed
+[live] kalyan-night failed: fetch failed
+[live] main-bazar failed: fetch failed
+[live] andhra-morning failed: fetch failed
+[live] andhra-day failed: fetch failed
+[live] andhra-night failed: fetch failed
+[live] kamal-morning failed: fetch failed
+[live] kamal-day failed: fetch failed
+[live] kamal-night failed: fetch failed
+[live] madhur-morning failed: fetch failed
+[live] madhur-day failed: fetch failed
+[live] rajdhani-day failed: fetch failed
+[live] rajdhani-night failed: fetch failed
+[live] supreme-day failed: fetch failed
+[live] supreme-night failed: fetch failed
+[live] mahadevi failed: fetch failed
+[live] time-bazar failed: fetch failed
+[live] wrote "live_results.json" (0/29 markets, 218728 bytes)
+publish-url: unchanged https://api.trycloudflare.com
