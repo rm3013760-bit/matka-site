@@ -1,1 +1,1 @@
-https://api.trycloudflare.com
+https://except-analyze-either-rent.trycloudflare.com
