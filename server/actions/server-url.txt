@@ -1,1 +1,1 @@
-https://ppm-artistic-identified-aim.trycloudflare.com
+https://api.trycloudflare.com
