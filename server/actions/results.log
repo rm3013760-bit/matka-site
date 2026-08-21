@@ -356,3 +356,8 @@ publish-url: no server-url.txt
 auto-push ok 17:02
 [live] wrote "live_results.json" (29/29 markets, 223369 bytes)
 publish-url: no server-url.txt
+auto-push ok 17:05
+17:05:47 tunnel: new url https://ppm-artistic-identified-aim.trycloudflare.com (published)
+17:05:48 tunnel: public check failed, backing off 10min
+[live] wrote "live_results.json" (29/29 markets, 223369 bytes)
+publish-url: unchanged https://ppm-artistic-identified-aim.trycloudflare.com
