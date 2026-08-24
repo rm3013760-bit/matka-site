@@ -690,3 +690,8 @@ publish-url: unchanged https://susan-specific-housing-sons.trycloudflare.com
 auto-push ok 02:25
 [live] wrote "live_results.json" (29/29 markets, 230628 bytes)
 publish-url: unchanged https://susan-specific-housing-sons.trycloudflare.com
+auto-push ok 06:31
+08:18:52 tunnel: new url https://episode-researcher-reflect-share.trycloudflare.com (published)
+08:18:52 tunnel: public check failed, backing off 10min
+[live] wrote "live_results.json" (29/29 markets, 230628 bytes)
+publish-url: unchanged https://episode-researcher-reflect-share.trycloudflare.com
