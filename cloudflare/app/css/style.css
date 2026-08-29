@@ -23,7 +23,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background:
     radial-gradient(ellipse 120% 60% at 50% -10%, rgba(13, 32, 96, 0.55) 0%, transparent 70%),
     radial-gradient(ellipse 80% 80% at 80% 100%, rgba(185, 144, 82, 0.08) 0%, transparent 60%),
@@ -70,7 +70,7 @@ a:hover { text-decoration: underline; }
 
 .logo small {
   display: block;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.55rem;
   font-weight: 600;
   letter-spacing: 3px;
@@ -185,7 +185,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .rates-table td.dimmed { color: var(--muted); }
 
-.rates-table td strong { font-family: "Rajdhani", sans-serif; letter-spacing: 0.5px; }
+.rates-table td strong { font-family: "Inter", sans-serif; letter-spacing: 0.5px; }
 
 .play-link {
   padding: 6px 16px;
@@ -226,7 +226,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   box-shadow: var(--glow-gold);
 }
 
-.howto-step h4 { font-family: "Rajdhani", sans-serif; color: var(--gold-light); font-size: 1rem; margin-bottom: 6px; }
+.howto-step h4 { font-family: "Inter", sans-serif; color: var(--gold-light); font-size: 1rem; margin-bottom: 6px; }
 .howto-step p { color: var(--muted); font-size: 0.82rem; line-height: 1.5; }
 
 .gc-code {
@@ -470,7 +470,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   border-radius: 25px;
   cursor: pointer;
   font-size: 0.85rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
   transition: all 0.2s;
 }
 
@@ -492,7 +492,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   text-align: left;
   background: rgba(185, 144, 82, 0.08);
   color: var(--gold);
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 700;
   letter-spacing: 0.5px;
   padding: 12px 14px;
@@ -514,7 +514,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .chart-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
-.chart-card h3 { font-family: "Rajdhani", sans-serif; font-size: 1rem; margin-bottom: 12px; color: var(--gold); }
+.chart-card h3 { font-family: "Inter", sans-serif; font-size: 1rem; margin-bottom: 12px; color: var(--gold); }
 
 .chart-row { display: flex; flex-direction: column; gap: 6px; }
 
@@ -562,7 +562,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   padding: 10px 12px;
   color: var(--text);
   font-size: 0.92rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .form textarea { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
@@ -582,7 +582,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   border-radius: 50px;
   cursor: pointer;
   font-size: 0.92rem;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", sans-serif;
   box-shadow: var(--glow-gold);
   transition: transform 0.2s, filter 0.2s;
 }
@@ -766,7 +766,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .qr-demo-box p { color: var(--muted); font-size: 0.8rem; margin-bottom: 6px; }
 .qr-demo-box .qr-img { margin: 0 auto; }
 
-.sub-title { margin: 14px 0 8px; color: var(--gold); font-size: 0.95rem; font-family: "Rajdhani", sans-serif; }
+.sub-title { margin: 14px 0 8px; color: var(--gold); font-size: 0.95rem; font-family: "Inter", sans-serif; }
 
 .req-status { font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
 
@@ -802,7 +802,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .bet-main { display: flex; flex-direction: column; gap: 3px; }
-.bet-main strong { font-family: "Rajdhani", sans-serif; font-size: 1rem; }
+.bet-main strong { font-family: "Inter", sans-serif; font-size: 1rem; }
 .bet-main span { color: var(--muted); font-size: 0.8rem; }
 
 .mini-del {
@@ -1714,9 +1714,120 @@ body { padding-bottom: 64px; }
 .gear-link { display: flex; align-items: center; color: var(--muted); padding: 6px; }
 .gear-link:hover, .gear-link:active { color: var(--gold-light); }
 
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--gold-light);
+  cursor: pointer;
+  transition: var(--tr);
+}
+.theme-toggle:hover { border-color: var(--gold); transform: rotate(15deg); }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+.theme-toggle.on .icon-sun { display: block; }
+.theme-toggle.on .icon-moon { display: none; }
+
 .save-bank { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
 .save-bank input { width: auto; }
 #bank-fields h4 { margin: 4px 0 8px; color: var(--gold-light); font-family: "Orbitron", sans-serif; font-size: 0.75rem; letter-spacing: 1px; }
 
 .foot-sync { font-size: 0.68rem; color: var(--muted); }
 .foot-sync span { color: var(--gold-light); word-break: break-all; }
+
+/* ============ LIGHT THEME (white / blue / gold) ============ */
+html[data-theme="light"] {
+  --navy: #f5f7ff;
+  --navy2: #eef2fb;
+  --mid-blue: #dbe4fa;
+  --card: rgba(10, 26, 74, 0.03);
+  --card-solid: #ffffff;
+  --border: rgba(10, 26, 74, 0.16);
+  --line: rgba(10, 26, 74, 0.12);
+  --border-strong: rgba(26, 84, 255, 0.45);
+  --text: #0a1a4a;
+  --muted: rgba(10, 26, 74, 0.62);
+  --gold: #1467ff;
+  --gold2: #1d7aff;
+  --gold3: #0a4fdd;
+  --gold-light: #1467ff;
+  --green: #16a34a;
+  --red: #dc2626;
+  --glow-gold: 0 0 20px rgba(20, 103, 255, 0.25);
+}
+html[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 120% 60% at 50% -10%, rgba(20, 103, 255, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 80% at 80% 100%, rgba(212, 175, 55, 0.10) 0%, transparent 60%),
+    var(--navy);
+  color: var(--text);
+}
+html[data-theme="light"] .topbar { background: rgba(255, 255, 255, 0.85); box-shadow: 0 4px 30px rgba(10, 26, 74, 0.08); }
+html[data-theme="light"] .logo small { color: rgba(10, 26, 74, 0.55); -webkit-text-fill-color: rgba(10, 26, 74, 0.55); }
+html[data-theme="light"] .nav a:hover { background: rgba(20, 103, 255, 0.08); }
+html[data-theme="light"] .nav .user-chip { background: rgba(20, 103, 255, 0.08); }
+html[data-theme="light"] .nav .user-chip:hover { background: rgba(20, 103, 255, 0.16); }
+html[data-theme="light"] .howto-step, html[data-theme="light"] .card, html[data-theme="light"] .hist-card,
+html[data-theme="light"] .chart-card, html[data-theme="light"] .family-section,
+html[data-theme="light"] .s5-row, html[data-theme="light"] .s5-game,
+html[data-theme="light"] .hist-row, html[data-theme="light"] .hist-stat,
+html[data-theme="light"] .guess-strip, html[data-theme="light"] .cat-chip,
+html[data-theme="light"] .wallet-beforeafter, html[data-theme="light"] .bet-row,
+html[data-theme="light"] .family-card, html[data-theme="light"] .s5-banner {
+  background: #ffffff;
+  border-color: rgba(10, 26, 74, 0.14);
+}
+html[data-theme="light"] .result-table tr:hover td,
+html[data-theme="light"] .activity-row, html[data-theme="light"] .hist-row,
+html[data-theme="light"] .s5-row, html[data-theme="light"] .s5-game,
+html[data-theme="light"] .hist-stat, html[data-theme="light"] .guess-strip,
+html[data-theme="light"] .bet-row, html[data-theme="light"] .family-card,
+html[data-theme="light"] .chart-cell { background: #ffffff; }
+html[data-theme="light"] .form input, html[data-theme="light"] .form select,
+html[data-theme="light"] .form textarea { background: #ffffff; color: var(--text); }
+html[data-theme="light"] .pad-d, html[data-theme="light"] .cat-chip { background: #ffffff; color: var(--muted); }
+html[data-theme="light"] .bottom-nav { background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(240,244,255,0.99)); }
+html[data-theme="light"] .type-style-panel { background: linear-gradient(180deg, #ffffff, #eef2fb); }
+html[data-theme="light"] .style-panel { background: linear-gradient(180deg, #ffffff, #eef2fb); }
+html[data-theme="light"] .style-btn { background: #ffffff; }
+html[data-theme="light"] .style-backdrop { background: rgba(10, 26, 74, 0.35); }
+html[data-theme="light"] .site-foot { background: rgba(10, 26, 74, 0.05); }
+html[data-theme="light"] .site-foot, html[data-theme="light"] .site-foot a { color: var(--muted); }
+html[data-theme="light"] .content details { background: #ffffff; }
+html[data-theme="light"] .market-select { background: linear-gradient(180deg, #ffffff, #eef2fb); color: var(--gold); }
+html[data-theme="light"] .market-select option { color: #0a1a4a; background: #fff; }
+html[data-theme="light"] .hpanel-digits, html[data-theme="light"] .s5-jodi b,
+html[data-theme="light"] .s5-open, html[data-theme="light"] .s5-close,
+html[data-theme="light"] .member-phone, html[data-theme="light"] .upi-id,
+html[data-theme="light"] .wallet-balance, html[data-theme="light"] .member-balance,
+html[data-theme="light"] .rate-amount, html[data-theme="light"] .jodi-cell,
+html[data-theme="light"] .rates-table .rate-amount { color: var(--gold); text-shadow: none; }
+html[data-theme="light"] .hist-stat b, html[data-theme="light"] .s5-jodi b,
+html[data-theme="light"] .s5-open b, html[data-theme="light"] .s5-close b { text-shadow: none; }
+html[data-theme="light"] .s5-close, html[data-theme="light"] .c-close, html[data-theme="light"] .l-open { color: #1467ff; }
+html[data-theme="light"] .wallet-chip, html[data-theme="light"] .jodi-pill,
+html[data-theme="light"] .bal-chip, html[data-theme="light"] .s5-bid,
+html[data-theme="light"] .t-open { color: #ffffff; text-shadow: none; }
+html[data-theme="light"] .howto-step b, html[data-theme="light"] .gc-code,
+html[data-theme="light"] .avatar, html[data-theme="light"] .family-card b,
+html[data-theme="light"] .user-chip .chip-avatar { color: #ffffff; }
+html[data-theme="light"] .seg.active, html[data-theme="light"] .chip.active, html[data-theme="light"] .cat-chip.on { color: #ffffff; }
+html[data-theme="light"] .btn, html[data-theme="light"] .btn-green,
+html[data-theme="light"] .s5-bid, html[data-theme="light"] .jodi-pill,
+html[data-theme="light"] .t-open { color: #ffffff; }
+html[data-theme="light"] .scene-theme-bg-gold { background: linear-gradient(135deg, #1467ff, #0a4fdd); }
+html[data-theme="light"] .ticker-wrap, html[data-theme="light"] .panel-badge { background: rgba(20, 103, 255, 0.08); }
+html[data-theme="light"] .l-win { color: #ffffff; }
+html[data-theme="light"] .chart-cell b, html[data-theme="light"] .c-win { color: var(--green); }
+html[data-theme="light"] .result-table th { background: rgba(20, 103, 255, 0.08); color: var(--gold); }
+html[data-theme="light"] body { --white: #0a1a4a; }
+html[data-theme="light"] .pad-display, html[data-theme="light"] .funds-balance {
+  background: linear-gradient(135deg, rgba(20, 103, 255, 0.12), rgba(255,255,255,0.8));
+}
+html[data-theme="light"] .funds-balance b { color: var(--gold); text-shadow: none; }
