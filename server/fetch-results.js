@@ -7,35 +7,35 @@ const BASE = "https://sara567.net/charts/mrecords/";
 const UA = "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Mobile Safari/537.36";
 
 const LIVE_MARKETS = [
-  { id: "sita-morning",     slug: "SITA%20MORNING",    name: "SITA MORNING" },
-  { id: "star-tara-morning",slug: "STAR%20TARA%20MORNING", name: "STAR TARA MORNING" },
-  { id: "milan-morning",    slug: "MILAN%20MORNING",   name: "MILAN MORNING" },
-  { id: "sridevi",          slug: "SRIDEVI",           name: "SRIDEVI" },
-  { id: "kalyan-morning",   slug: "Kalyan%20Morning",  name: "Kalyan Morning" },
-  { id: "sita-day",         slug: "SITA%20DAY",        name: "SITA DAY" },
-  { id: "star-tara-day",    slug: "STAR%20TARA%20DAY", name: "STAR TARA DAY" },
-  { id: "milan-day",        slug: "MILAN%20DAY",       name: "MILAN DAY" },
-  { id: "kalyan-main",      slug: "KALYAN",            name: "KALYAN" },
-  { id: "sita-night",       slug: "SITA%20NIGHT",      name: "SITA NIGHT" },
-  { id: "sridevi-night",    slug: "SRIDEVI%20NIGHT",   name: "SRIDEVI NIGHT" },
-  { id: "star-tara-night",  slug: "STAR%20TARA%20NIGHT", name: "STAR TARA NIGHT" },
-  { id: "milan-night",      slug: "MILAN%20NIGHT",     name: "MILAN NIGHT" },
-  { id: "kalyan-night",     slug: "KALYAN%20NIGHT",    name: "KALYAN NIGHT" },
-  { id: "main-bazar",       slug: "MAIN%20BAZAR",      name: "MAIN BAZAR" },
-  { id: "andhra-morning",   slug: "ANDHRA%20MORNING",  name: "ANDHRA MORNING" },
-  { id: "andhra-day",       slug: "ANDHRA%20DAY",      name: "ANDHRA DAY" },
-  { id: "andhra-night",     slug: "ANDHRA%20NIGHT",    name: "ANDHRA NIGHT" },
-  { id: "kamal-morning",    slug: "KAMAL%20MORNING",   name: "KAMAL MORNING" },
-  { id: "kamal-day",        slug: "KAMAL%20DAY",       name: "KAMAL DAY" },
-  { id: "kamal-night",      slug: "KAMAL%20NIGHT",     name: "KAMAL NIGHT" },
-  { id: "madhur-morning",   slug: "MADHUR%20MORNING",  name: "MADHUR MORNING" },
-  { id: "madhur-day",       slug: "MADHUR%20DAY",      name: "MADHUR DAY" },
-  { id: "rajdhani-day",     slug: "RAJDHANI%20DAY",    name: "RAJDHANI DAY" },
-  { id: "rajdhani-night",   slug: "RAJDHANI%20NIGHT",  name: "RAJDHANI NIGHT" },
-  { id: "supreme-day",      slug: "SUPREME%20DAY",     name: "SUPREME DAY" },
-  { id: "supreme-night",    slug: "SUPREME%20NIGHT",   name: "SUPREME NIGHT" },
-  { id: "mahadevi",         slug: "MAHADEVI",          name: "MAHADEVI" },
-  { id: "time-bazar",       slug: "TIME%20BAZAR",      name: "TIME BAZAR" }
+  { id: "sita-morning",     slug: "SITA%20MORNING",    name: "SITA MORNING",     api: "sita-morning" },
+  { id: "star-tara-morning",slug: "STAR%20TARA%20MORNING", name: "STAR TARA MORNING", api: "star-tara-morning" },
+  { id: "milan-morning",    slug: "MILAN%20MORNING",   name: "MILAN MORNING",    api: "milan-morning" },
+  { id: "sridevi",          slug: "SRIDEVI",           name: "SRIDEVI",          api: "sridevi" },
+  { id: "kalyan-morning",   slug: "Kalyan%20Morning",  name: "Kalyan Morning",   api: "kalyan-morning" },
+  { id: "sita-day",         slug: "SITA%20DAY",        name: "SITA DAY",         api: "sita-day" },
+  { id: "star-tara-day",    slug: "STAR%20TARA%20DAY", name: "STAR TARA DAY",    api: "star-tara-day" },
+  { id: "milan-day",        slug: "MILAN%20DAY",       name: "MILAN DAY",        api: "milan-day" },
+  { id: "kalyan-main",      slug: "KALYAN",            name: "KALYAN",           api: "kalyan" },
+  { id: "sita-night",       slug: "SITA%20NIGHT",      name: "SITA NIGHT",       api: "sita-night" },
+  { id: "sridevi-night",    slug: "SRIDEVI%20NIGHT",   name: "SRIDEVI NIGHT",    api: "sridevi-night" },
+  { id: "star-tara-night",  slug: "STAR%20TARA%20NIGHT", name: "STAR TARA NIGHT", api: "star-tara-night" },
+  { id: "milan-night",      slug: "MILAN%20NIGHT",     name: "MILAN NIGHT",      api: "milan-night" },
+  { id: "kalyan-night",     slug: "KALYAN%20NIGHT",    name: "KALYAN NIGHT",     api: "kalyan-night" },
+  { id: "main-bazar",       slug: "MAIN%20BAZAR",      name: "MAIN BAZAR",       api: "main-bazar" },
+  { id: "andhra-morning",   slug: "ANDHRA%20MORNING",  name: "ANDHRA MORNING",   api: "andhra-morning" },
+  { id: "andhra-day",       slug: "ANDHRA%20DAY",      name: "ANDHRA DAY",       api: "andhra-day" },
+  { id: "andhra-night",     slug: "ANDHRA%20NIGHT",    name: "ANDHRA NIGHT",     api: "andhra-night" },
+  { id: "kamal-morning",    slug: "KAMAL%20MORNING",   name: "KAMAL MORNING",    api: "kamal-morning" },
+  { id: "kamal-day",        slug: "KAMAL%20DAY",       name: "KAMAL DAY",        api: "kamal-day" },
+  { id: "kamal-night",      slug: "KAMAL%20NIGHT",     name: "KAMAL NIGHT",      api: "kamal-night" },
+  { id: "madhur-morning",   slug: "MADHUR%20MORNING",  name: "MADHUR MORNING",   api: "madhur-morning" },
+  { id: "madhur-day",       slug: "MADHUR%20DAY",      name: "MADHUR DAY",       api: "madhur-day" },
+  { id: "rajdhani-day",     slug: "RAJDHANI%20DAY",    name: "RAJDHANI DAY",     api: "rajdhani-day" },
+  { id: "rajdhani-night",   slug: "RAJDHANI%20NIGHT",  name: "RAJDHANI NIGHT",   api: "rajdhani-night" },
+  { id: "supreme-day",      slug: "SUPREME%20DAY",     name: "SUPREME DAY",      api: "supreme-day" },
+  { id: "supreme-night",    slug: "SUPREME%20NIGHT",   name: "SUPREME NIGHT",    api: "supreme-night" },
+  { id: "mahadevi",         slug: "MAHADEVI",          name: "MAHADEVI",         api: "mahadevi" },
+  { id: "time-bazar",       slug: "TIME%20BAZAR",      name: "TIME BAZAR",       api: "time-bazar" }
 ];
 
 const MONTHS = { Jan: 1, Feb: 2, Mar: 3, Apr: 4, May: 5, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Oct: 10, Nov: 11, Dec: 12 };
@@ -119,6 +119,53 @@ function loadLive() {
   }
 }
 
+const API_BOARD = "https://sattamatkaapi.live/api/results/board";
+
+// Free JSON API primary source: clean board with status/pana/jodi for all markets.
+async function fetchApiBoard() {
+  const res = await fetch(API_BOARD, {
+    headers: { "User-Agent": UA },
+    signal: AbortSignal.timeout(15000)
+  });
+  if (!res.ok) throw new Error("API board HTTP " + res.status);
+  const js = await res.json();
+  const list = Array.isArray(js) ? js : (js && js.data) ? js.data : [];
+  const bySlug = {};
+  for (const m of list) bySlug[(m.slug || m.name || "").toLowerCase()] = m;
+  return bySlug;
+}
+
+// Merge API results (primary) into live map. Returns count of fresh markets from API.
+function applyApiBoard(bySlug, live) {
+  let fresh = 0;
+  for (const market of LIVE_MARKETS) {
+    const m = bySlug[market.api.toLowerCase()];
+    if (!m) continue;
+    const date = m.marketDate || m.resultDate;
+    if (!date) continue;
+    const state = m.boardState || m.status || "";
+    const open = m.openPana;
+    const jodi = m.jodi ? String(m.jodi).replace("*", "") : "";
+    const close = m.closePana;
+    const announced = !!open || state === "closed" || state === "open";
+    if (!announced && !(open && jodi)) continue;
+    const entry = {
+      panel: open || null,
+      panel2: close || null,
+      jodi: jodi ? jodi[0] : null,
+      jodi2: jodi ? jodi[1] : null,
+      announced: !!open,
+      live: state === "open" || state === "closed",
+      state: state,
+      source: "sattamatkaapi.live"
+    };
+    if (!live[market.id]) live[market.id] = {};
+    live[market.id][date] = entry;
+    fresh++;
+  }
+  return fresh;
+}
+
 async function refreshLiveMarket(market, live) {
   try {
     const html = await fetchChart(market.slug);
@@ -147,16 +194,32 @@ async function refreshLiveMarket(market, live) {
 
 async function refreshMarkets() {
   const live = loadLive();
-  const results = new Array(LIVE_MARKETS.length).fill(0);
-  let idx = 0;
-  const worker = async () => {
-    while (idx < LIVE_MARKETS.length) {
-      const i = idx++;
-      results[i] = await refreshLiveMarket(LIVE_MARKETS[i], live);
-    }
-  };
-  await Promise.all(Array.from({ length: 5 }, worker));
-  return { live, ok: results.filter(Boolean).length };
+  let apiFresh = 0;
+  const apiCovered = new Set();
+  try {
+    const bySlug = await fetchApiBoard();
+    apiFresh = applyApiBoard(bySlug, live);
+    for (const m of LIVE_MARKETS) if (bySlug[m.api.toLowerCase()]) apiCovered.add(m.api.toLowerCase());
+    console.log("[live] api board: " + apiFresh + "/" + LIVE_MARKETS.length + " markets from sattamatkaapi.live");
+  } catch (err) {
+    console.log("[live] api board failed: " + err.message + " (falling back to sara567 scrape)");
+  }
+
+  // Fallback scrape only markets missing from the API board.
+  const missing = LIVE_MARKETS.filter((m) => !apiCovered.has(m.api.toLowerCase()));
+  let scraped = 0;
+  if (missing.length) {
+    let idx = 0;
+    const worker = async () => {
+      while (idx < missing.length) {
+        const i = idx++;
+        scraped += await refreshLiveMarket(missing[i], live);
+      }
+    };
+    await Promise.all(Array.from({ length: 5 }, worker));
+  }
+  console.log("[live] sara567 fallback: " + scraped + "/" + missing.length + " markets");
+  return { live, ok: Math.max(apiFresh, scraped) };
 }
 
 async function refreshAll() {
