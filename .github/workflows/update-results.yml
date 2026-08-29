@@ -2,7 +2,7 @@ name: update-results
 
 on:
   schedule:
-    - cron: "*/4 * * * *"
+    - cron: "*/2 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -15,23 +15,14 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Fetch loop (30s interval)
+          cache: npm
+      - name: Run self-healing updater (retries until fresh)
         run: |
-          git config user.name "results-bot"
-          git config user.email "actions@users.noreply.github.com"
-          end=$((SECONDS + 240))
-          while [ $SECONDS -lt $end ]; do
-            node server/fetch-results.js --to-file live_results.json || true
-            if ! git diff --quiet; then
-              git add live_results.json
-              git commit -m "auto: results $(TZ=Asia/Kolkata date +%H:%M:%S)"
-              git push || true
-            fi
-            sleep 30
-          done
+          chmod +x server/actions/updater.sh
+          ./server/actions/updater.sh
