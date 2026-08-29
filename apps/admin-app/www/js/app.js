@@ -113,6 +113,26 @@ function nextResultTime(market) {
   return d.getTime();
 }
 
+function timeToMin(t) {
+  if (!t) return null;
+  const s = String(t).trim();
+  const m = s.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  return (parseInt(m[1], 10) % 24) * 60 + parseInt(m[2], 10);
+}
+
+// Returns "open" / "pending" / "closed" for a market based on the device clock.
+function marketPlayStatus(market) {
+  const now = new Date();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+  const openMin = timeToMin(market.open);
+  const closeMin = timeToMin(market.close);
+  if (openMin == null || closeMin == null) return "open";
+  if (nowMin >= openMin && nowMin < closeMin) return "open";
+  if (nowMin < openMin) return "pending";
+  return "closed";
+}
+
 function router() {
   const page = $("#page");
   if (!page) return;
@@ -275,9 +295,17 @@ function renderHomeRows(cat) {
     const jodi = hasResult ? result.jodi + result.jodi2 : "--";
     const pan1 = hasResult ? result.panel : "---";
     const pan2 = hasResult ? result.panel2 || "--" : "---";
-    const tag = hasResult
-      ? `<span class="s5-tag t-open">OPEN</span>`
-      : `<span class="s5-tag t-closed">PENDING</span>`;
+    const status = marketPlayStatus(market);
+    let tagTxt = "PENDING";
+    let tagCls = "t-closed";
+    if (hasResult) { tagTxt = "RESULT"; tagCls = "t-open"; }
+    else if (status === "open") { tagTxt = "OPEN"; tagCls = "t-open"; }
+    else if (status === "closed") { tagTxt = "CLOSED"; tagCls = "t-closed"; }
+    const tag = `<span class="s5-tag ${tagCls}">${tagTxt}</span>`;
+    const playable = !hasResult && status === "open";
+    const bidBtn = playable
+      ? `<button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>`
+      : `<span class="s5-bid disabled" aria-disabled="true">${hasResult ? "DONE" : status === "closed" ? "CLOSED" : "SOON"}</span>`;
     row.innerHTML = `
       <div class="s5-top">
         <div class="s5-mkt">
@@ -292,11 +320,11 @@ function renderHomeRows(cat) {
           <span class="s5-open"><i>OPEN</i>${pan1}</span>
           <span class="s5-close"><i>CLOSE</i>${pan2}</span>
         </div>
-        <button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>
+        ${bidBtn}
       </div>`;
     row.addEventListener("click", () => (location.hash = "#/market/" + market.id));
-    const bidBtn = row.querySelector(".s5-bid");
-    bidBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: bidBtn }); });
+    const playBtn = row.querySelector(".s5-bid[data-play-market]");
+    if (playBtn) playBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: playBtn }); });
     homeRows.appendChild(row);
   }
 }
@@ -410,20 +438,29 @@ function renderMarketDetail(page, id) {
     return;
   }
   const results = getResults();
+  const todayR = results[id + "|" + todayKey()];
+  const status = marketPlayStatus(market);
+  const declaredToday = todayR && todayR.announced;
+  const playable = !declaredToday && status === "open";
+  const playBtns = playable
+    ? `<div class="card-actions" style="margin-top:10px">
+        <a class="btn btn-green" href="#/play/jodi/${market.id}">Play Jodi</a>
+        <a class="btn ghost" href="#/play/single/${market.id}">Play Digit</a>
+      </div>`
+    : `<div class="card-actions" style="margin-top:10px">
+        <span class="s5-bid disabled" style="font-size:0.75rem">${declaredToday ? "Result declared — closed" : status === "closed" ? "Closed for today" : "Not open yet"}</span>
+      </div>`;
   const days = Object.keys(results).filter((k) => k.startsWith(id + "|")).sort().slice(-14).reverse();
   page.innerHTML = `
     <section class="page-head">
       <h1>${market.name}</h1>
       <p>Open ${market.open} · Close ${market.close} · Result ${market.result} · ${market.days}</p>
-      <div class="card-actions" style="margin-top:10px">
-        <a class="btn btn-green" href="#/play/jodi/${market.id}">Play Jodi</a>
-        <a class="btn ghost" href="#/play/single/${market.id}">Play Digit</a>
-      </div>
+      ${playBtns}
     </section>
     <div class="hist-stats">
       <div class="hist-stat"><b>${days.length}</b><span>Results</span></div>
       <div class="hist-stat"><b>${days.length ? fmtDateNice(days[0].split("|").pop()) : "—"}</b><span>Latest</span></div>
-      <div class="hist-stat"><b>${days.some((k) => results[k].announced && results[k].date === todayKey()) ? "LIVE" : "AWAIT"}</b><span>Today</span></div>
+      <div class="hist-stat"><b>${declaredToday ? "LIVE" : "AWAIT"}</b><span>Today</span></div>
     </div>
     <div class="hist-card">
       <h3>Recent Results</h3>

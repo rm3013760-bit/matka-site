@@ -1555,6 +1555,16 @@ body { padding-bottom: 64px; }
 .s5-bid:hover { transform: scale(1.04); }
 .s5-bid-small { padding: 6px 12px; font-size: 0.62rem; }
 
+.s5-bid.disabled {
+  background: rgba(128, 128, 128, 0.12);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  box-shadow: none;
+  cursor: not-allowed;
+  font-size: 0.66rem;
+}
+.s5-bid.disabled:hover { transform: none; }
+
 .guess-strip {
   display: flex;
   gap: 10px;
@@ -1831,3 +1841,21 @@ html[data-theme="light"] .pad-display, html[data-theme="light"] .funds-balance {
   background: linear-gradient(135deg, rgba(20, 103, 255, 0.12), rgba(255,255,255,0.8));
 }
 html[data-theme="light"] .funds-balance b { color: var(--gold); text-shadow: none; }
+
+/* ---------- prevent horizontal overflow on small phones ---------- */
+html, body { overflow-x: hidden; }
+
+@media (max-width: 480px) {
+  .hist-row, .s5-top, .s5-btm { gap: 6px; }
+  .hist-date { min-width: 74px; }
+  .hist-jodi { min-width: 70px; }
+  .hpanel-digits { font-size: 1.05rem; padding: 5px 8px; letter-spacing: 1.5px; }
+  .jodi-pill { font-size: 0.8rem; padding: 4px 10px; }
+  .hist-panels { gap: 6px; }
+  .s5-btm { flex-wrap: wrap; }
+  .s5-jodi small { font-size: 0.52rem; }
+  .s5-open, .s5-close { font-size: 0.78rem; padding: 3px 7px; min-width: 44px; }
+  .s5-jodi b { font-size: 1.1rem; }
+  .s5-bid, .s5-bid.disabled { font-size: 0.6rem; padding: 7px 10px; }
+  .card-actions .btn { font-size: 0.8rem; padding: 9px 14px; }
+}
