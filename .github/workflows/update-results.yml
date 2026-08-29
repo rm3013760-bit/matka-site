@@ -1,8 +1,6 @@
 name: update-results
 
 on:
-  schedule:
-    - cron: "*/2 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -16,22 +14,28 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 290
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Run self-healing updater (retries until fresh)
+      - name: Continuous fetch loop (refreshes ~every 30s, ~4.2h per run)
         run: |
           chmod +x server/actions/updater.sh
-          ./server/actions/updater.sh
+          DEADLINE=$((SECONDS + 252*60))   # 4h12m of fetching
+          while [ $SECONDS -lt $DEADLINE ]; do
+            ./server/actions/updater.sh || true
+            sleep 30
+          done
         env:
           TZ: Asia/Kolkata
-      - name: Re-arm self-perpetuating chain (re-dispatch)
+      - name: Re-arm self-perpetuating chain (start next run)
         run: |
-          sleep 5
-          gh api -X POST repos/${{ github.repository }}/actions/workflows/update-results.yml/dispatches \
-            -f ref="${{ github.ref_name }}"
+          for i in 1 2 3; do
+            gh api -X POST repos/${{ github.repository }}/actions/workflows/update-results.yml/dispatches \
+              -f ref="${{ github.ref_name }}" || true
+            sleep 2
+          done
         env:
           GH_TOKEN: ${{ github.token }}
