@@ -57,7 +57,7 @@ a:hover { text-decoration: underline; }
 }
 
 .logo {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 900;
   font-size: 1.2rem;
   letter-spacing: 1px;
@@ -147,7 +147,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .page-head { text-align: center; padding: 20px 0 26px; }
 .page-head h1 {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: clamp(1.3rem, 4vw, 1.8rem);
   font-weight: 900;
   background: linear-gradient(90deg, var(--gold2), var(--gold-light), var(--gold2));
@@ -167,16 +167,16 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .rates-wrap { margin-bottom: 28px; }
 
-.rates-wrap h3 { font-family: "Orbitron", sans-serif; }
+.rates-wrap h3 { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
 .rates-table .rate-amount {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 700;
   color: var(--gold-light);
   white-space: nowrap;
 }
 
-.rates-table .rate-cell b {  font-family: "Orbitron", sans-serif;
+.rates-table .rate-cell b {  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.3rem;
   color: var(--gold);
   text-shadow: var(--glow-gold);
@@ -221,7 +221,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   border-radius: 50%;
   background: linear-gradient(135deg, var(--gold), var(--gold3));
   color: var(--navy);
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.05rem;
   box-shadow: var(--glow-gold);
 }
@@ -248,7 +248,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .gc-meta span { color: var(--gold-light); }
 
 .family-section { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 20px; padding: 22px; }
-.family-section h2 { font-family: "Orbitron", sans-serif; color: var(--gold); margin-bottom: 6px; font-size: 1.1rem; }
+.family-section h2 { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--gold); margin-bottom: 6px; font-size: 1.1rem; }
 .family-section > p { color: var(--muted); font-size: 0.85rem; margin-bottom: 16px; }
 
 .family-grid {
@@ -309,7 +309,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   box-shadow: 0 0 0 1px rgba(185, 144, 82, 0.35), var(--glow-gold);
 }
 
-.game-pick b { font-family: "Orbitron", sans-serif; color: var(--gold-light); letter-spacing: 0.5px; }
+.game-pick b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--gold-light); letter-spacing: 0.5px; }
 
 .game-pick span { font-size: 0.85rem; font-weight: 600; color: var(--text); }
 
@@ -321,7 +321,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   flex: 1;
   min-width: 52px;
   padding: 10px 0;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--muted);
@@ -343,7 +343,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .bid-stake {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--gold-light);
@@ -397,9 +397,9 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .style-market-locked span { color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-size: 0.7rem; }
 
-.style-market-locked b { color: var(--gold-light); font-family: "Orbitron", sans-serif; letter-spacing: 0.5px; }
+.style-market-locked b { color: var(--gold-light); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0.5px; }
 
-.style-head b { font-family: "Orbitron", sans-serif; color: var(--gold-light); }
+.style-head b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--gold-light); }
 
 .style-close {
   width: 30px;
@@ -443,7 +443,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .style-btn b { font-size: 0.85rem; }
 
 .style-btn small {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--gold);
@@ -482,7 +482,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .hist-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 20px; padding: 20px; }
-.hist-card h3 { font-family: "Orbitron", sans-serif; font-size: 1rem; margin-bottom: 14px; color: var(--gold); }
+.hist-card h3 { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1rem; margin-bottom: 14px; color: var(--gold); }
 
 .table-wrap { overflow-x: auto; }
 
@@ -504,7 +504,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .result-table tr:hover td { background: rgba(185, 144, 82, 0.05); }
 
-.jodi-cell { color: var(--gold-light); font-weight: 700; white-space: nowrap; font-family: "Orbitron", sans-serif; font-size: 0.85rem; }
+.jodi-cell { color: var(--gold-light); font-weight: 700; white-space: nowrap; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.85rem; }
 .empty { text-align: center; color: var(--muted); }
 
 .chart-grid {
@@ -528,7 +528,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   padding: 6px 12px;
 }
 
-.chart-cell b { color: var(--green); font-size: 1.05rem; letter-spacing: 1px; font-family: "Orbitron", sans-serif; }
+.chart-cell b { color: var(--green); font-size: 1.05rem; letter-spacing: 1px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 .chart-cell span { color: var(--muted); font-size: 0.75rem; }
 
 .card {
@@ -542,7 +542,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .card h3 {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--gold);
   font-size: 1rem;
   margin-bottom: 16px;
@@ -612,12 +612,12 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .foot-links a { color: var(--muted); }
 .foot-links a:hover { color: var(--gold); }
 
-.site-foot strong { color: var(--gold); font-family: "Orbitron", sans-serif; }
+.site-foot strong { color: var(--gold); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 
 .content { max-width: 720px; margin: 0 auto; }
 .content p { color: var(--muted); line-height: 1.7; margin-bottom: 14px; }
 .content p strong { color: var(--text); }
-.content h3 { color: var(--gold); margin: 20px 0 8px; font-family: "Orbitron", sans-serif; font-size: 1rem; }
+.content h3 { color: var(--gold); margin: 20px 0 8px; font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1rem; }
 .content details {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border);
@@ -657,7 +657,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   font-size: 2rem;
   letter-spacing: 6px;
   color: var(--green);
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .otp-timer { display: block; margin-top: 6px; color: var(--muted); font-size: 0.78rem; }
@@ -717,7 +717,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   font-weight: 800;
   color: var(--gold);
   margin-bottom: 6px;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .wallet-plus { color: var(--green); font-weight: 700; }
@@ -915,7 +915,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 800;
   color: var(--gold);
   background: rgba(185, 144, 82, 0.1);
@@ -992,7 +992,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .member-head .member-meta h3::after { display: none; }
 
 .member-phone {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--gold-light);
@@ -1023,7 +1023,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .member-balance {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.3rem;
   font-weight: 900;
   color: var(--gold);
@@ -1081,7 +1081,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .seg {
   flex: 1;
   padding: 10px 0;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -1105,7 +1105,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .wd-row small { color: var(--muted); font-size: 0.75rem; }
 
 .upi-id {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -1150,7 +1150,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 
 .hist-stat b {
   display: block;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--gold-light);
@@ -1250,7 +1250,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .hpanel-digits {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 3px;
@@ -1280,7 +1280,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 }
 
 .jodi-pill {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   letter-spacing: 1px;
@@ -1295,7 +1295,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .market-select {
   width: 100%;
   padding: 12px 14px;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -1325,7 +1325,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 
 .bal-chip {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   color: #0a1535;
@@ -1399,7 +1399,7 @@ body { padding-bottom: 64px; }
 .s5-banner.b3 { background: linear-gradient(120deg, #10274e, #0d1a3d 60%, #16335f); }
 
 .s5-banner b {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.25rem;
   font-weight: 900;
   letter-spacing: 1px;
@@ -1445,7 +1445,7 @@ body { padding-bottom: 64px; }
 }
 
 .s5-head h2 {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.85rem;
   letter-spacing: 1.5px;
   color: var(--gold-light);
@@ -1515,7 +1515,7 @@ body { padding-bottom: 64px; }
   letter-spacing: 2px;
 }
 .s5-jodi b {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 1.35rem;
   font-weight: 900;
   color: var(--gold-light);
@@ -1524,7 +1524,7 @@ body { padding-bottom: 64px; }
 
 .s5-oc { display: flex; flex-direction: column; gap: 4px; }
 .s5-open, .s5-close {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.88rem;
   font-weight: 700;
   letter-spacing: 1px;
@@ -1538,7 +1538,7 @@ body { padding-bottom: 64px; }
 .s5-open i, .s5-close i { font-style: normal; opacity: 0.5; }
 
 .s5-bid {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 1px;
@@ -1565,7 +1565,7 @@ body { padding-bottom: 64px; }
 }
 
 .guess-day {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.62rem;
   font-weight: 900;
   letter-spacing: 1px;
@@ -1589,7 +1589,7 @@ body { padding-bottom: 64px; }
 }
 
 .guess-card small { display: block; color: var(--muted); font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; }
-.guess-card b { font-family: "Orbitron", sans-serif; font-size: 0.85rem; color: var(--gold-light); }
+.guess-card b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.85rem; color: var(--gold-light); }
 
 .s5-games { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 
@@ -1604,7 +1604,7 @@ body { padding-bottom: 64px; }
 }
 
 .s5-game b {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.7rem;
   color: var(--gold-light);
   letter-spacing: 1px;
@@ -1647,7 +1647,7 @@ body { padding-bottom: 64px; }
 .cat-chips { display: flex; gap: 8px; overflow-x: auto; padding: 10px 14px 2px; -webkit-overflow-scrolling: touch; }
 .cat-chip {
   flex: 0 0 auto;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 1px;
@@ -1663,7 +1663,7 @@ body { padding-bottom: 64px; }
 .digit-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
 .digit-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 12px; max-height: 340px; overflow-y: auto; }
 .pad-d {
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--white);
@@ -1684,9 +1684,9 @@ body { padding-bottom: 64px; }
   border: 1px dashed rgba(212, 175, 55, 0.5);
   border-radius: 12px;
 }
-.pad-display b { font-family: "Orbitron", sans-serif; font-size: 1.25rem; color: var(--gold-light); letter-spacing: 4px; }
+.pad-display b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.25rem; color: var(--gold-light); letter-spacing: 4px; }
 .pad-clear {
-  font-family: "Orbitron", sans-serif; font-size: 0.8rem; font-weight: 800;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.8rem; font-weight: 800;
   color: #ff6b6b; background: transparent; border: 1px solid rgba(255, 107, 107, 0.4); border-radius: 999px; padding: 4px 10px; cursor: pointer;
 }
 
@@ -1696,7 +1696,7 @@ body { padding-bottom: 64px; }
   background: rgba(12, 20, 48, 0.6); border: 1px solid var(--line); border-radius: 10px;
   font-size: 0.78rem; color: var(--muted);
 }
-.wallet-beforeafter b { font-family: "Orbitron", sans-serif; color: var(--gold-light); font-size: 0.85rem; }
+.wallet-beforeafter b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--gold-light); font-size: 0.85rem; }
 
 .pay-icon-row { display: flex; gap: 10px; align-items: center; margin: 10px 0 4px; }
 .pay-icon-row img { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: rgba(12, 20, 48, 0.8); padding: 6px; object-fit: contain; filter: saturate(0.9); }
@@ -1708,7 +1708,7 @@ body { padding-bottom: 64px; }
   border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 14px;
 }
 .funds-balance span { font-size: 0.72rem; letter-spacing: 2px; color: var(--muted); font-weight: 800; }
-.funds-balance b { font-family: "Orbitron", sans-serif; font-size: 1.6rem; color: var(--gold-light); text-shadow: 0 0 14px rgba(212, 175, 55, 0.5); }
+.funds-balance b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 1.6rem; color: var(--gold-light); text-shadow: 0 0 14px rgba(212, 175, 55, 0.5); }
 .funds-balance small { color: var(--muted); font-size: 0.7rem; }
 
 .gear-link { display: flex; align-items: center; color: var(--muted); padding: 6px; }
@@ -1736,7 +1736,7 @@ body { padding-bottom: 64px; }
 
 .save-bank { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--muted); }
 .save-bank input { width: auto; }
-#bank-fields h4 { margin: 4px 0 8px; color: var(--gold-light); font-family: "Orbitron", sans-serif; font-size: 0.75rem; letter-spacing: 1px; }
+#bank-fields h4 { margin: 4px 0 8px; color: var(--gold-light); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.75rem; letter-spacing: 1px; }
 
 .foot-sync { font-size: 0.68rem; color: var(--muted); }
 .foot-sync span { color: var(--gold-light); word-break: break-all; }
