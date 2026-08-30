@@ -144,6 +144,8 @@ function router() {
   else if (route === "funds") renderFunds(page, parts[1]);
   else if (route === "history") renderMyHistory(page, parts[1] || "entries");
   else if (route === "results") renderHistory(page, parts[1]);
+  else if (route === "my-bids") renderMyBids(page);
+  else if (route === "passbook") renderPassbook(page);
   else if (route === "notification") renderNotifications(page);
   else if (route === "timetable") renderTimetable(page);
   else if (route === "notice") renderNotice(page);
@@ -741,6 +743,79 @@ function renderMyHistory(page, tab) {
   </div>`;
 }
 
+function renderMyBids(page) {
+  if (!currentUser) { renderLogin(page); return; }
+  resolveBets();
+  const u = currentUser;
+  const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const won = bets.filter((b) => b.status === "won");
+  let rows = "";
+  if (bets.length) {
+    for (const b of bets.slice(0, 100)) {
+      const num = b.game === "half-sangam" || b.game === "half-sangam-b" ? b.numbers.jodi + " - " + b.numbers.patti :
+        b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
+        b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
+      const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
+      const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
+      rows += `
+        <div class="hist-row">
+          <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${(b.date || "").slice(0, 10)}</span></div>
+          <span class="hist-market">${b.marketName}</span>
+          <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
+          <div class="hist-panels">
+            <div class="hpanel"><span class="hpanel-label">Stake</span><span class="hpanel-digits">₹ ${b.stake}</span></div>
+            <div class="hpanel"><span class="hpanel-label">Odds</span><span class="hpanel-digits">${b.odds}x</span></div>
+          </div>
+          <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
+        </div>`;
+    }
+  } else {
+    rows = `<p class="empty">No bids yet. Place one from the Home page.</p>`;
+  }
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> ${u.name}</div>
+      <h1>My Bids</h1>
+      <p>All your placed bids.</p>
+    </section>
+    <div class="hist-stats">
+      <div class="hist-stat"><b>${bets.length}</b><span>Total Bids</span></div>
+      <div class="hist-stat"><b>${bets.filter((b) => b.status === "pending").length}</b><span>In Play</span></div>
+      <div class="hist-stat"><b>₹ ${bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>In Play Amt</span></div>
+      <div class="hist-stat"><b>₹ ${won.reduce((s, b) => s + b.stake * b.odds, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Won</span></div>
+    </div>
+    <div class="hist-card"><div class="hist-list">${rows}</div></div>`;
+}
+
+function renderPassbook(page) {
+  if (!currentUser) { renderLogin(page); return; }
+  const u = currentUser;
+  const wallet = walletTx(u.phone, 200);
+  const balance = walletBalance(u.phone);
+  const rows = wallet.length
+    ? wallet.map((t) => `
+        <div class="hist-row">
+          <div class="hist-date"><span class="hd-day">${t.note || "Transaction"}</span><span class="hd-date">${new Date(t.date).toLocaleString()}</span></div>
+          <span class="hist-market">${t.amount >= 0 ? "Credit" : "Debit"}</span>
+          <div class="hist-panels"><div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits ${t.amount >= 0 ? "wallet-plus" : "wallet-minus"}">${t.amount >= 0 ? "+" : "−"}${Math.abs(t.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div></div>
+          <span class="l-status ${t.amount >= 0 ? "l-win" : "l-lose"}">${t.amount >= 0 ? "CREDIT" : "DEBIT"}</span>
+        </div>`).join("")
+    : `<p class="empty">No passbook entries yet.</p>`;
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> ${u.name}</div>
+      <h1>Passbook</h1>
+      <p>Your complete wallet transaction history.</p>
+    </section>
+    <div class="hist-stats">
+      <div class="hist-stat"><b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Balance</span></div>
+      <div class="hist-stat"><b>${wallet.length}</b><span>Transactions</span></div>
+    </div>
+    <div class="hist-card"><div class="hist-list">${rows}</div></div>`;
+}
+
 function renderFunds(page, tab) {
   if (!currentUser) { renderLogin(page); return; }
   const users = store.get("matka.users", []);
@@ -749,28 +824,49 @@ function renderFunds(page, tab) {
   const balance = walletBalance(u.phone);
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
-  const tabName = tab === "withdraw" ? "withdraw" : "add";
+  const tabName = tab === "withdraw" ? "withdraw" : tab === "add" ? "add" : "hub";
   const savedBank = store.get("matka.bank." + u.phone, null);
+
+  if (tabName === "hub") {
+    const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
+    page.innerHTML = `
+      <section class="page-head">
+        <h1>Funds</h1>
+        <p>Manage your wallet balance, deposits and withdrawals.</p>
+      </section>
+      <div class="funds-balance card">
+        <span>Wallet Balance</span>
+        <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
+      </div>
+      <div class="card-actions" style="margin-top:16px">
+        <a class="btn btn-green" href="#/funds/add">Add Money</a>
+        <a class="btn ghost" href="#/funds/withdraw">Withdraw</a>
+      </div>
+      <div class="card panel-card" style="margin-top:14px">
+        <h3>Recent Activity</h3>
+        <p class="hint">${myRequests.length || wds.length ? "See your latest deposit and withdrawal requests." : "No fund activity yet. Add money to get started."}</p>
+        <div class="activity-list" style="margin-top:8px">
+          ${myRequests.slice(0, 5).map((r) => `<div class="activity-row"><span>Deposit ₹ ${Number(r.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })} · Ref: ${r.ref || "—"}</span><small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small></div>`).join("")}
+          ${wds.slice(0, 5).map((w) => `<div class="activity-row"><span>Withdraw ₹ ${Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method}</span><small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small></div>`).join("")}
+        </div>
+      </div>`;
+    return;
+  }
+
+  const title = tabName === "withdraw" ? "Withdrawals" : "Add Money";
+  const subtitle = tabName === "withdraw" ? "Request a payout from your wallet." : "Add money to your wallet.";
 
   page.innerHTML = `
     <section class="page-head">
-      <h1>Funds</h1>
-      <p>Add money or request a withdrawal.</p>
+      <h1>${title}</h1>
+      <p>${subtitle}</p>
     </section>
     <div class="funds-balance card">
       <span>Wallet Balance</span>
       <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
-      <small>Credited after the administrator confirms your payment.</small>
-    </div>
-    <div class="panel-tabs">
-      <button type="button" class="chip ${tabName === "add" ? "active" : ""}" data-tab="add">Deposit</button>
-      <button type="button" class="chip ${tabName === "withdraw" ? "active" : ""}" data-tab="withdraw">Withdraw</button>
+      <small>${tabName === "withdraw" ? "Approved withdrawals are paid out by the administrator." : "Credited after the administrator confirms your payment."}</small>
     </div>
     <div id="funds-body"></div>`;
-
-  for (const c of page.querySelectorAll(".panel-tabs .chip")) {
-    c.onclick = () => { location.hash = "#/funds/" + c.dataset.tab; };
-  }
 
   const body = $("#funds-body");
 
