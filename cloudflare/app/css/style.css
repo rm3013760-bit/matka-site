@@ -2027,9 +2027,9 @@ html[data-theme="light"] .side-drawer { background: linear-gradient(180deg, #f5f
 
 /* Funds quick action buttons */
 .funds-quick {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin: 16px 0 4px;
 }
 .funds-btn {
@@ -2037,10 +2037,11 @@ html[data-theme="light"] .side-drawer { background: linear-gradient(180deg, #f5f
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 14px 12px;
+  width: 100%;
+  padding: 16px 12px;
   border-radius: 14px;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #fff;
   text-decoration: none;

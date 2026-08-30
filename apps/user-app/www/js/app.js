@@ -851,16 +851,7 @@ function renderFunds(page, tab) {
   const body = $("#funds-body");
 
   if (tabName === "hub") {
-    body.innerHTML = `
-      <div class="card panel-card" style="margin-top:8px">
-        <h3>Choose an option</h3>
-        <p class="hint">Select a button above to add money, withdraw funds or manage your bank account.</p>
-        <div class="card-actions" style="margin-top:12px">
-          <a class="btn btn-green" href="#/funds/add">Add Funds</a>
-          <a class="btn ghost" href="#/funds/withdraw">Withdraw Funds</a>
-          <a class="btn ghost" href="#/funds/bank">Add Bank Account</a>
-        </div>
-      </div>`;
+    body.innerHTML = "";
     return;
   }
 
