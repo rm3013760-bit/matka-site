@@ -841,6 +841,12 @@ function renderFunds(page, tab) {
       <span>Wallet Balance</span>
       <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
     </div>
+    <div class="funds-quick">
+      <a class="funds-btn f-add ${tabName === "add" ? "on" : ""}" href="#/funds/add">Add Funds</a>
+      <a class="funds-btn f-withdraw ${tabName === "withdraw" ? "on" : ""}" href="#/funds/withdraw">Withdraw Funds</a>
+      <a class="funds-btn f-bank ${tabName === "bank" ? "on" : ""}" href="#/funds/bank">Add Bank Account</a>
+      <a class="funds-btn f-passbook" href="#/passbook">Passbook</a>
+    </div>
     <div class="panel-tabs">
       <button type="button" class="chip ${tabName === "add" ? "active" : ""}" data-tab="add">Add Funds</button>
       <button type="button" class="chip ${tabName === "withdraw" ? "active" : ""}" data-tab="withdraw">Withdraw Funds</button>
