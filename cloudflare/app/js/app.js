@@ -302,10 +302,10 @@ function renderHomeRows(cat) {
     else if (status === "open") { tagTxt = "OPEN"; tagCls = "t-open"; }
     else if (status === "closed") { tagTxt = "CLOSED"; tagCls = "t-closed"; }
     const tag = `<span class="s5-tag ${tagCls}">${tagTxt}</span>`;
-    const playable = !hasResult && status === "open";
+    const playable = !hasResult;
     const bidBtn = playable
       ? `<button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>`
-      : `<span class="s5-bid disabled" aria-disabled="true">${hasResult ? "DONE" : status === "closed" ? "CLOSED" : "SOON"}</span>`;
+      : `<span class="s5-bid disabled" aria-disabled="true">DONE</span>`;
     row.innerHTML = `
       <div class="s5-top">
         <div class="s5-mkt">
@@ -439,16 +439,15 @@ function renderMarketDetail(page, id) {
   }
   const results = getResults();
   const todayR = results[id + "|" + todayKey()];
-  const status = marketPlayStatus(market);
   const declaredToday = todayR && todayR.announced;
-  const playable = !declaredToday && status === "open";
+  const playable = !declaredToday;
   const playBtns = playable
     ? `<div class="card-actions" style="margin-top:10px">
         <a class="btn btn-green" href="#/play/jodi/${market.id}">Play Jodi</a>
         <a class="btn ghost" href="#/play/single/${market.id}">Play Digit</a>
       </div>`
     : `<div class="card-actions" style="margin-top:10px">
-        <span class="s5-bid disabled" style="font-size:0.75rem">${declaredToday ? "Result declared — closed" : status === "closed" ? "Closed for today" : "Not open yet"}</span>
+        <span class="s5-bid disabled" style="font-size:0.75rem">Result declared — closed</span>
       </div>`;
   const days = Object.keys(results).filter((k) => k.startsWith(id + "|")).sort().slice(-14).reverse();
   page.innerHTML = `
