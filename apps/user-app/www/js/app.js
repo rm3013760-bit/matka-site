@@ -824,7 +824,7 @@ function renderFunds(page, tab) {
   const balance = walletBalance(u.phone);
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
-  const tabName = tab === "withdraw" ? "withdraw" : tab === "bank" ? "bank" : "add";
+  const tabName = (tab === "add" || tab === "withdraw" || tab === "bank") ? tab : "hub";
   const savedBank = store.get("matka.bank." + u.phone, null);
   const accounts = store.get("matka.accounts." + u.phone, null) || {
     upi: (savedBank && savedBank.upi) || "",
@@ -845,20 +845,24 @@ function renderFunds(page, tab) {
       <a class="funds-btn f-add ${tabName === "add" ? "on" : ""}" href="#/funds/add">Add Funds</a>
       <a class="funds-btn f-withdraw ${tabName === "withdraw" ? "on" : ""}" href="#/funds/withdraw">Withdraw Funds</a>
       <a class="funds-btn f-bank ${tabName === "bank" ? "on" : ""}" href="#/funds/bank">Add Bank Account</a>
-      <a class="funds-btn f-passbook" href="#/passbook">Passbook</a>
-    </div>
-    <div class="panel-tabs">
-      <button type="button" class="chip ${tabName === "add" ? "active" : ""}" data-tab="add">Add Funds</button>
-      <button type="button" class="chip ${tabName === "withdraw" ? "active" : ""}" data-tab="withdraw">Withdraw Funds</button>
-      <button type="button" class="chip ${tabName === "bank" ? "active" : ""}" data-tab="bank">Add Bank Account</button>
     </div>
     <div id="funds-body"></div>`;
 
-  for (const c of page.querySelectorAll(".panel-tabs .chip")) {
-    c.onclick = () => { location.hash = "#/funds/" + c.dataset.tab; };
-  }
-
   const body = $("#funds-body");
+
+  if (tabName === "hub") {
+    body.innerHTML = `
+      <div class="card panel-card" style="margin-top:8px">
+        <h3>Choose an option</h3>
+        <p class="hint">Select a button above to add money, withdraw funds or manage your bank account.</p>
+        <div class="card-actions" style="margin-top:12px">
+          <a class="btn btn-green" href="#/funds/add">Add Funds</a>
+          <a class="btn ghost" href="#/funds/withdraw">Withdraw Funds</a>
+          <a class="btn ghost" href="#/funds/bank">Add Bank Account</a>
+        </div>
+      </div>`;
+    return;
+  }
 
   if (tabName === "withdraw") {
     body.innerHTML = `
