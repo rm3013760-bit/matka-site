@@ -2104,3 +2104,61 @@ html[data-theme="night"] .app-hamburger { background: rgba(255, 255, 255, 0.9); 
 html[data-theme="night"] .side-drawer { background: linear-gradient(180deg, #ffffff, #eef7fb); }
 html[data-theme="night"] .theme-toggle.t-night { color: #0891b2; }
 html[data-theme="night"] .bottom-nav { background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(240,247,251,0.99)); }
+html[data-theme="night"] .howto-step, html[data-theme="night"] .card, html[data-theme="night"] .hist-card,
+html[data-theme="night"] .chart-card, html[data-theme="night"] .family-section,
+html[data-theme="night"] .s5-row, html[data-theme="night"] .s5-game,
+html[data-theme="night"] .hist-row, html[data-theme="night"] .hist-stat,
+html[data-theme="night"] .guess-strip, html[data-theme="night"] .cat-chip,
+html[data-theme="night"] .wallet-beforeafter, html[data-theme="night"] .bet-row,
+html[data-theme="night"] .family-card, html[data-theme="night"] .s5-banner {
+  background: #ffffff;
+  border-color: rgba(8, 145, 214, 0.18);
+}
+html[data-theme="night"] .result-table tr:hover td,
+html[data-theme="night"] .activity-row, html[data-theme="night"] .hist-row,
+html[data-theme="night"] .s5-row, html[data-theme="night"] .s5-game,
+html[data-theme="night"] .hist-stat, html[data-theme="night"] .guess-strip,
+html[data-theme="night"] .bet-row, html[data-theme="night"] .family-card,
+html[data-theme="night"] .chart-cell { background: #ffffff; color: var(--text); }
+html[data-theme="night"] .form input, html[data-theme="night"] .form select,
+html[data-theme="night"] .form textarea { background: #ffffff; color: var(--text); }
+html[data-theme="night"] .pad-d, html[data-theme="night"] .cat-chip { background: #ffffff; color: var(--muted); }
+html[data-theme="night"] .type-style-panel { background: linear-gradient(180deg, #ffffff, #eef7fb); }
+html[data-theme="night"] .style-panel { background: linear-gradient(180deg, #ffffff, #eef7fb); }
+html[data-theme="night"] .style-btn { background: #ffffff; }
+html[data-theme="night"] .style-backdrop { background: rgba(8, 51, 68, 0.35); }
+html[data-theme="night"] .site-foot { background: rgba(8, 51, 68, 0.05); }
+html[data-theme="night"] .site-foot, html[data-theme="night"] .site-foot a { color: var(--muted); }
+html[data-theme="night"] .content details { background: #ffffff; }
+html[data-theme="night"] .market-select { background: linear-gradient(180deg, #ffffff, #eef7fb); color: var(--gold); }
+html[data-theme="night"] .market-select option { color: #083344; background: #fff; }
+html[data-theme="night"] .hpanel-digits, html[data-theme="night"] .s5-jodi b,
+html[data-theme="night"] .s5-open, html[data-theme="night"] .s5-close,
+html[data-theme="night"] .member-phone, html[data-theme="night"] .upi-id,
+html[data-theme="night"] .wallet-balance, html[data-theme="night"] .member-balance,
+html[data-theme="night"] .rate-amount, html[data-theme="night"] .jodi-cell,
+html[data-theme="night"] .rates-table .rate-amount { color: var(--gold); text-shadow: none; }
+html[data-theme="night"] .hist-stat b, html[data-theme="night"] .s5-jodi b,
+html[data-theme="night"] .s5-open b, html[data-theme="night"] .s5-close b { text-shadow: none; }
+html[data-theme="night"] .s5-close, html[data-theme="night"] .c-close, html[data-theme="night"] .l-open { color: #0ea5e9; }
+html[data-theme="night"] .wallet-chip, html[data-theme="night"] .jodi-pill,
+html[data-theme="night"] .bal-chip, html[data-theme="night"] .s5-bid,
+html[data-theme="night"] .t-open { color: #ffffff; text-shadow: none; }
+html[data-theme="night"] .howto-step b, html[data-theme="night"] .gc-code,
+html[data-theme="night"] .avatar, html[data-theme="night"] .family-card b,
+html[data-theme="night"] .user-chip .chip-avatar { color: #ffffff; }
+html[data-theme="night"] .seg.active, html[data-theme="night"] .chip.active,
+html[data-theme="night"] .cat-chip.on { color: #ffffff; }
+html[data-theme="night"] .btn, html[data-theme="night"] .btn-green,
+html[data-theme="night"] .s5-bid, html[data-theme="night"] .jodi-pill,
+html[data-theme="night"] .t-open { color: #ffffff; }
+html[data-theme="night"] .scene-theme-bg-gold { background: linear-gradient(135deg, #22d3ee, #0891b2); }
+html[data-theme="night"] .ticker-wrap, html[data-theme="night"] .panel-badge { background: rgba(14, 165, 233, 0.1); }
+html[data-theme="night"] .l-win { color: #ffffff; }
+html[data-theme="night"] .chart-cell b, html[data-theme="night"] .c-win { color: var(--green); }
+html[data-theme="night"] .result-table th { background: rgba(14, 165, 233, 0.12); color: var(--gold); }
+html[data-theme="night"] body { --white: #083344; }
+html[data-theme="night"] .pad-display, html[data-theme="night"] .funds-balance {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.14), rgba(255,255,255,0.85));
+}
+html[data-theme="night"] .funds-balance b { color: var(--gold); text-shadow: none; }
