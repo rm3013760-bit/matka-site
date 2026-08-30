@@ -2009,3 +2009,18 @@ html[data-theme="light"] .app-hamburger { background: rgba(255, 255, 255, 0.9); 
 html[data-theme="light"] .side-drawer { background: linear-gradient(180deg, #f5f7ff, #eaf0ff); }
 
 
+
+/* Bank accounts list */
+.bank-actions { margin-left: auto; }
+.bank-del {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--red);
+  color: var(--red);
+  background: transparent;
+  cursor: pointer;
+}
+.bank-del:hover { background: var(--red); color: #fff; }

@@ -824,221 +824,286 @@ function renderFunds(page, tab) {
   const balance = walletBalance(u.phone);
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
-  const tabName = tab === "withdraw" ? "withdraw" : tab === "add" ? "add" : "hub";
+  const tabName = tab === "withdraw" ? "withdraw" : tab === "bank" ? "bank" : "add";
   const savedBank = store.get("matka.bank." + u.phone, null);
-
-  if (tabName === "hub") {
-    const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
-    page.innerHTML = `
-      <section class="page-head">
-        <h1>Funds</h1>
-        <p>Manage your wallet balance, deposits and withdrawals.</p>
-      </section>
-      <div class="funds-balance card">
-        <span>Wallet Balance</span>
-        <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
-      </div>
-      <div class="card-actions" style="margin-top:16px">
-        <a class="btn btn-green" href="#/funds/add">Add Money</a>
-        <a class="btn ghost" href="#/funds/withdraw">Withdraw</a>
-      </div>
-      <div class="card panel-card" style="margin-top:14px">
-        <h3>Recent Activity</h3>
-        <p class="hint">${myRequests.length || wds.length ? "See your latest deposit and withdrawal requests." : "No fund activity yet. Add money to get started."}</p>
-        <div class="activity-list" style="margin-top:8px">
-          ${myRequests.slice(0, 5).map((r) => `<div class="activity-row"><span>Deposit ₹ ${Number(r.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })} · Ref: ${r.ref || "—"}</span><small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small></div>`).join("")}
-          ${wds.slice(0, 5).map((w) => `<div class="activity-row"><span>Withdraw ₹ ${Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method}</span><small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small></div>`).join("")}
-        </div>
-      </div>`;
-    return;
-  }
-
-  const title = tabName === "withdraw" ? "Withdrawals" : "Add Money";
-  const subtitle = tabName === "withdraw" ? "Request a payout from your wallet." : "Add money to your wallet.";
+  const accounts = store.get("matka.accounts." + u.phone, null) || {
+    upi: (savedBank && savedBank.upi) || "",
+    banks: savedBank ? [{ bankName: savedBank.bankName || "", accName: savedBank.accName || "", accNo: savedBank.accNo || "", ifsc: savedBank.ifsc || "" }] : []
+  };
+  const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
 
   page.innerHTML = `
     <section class="page-head">
-      <h1>${title}</h1>
-      <p>${subtitle}</p>
+      <h1>Funds</h1>
+      <p>Manage your wallet, deposits, withdrawals and bank accounts.</p>
     </section>
     <div class="funds-balance card">
       <span>Wallet Balance</span>
       <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
-      <small>${tabName === "withdraw" ? "Approved withdrawals are paid out by the administrator." : "Credited after the administrator confirms your payment."}</small>
+    </div>
+    <div class="panel-tabs">
+      <button type="button" class="chip ${tabName === "add" ? "active" : ""}" data-tab="add">Add Funds</button>
+      <button type="button" class="chip ${tabName === "withdraw" ? "active" : ""}" data-tab="withdraw">Withdraw Funds</button>
+      <button type="button" class="chip ${tabName === "bank" ? "active" : ""}" data-tab="bank">Add Bank Account</button>
     </div>
     <div id="funds-body"></div>`;
 
+  for (const c of page.querySelectorAll(".panel-tabs .chip")) {
+    c.onclick = () => { location.hash = "#/funds/" + c.dataset.tab; };
+  }
+
   const body = $("#funds-body");
 
-  if (tabName === "add") {
+  if (tabName === "withdraw") {
     body.innerHTML = `
       <div class="card panel-card">
-        <h3>Add Fund</h3>
-        <div class="pay-icon-row">
-          <img src="assets/icons/gpay.svg" alt="GPay" title="GPay">
-          <img src="assets/icons/phonepe.svg" alt="PhonePe" title="PhonePe">
-          <img src="assets/icons/paytm.svg" alt="Paytm" title="Paytm">
-          <img src="assets/icons/bank.svg" alt="Bank" title="Bank Transfer">
-          <img src="assets/icons/whatsapp.svg" alt="WhatsApp" title="WhatsApp">
-        </div>
-        <form class="form" id="add-fund-form">
-          <label>Amount
-            <input name="amount" type="number" min="100" step="1" placeholder="100" required>
-          </label>
-          <label class="form-label">Payment method
+        <h3>Withdraw Fund</h3>
+        <p class="hint">Request a payout via UPI or bank transfer — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
+        <form class="form" id="wd-form">
+          <label>Amount <input name="amount" type="number" min="100" step="1" placeholder="100" required></label>
+          <label class="form-label">Payout method
             <div class="seg-row">
-              <button type="button" class="seg active" id="af-upi">UPI</button>
-              <button type="button" class="seg" id="af-qr">QR Code</button>
+              <button type="button" class="seg active" id="m-upi">UPI</button>
+              <button type="button" class="seg" id="m-bank">Bank Transfer</button>
             </div>
           </label>
-          <div id="af-upi-fields">
-            <div class="qr-demo-box">
-              <p>Pay to this UPI ID, then enter the reference below:</p>
-              <p class="upi-id">${(demoQr && demoQr.upi) || DEMO_UPI}</p>
-            </div>
-            <label>UTR / Transaction reference number
-              <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
-            </label>
+          <div id="upi-fields">
+            <label>UPI ID <input name="upi" placeholder="yourname@upi" value="${accounts.upi || ""}"></label>
           </div>
-          <div id="af-qr-fields" style="display:none">
-            ${demoQr ? `
-              <div class="qr-demo-box">
-                <p>Pay to this QR, then enter the reference below:</p>
-                <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
-              </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
-            <label>UTR / Transaction reference number
-              <input name="qrRef" maxlength="30" placeholder="e.g. 4123876541" required>
-            </label>
+          <div id="bank-fields" style="display:none">
+            ${accounts.banks.length ? `
+              <h4>Saved Bank Accounts</h4>
+              ${accounts.banks.map((b, i) => `<p class="hint" style="margin:2px 0">${i + 1}. ${b.bankName} · ${b.accName} · ${b.accNo} · ${b.ifsc}</p>`).join("")}
+              <p class="hint" style="margin-top:6px">Enter details below (or edit your <a href="#/funds/bank">bank accounts</a>).</p>` : `<p class="hint">No saved bank account. <a href="#/funds/bank">Add your bank account</a> to pay out faster.</p>`}
+            <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank" value="${accounts.banks[0] ? accounts.banks[0].bankName : ""}"></label>
+            <label>Account Holder Name <input name="accName" placeholder="Name on account" value="${accounts.banks[0] ? accounts.banks[0].accName : ""}"></label>
+            <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890" value="${accounts.banks[0] ? accounts.banks[0].accNo : ""}"></label>
+            <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123" value="${accounts.banks[0] ? accounts.banks[0].ifsc : ""}"></label>
           </div>
-          <button class="btn btn-green" type="submit">Submit Payment Proof</button>
-          <p class="form-hint">Balance is credited only after the administrator confirms your payment.</p>
+          <button class="btn btn-green" type="submit">Request Withdrawal</button>
         </form>
       </div>
+      <div id="wd-list"></div>`;
+
+    const wdList = $("#wd-list");
+    wdList.innerHTML = `
       <div class="card panel-card">
-        <h3>Fund Deposit History</h3>
-        ${myRequests.length ? `<div class="activity-list">${myRequests.slice(0, 8).map((r) => `
-          <div class="activity-row">
-            <span>₹ ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${r.method} · Ref: ${r.ref}</span>
-            <small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small>
-          </div>`).join("")}</div>` : `<p class="hint">No top-up requests yet.</p>`}
+        <h3>Withdrawal Requests</h3>
+        <p class="hint">Withdraw request submitted — track the status here; the administrator approves it.</p>
+        <div class="activity-list">
+          ${wds.length ? wds.slice(0, 8).map((w) => `
+            <div class="activity-row">
+              <span>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method === "bank" ? w.bankName + " · " + w.accName : "UPI · " + w.upi}</span>
+              <small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small>
+            </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`}
+        </div>
       </div>`;
 
-    const afMethod = { upi: true };
-    const showAf = (upi) => {
-      afMethod.upi = upi;
-      $("#af-upi").classList.toggle("active", upi);
-      $("#af-qr").classList.toggle("active", !upi);
-      $("#af-upi-fields").style.display = upi ? "" : "none";
-      $("#af-qr-fields").style.display = upi ? "none" : "";
+    const mMethod = { upi: true };
+    const showM = (upi) => {
+      mMethod.upi = upi;
+      $("#m-upi").classList.toggle("active", upi);
+      $("#m-bank").classList.toggle("active", !upi);
+      $("#upi-fields").style.display = upi ? "" : "none";
+      $("#bank-fields").style.display = upi ? "none" : "";
     };
-    $("#af-upi").onclick = () => showAf(true);
-    $("#af-qr").onclick = () => showAf(false);
+    $("#m-upi").onclick = () => showM(true);
+    $("#m-bank").onclick = () => showM(false);
+    if (accounts.banks.length === 0) showM(true);
 
-    $("#add-fund-form").onsubmit = (e) => {
+    $("#wd-form").onsubmit = (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const amount = parseFloat(fd.get("amount"));
-      if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
-      const ref = String(fd.get(afMethod.upi ? "ref" : "qrRef") || "").trim();
-      if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
-      API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: afMethod.upi ? "upi" : "qr", ref: ref }).then((res) => {
+      if (!amount || amount < 100) { alert("Minimum withdrawal is ₹ 100."); return; }
+      const bal = walletBalance(u.phone);
+      if (amount > bal) { alert("Insufficient balance. Add fund first."); return; }
+      if (mMethod.upi) {
+        const upi = String(fd.get("upi") || "").trim();
+        if (!upi.includes("@")) { alert("Enter a valid UPI ID."); return; }
+        API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "upi", upi_id: upi }).then((res) => {
+          if (!res.success) { alert(res.message); return; }
+          logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via UPI (pending approval)");
+          alert("Withdraw request submitted!");
+          renderFunds(page, "withdraw");
+        });
+        return;
+      }
+      const bankName = String(fd.get("bankName") || "").trim();
+      const accName = String(fd.get("accName") || "").trim();
+      const accNo = String(fd.get("accNo") || "").trim();
+      const ifsc = String(fd.get("ifsc") || "").trim();
+      if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in the bank details (Name, Account Holder, Account Number, IFSC)."); return; }
+      API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc }).then((res) => {
         if (!res.success) { alert(res.message); return; }
-        logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via " + (afMethod.upi ? "UPI" : "QR") + " (pending confirmation)");
-        alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
-        renderFunds(page, "add");
+        logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via bank transfer (pending approval)");
+        alert("Withdraw request submitted!");
+        renderFunds(page, "withdraw");
       });
+    };
+    return;
+  }
+
+  if (tabName === "bank") {
+    body.innerHTML = `
+      <div class="card panel-card">
+        <h3>UPI ID</h3>
+        <p class="hint">Set your default UPI ID used for payouts.</p>
+        <form class="form" id="upi-form">
+          <label>UPI ID <input name="upi" placeholder="yourname@upi" value="${accounts.upi || ""}"></label>
+          <button class="btn btn-green" type="submit">Save UPI</button>
+        </form>
+      </div>
+      <div class="card panel-card">
+        <h3>Bank Accounts</h3>
+        <p class="hint">Store your bank account details for fast withdrawals.</p>
+        <div id="bank-list"></div>
+        <form class="form" id="bank-form" style="margin-top:10px">
+          <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank" required></label>
+          <label>Account Holder Name <input name="accName" placeholder="Name on account" required></label>
+          <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890" required></label>
+          <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123" required></label>
+          <button class="btn btn-green" type="submit">Save Bank Account</button>
+        </form>
+      </div>`;
+
+    const bankList = $("#bank-list");
+    const renderList = () => {
+      const acc = store.get("matka.accounts." + u.phone, null) || { upi: "", banks: [] };
+      bankList.innerHTML = acc.banks.length
+        ? acc.banks.map((b, i) => `
+            <div class="activity-row">
+              <span><strong>${b.bankName}</strong> · ${b.accName} · <em>${b.accNo}</em> · ${b.ifsc}</span>
+              <span class="bank-actions">
+                <button type="button" class="bank-del" data-i="${i}">Remove</button>
+              </span>
+            </div>`).join("")
+        : `<p class="hint">No bank accounts saved yet.</p>`;
+      for (const b of bankList.querySelectorAll(".bank-del")) {
+        b.onclick = () => {
+          const a = store.get("matka.accounts." + u.phone, null) || { upi: "", banks: [] };
+          a.banks.splice(parseInt(b.dataset.i, 10), 1);
+          store.set("matka.accounts." + u.phone, a);
+          if (a.banks[0]) store.set("matka.bank." + u.phone, a.banks[0]);
+          renderList();
+        };
+      }
+    };
+    renderList();
+
+    $("#upi-form").onsubmit = (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const upi = String(f.get("upi") || "").trim();
+      if (!upi.includes("@")) { alert("Enter a valid UPI ID."); return; }
+      const a = store.get("matka.accounts." + u.phone, null) || { upi: "", banks: accounts.banks };
+      a.upi = upi;
+      store.set("matka.accounts." + u.phone, a);
+      if (!store.get("matka.bank." + u.phone, null)) store.set("matka.bank." + u.phone, { upi: upi });
+      else { const sb = store.get("matka.bank." + u.phone); sb.upi = upi; store.set("matka.bank." + u.phone, sb); }
+      logActivity(u, "Updated default UPI ID");
+      alert("UPI ID saved.");
+      renderFunds(page, "bank");
+    };
+
+    $("#bank-form").onsubmit = (e) => {
+      e.preventDefault();
+      const f = new FormData(e.target);
+      const bankName = String(f.get("bankName") || "").trim();
+      const accName = String(f.get("accName") || "").trim();
+      const accNo = String(f.get("accNo") || "").trim();
+      const ifsc = String(f.get("ifsc") || "").trim();
+      if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in all bank fields."); return; }
+      const a = store.get("matka.accounts." + u.phone, null) || { upi: accounts.upi, banks: [] };
+      a.banks.push({ bankName, accName, accNo, ifsc });
+      store.set("matka.accounts." + u.phone, a);
+      store.set("matka.bank." + u.phone, a.banks[a.banks.length - 1]);
+      logActivity(u, "Added bank account " + bankName + " · " + accNo);
+      alert("Bank account saved.");
+      renderFunds(page, "bank");
     };
     return;
   }
 
   body.innerHTML = `
     <div class="card panel-card">
-      <h3>Withdraw Fund</h3>
-      <p class="hint">Request a payout via UPI or bank transfer — the administrator approves it. Minimum withdrawal: ₹ 100.</p>
-      <form class="form" id="wd-form">
-        <label>Amount <input name="amount" type="number" min="100" step="1" placeholder="100" required></label>
-        <label class="form-label">Payout method
+      <h3>Add Fund</h3>
+      <div class="pay-icon-row">
+        <img src="assets/icons/gpay.svg" alt="GPay" title="GPay">
+        <img src="assets/icons/phonepe.svg" alt="PhonePe" title="PhonePe">
+        <img src="assets/icons/paytm.svg" alt="Paytm" title="Paytm">
+        <img src="assets/icons/bank.svg" alt="Bank" title="Bank Transfer">
+        <img src="assets/icons/whatsapp.svg" alt="WhatsApp" title="WhatsApp">
+      </div>
+      <form class="form" id="add-fund-form">
+        <label>Amount
+          <input name="amount" type="number" min="100" step="1" placeholder="100" required>
+        </label>
+        <label class="form-label">Payment method
           <div class="seg-row">
-            <button type="button" class="seg active" id="m-upi">UPI</button>
-            <button type="button" class="seg" id="m-bank">Bank Transfer</button>
+            <button type="button" class="seg active" id="af-upi">UPI</button>
+            <button type="button" class="seg" id="af-qr">QR Code</button>
           </div>
         </label>
-        <div id="upi-fields">
-          <label>UPI ID <input name="upi" placeholder="yourname@upi" value="${(savedBank && savedBank.upi) || ""}"></label>
+        <div id="af-upi-fields">
+          <div class="qr-demo-box">
+            <p>Pay to this UPI ID, then enter the reference below:</p>
+            <p class="upi-id">${(demoQr && demoQr.upi) || DEMO_UPI}</p>
+          </div>
+          <label>UTR / Transaction reference number
+            <input name="ref" maxlength="30" placeholder="e.g. 4123876541" required>
+          </label>
         </div>
-        <div id="bank-fields" style="display:none">
-          <h4>Add Bank Details</h4>
-          <label>Bank Name <input name="bankName" placeholder="e.g. HDFC Bank" value="${(savedBank && savedBank.bankName) || ""}"></label>
-          <label>Account Holder Name <input name="accName" placeholder="Name on account" value="${(savedBank && savedBank.accName) || ""}"></label>
-          <label>Account Number <input name="accNo" type="text" inputmode="numeric" placeholder="1234567890" value="${(savedBank && savedBank.accNo) || ""}"></label>
-          <label>IFSC Code <input name="ifsc" placeholder="HDFC0000123" value="${(savedBank && savedBank.ifsc) || ""}"></label>
-          <label class="save-bank"><input type="checkbox" name="saveBank" checked> Save as my default bank details</label>
+        <div id="af-qr-fields" style="display:none">
+          ${demoQr ? `
+            <div class="qr-demo-box">
+              <p>Pay to this QR, then enter the reference below:</p>
+              <img class="qr-img" src="${demoQr.data}" alt="Payment QR">
+            </div>` : `<p class="hint">Payment QR not set by the administrator.</p>`}
+          <label>UTR / Transaction reference number
+            <input name="qrRef" maxlength="30" placeholder="e.g. 4123876541" required>
+          </label>
         </div>
-        <button class="btn btn-green" type="submit">Request Withdrawal</button>
+        <button class="btn btn-green" type="submit">Submit Payment Proof</button>
+        <p class="form-hint">Balance is credited only after the administrator confirms your payment.</p>
       </form>
     </div>
-    <div id="wd-list"></div>`;
-
-  const wdList = $("#wd-list");
-  const myWds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
-  wdList.innerHTML = `
     <div class="card panel-card">
-      <h3>Withdrawal Requests</h3>
-      <p class="hint">Withdraw request submitted — track the status here; the administrator approves it.</p>
-      <div class="activity-list">
-        ${myWds.length ? myWds.slice(0, 8).map((w) => `
-          <div class="activity-row">
-            <span>₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${w.method === "bank" ? w.bankName + " · " + w.accName : "UPI · " + w.upi}</span>
-            <small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small>
-          </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`}
-      </div>
+      <h3>Fund Deposit History</h3>
+      ${myRequests.length ? `<div class="activity-list">${myRequests.slice(0, 8).map((r) => `
+        <div class="activity-row">
+          <span>₹ ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} · ${r.method} · Ref: ${r.ref}</span>
+          <small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small>
+        </div>`).join("")}</div>` : `<p class="hint">No top-up requests yet.</p>`}
     </div>`;
 
-  const mMethod = { upi: true };
-  const showM = (upi) => {
-    mMethod.upi = upi;
-    $("#m-upi").classList.toggle("active", upi);
-    $("#m-bank").classList.toggle("active", !upi);
-    $("#upi-fields").style.display = upi ? "" : "none";
-    $("#bank-fields").style.display = upi ? "none" : "";
+  const afMethod = { upi: true };
+  const showAf = (upi) => {
+    afMethod.upi = upi;
+    $("#af-upi").classList.toggle("active", upi);
+    $("#af-qr").classList.toggle("active", !upi);
+    $("#af-upi-fields").style.display = upi ? "" : "none";
+    $("#af-qr-fields").style.display = upi ? "none" : "";
   };
-  $("#m-upi").onclick = () => showM(true);
-  $("#m-bank").onclick = () => showM(false);
+  $("#af-upi").onclick = () => showAf(true);
+  $("#af-qr").onclick = () => showAf(false);
 
-  $("#wd-form").onsubmit = (e) => {
+  $("#add-fund-form").onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     const amount = parseFloat(fd.get("amount"));
-    if (!amount || amount < 100) { alert("Minimum withdrawal is ₹ 100."); return; }
-    const bal = walletBalance(u.phone);
-    if (amount > bal) { alert("Insufficient balance. Add fund first."); return; }
-    if (mMethod.upi) {
-      const upi = String(fd.get("upi") || "").trim();
-      if (!upi.includes("@")) { alert("Enter a valid UPI ID."); return; }
-      API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "upi", upi_id: upi }).then((res) => {
-        if (!res.success) { alert(res.message); return; }
-        logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via UPI (pending approval)");
-        alert("Withdraw request submitted!");
-        renderFunds(page, "withdraw");
-      });
-      return;
-    }
-    const bankName = String(fd.get("bankName") || "").trim();
-    const accName = String(fd.get("accName") || "").trim();
-    const accNo = String(fd.get("accNo") || "").trim();
-    const ifsc = String(fd.get("ifsc") || "").trim();
-    if (!bankName || !accName || !accNo || !ifsc) { alert("Fill in the bank details (Name, Account Holder, Account Number, IFSC)."); return; }
-    if (fd.get("saveBank")) {
-      store.set("matka.bank." + u.phone, { bankName, accName, accNo, ifsc });
-    }
-    API.call("submit_withdrawalv1", { mobile: u.phone, amount: amount, method: "bank", bank_name: bankName, acc_name: accName, acc_no: accNo, ifsc: ifsc }).then((res) => {
+    if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
+    const ref = String(fd.get(afMethod.upi ? "ref" : "qrRef") || "").trim();
+    if (ref.length < 4) { alert("Enter the UTR / transaction reference number."); return; }
+    API.call("submit_offlinepayment_request", { mobile: u.phone, amount: amount, method: afMethod.upi ? "upi" : "qr", ref: ref }).then((res) => {
       if (!res.success) { alert(res.message); return; }
-      logActivity(u, "Withdrawal request of " + amount.toFixed(2) + " submitted via bank transfer (pending approval)");
-      alert("Withdraw request submitted!");
-      renderFunds(page, "withdraw");
+      logActivity(u, "Top-up request of " + amount.toFixed(2) + " submitted via " + (afMethod.upi ? "UPI" : "QR") + " (pending confirmation)");
+      alert("Payment proof submitted. Your balance will be credited after the administrator confirms the payment.");
+      renderFunds(page, "add");
     });
   };
 }
+
 
 function renderSettings(page) {
   if (!currentUser) { renderLogin(page); return; }
