@@ -140,6 +140,12 @@ function router() {
   const parts = hash.split("/");
   const route = parts[0] || "";
   updateBottomNav(route);
+  const floatEl = $("#floating-actions");
+  if (floatEl) {
+    const hiddenRoutes = ["login", "register", "settings", "profile", "account"];
+    const hide = !currentUser || hiddenRoutes.includes(route);
+    floatEl.style.display = hide ? "none" : "flex";
+  }
   if (route === "charts") renderCharts(page, parts[1]);
   else if (route === "funds") renderFunds(page, parts[1]);
   else if (route === "history") renderMyHistory(page, parts[1] || "entries");

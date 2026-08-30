@@ -1863,21 +1863,21 @@ html, body { overflow-x: hidden; }
 /* Floating Add Money / Withdraw buttons — always visible on top */
 .floating-actions {
   position: fixed;
+  top: 62px;
   right: 16px;
-  bottom: 84px;
   z-index: 200;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 10px;
 }
 .float-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 16px;
+  padding: 11px 15px;
   border-radius: 40px;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #fff;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
@@ -1894,8 +1894,7 @@ html, body { overflow-x: hidden; }
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 @media (max-width: 480px) {
-  .floating-actions { right: 10px; bottom: 74px; gap: 8px; }
-  .float-btn { padding: 10px 13px; font-size: 0.8rem; }
-  .float-btn span { display: none; }
-  .float-btn { border-radius: 50%; padding: 12px; }
+  .floating-actions { top: 58px; right: 10px; gap: 8px; }
+  .float-btn { padding: 10px 12px; font-size: 0.78rem; }
 }
+
