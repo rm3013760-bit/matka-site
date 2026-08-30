@@ -832,7 +832,8 @@ function renderFunds(page, tab) {
   };
   const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
 
-  page.innerHTML = `
+  page.innerHTML = (tabName === "hub"
+    ? `
     <section class="page-head">
       <h1>Funds</h1>
       <p>Manage your wallet, deposits, withdrawals and bank accounts.</p>
@@ -842,11 +843,21 @@ function renderFunds(page, tab) {
       <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
     </div>
     <div class="funds-quick">
-      <a class="funds-btn f-add ${tabName === "add" ? "on" : ""}" href="#/funds/add">Add Funds</a>
-      <a class="funds-btn f-withdraw ${tabName === "withdraw" ? "on" : ""}" href="#/funds/withdraw">Withdraw Funds</a>
-      <a class="funds-btn f-bank ${tabName === "bank" ? "on" : ""}" href="#/funds/bank">Add Bank Account</a>
+      <a class="funds-btn f-add" href="#/funds/add">Add Funds</a>
+      <a class="funds-btn f-withdraw" href="#/funds/withdraw">Withdraw Funds</a>
+      <a class="funds-btn f-bank" href="#/funds/bank">Add Bank Account</a>
     </div>
-    <div id="funds-body"></div>`;
+    <div id="funds-body"></div>`
+    : `
+    <section class="page-head">
+      <h1>${tabName === "withdraw" ? "Withdrawals" : tabName === "bank" ? "Add Bank Account" : "Add Money"}</h1>
+      <p>${tabName === "withdraw" ? "Request a payout from your wallet." : tabName === "bank" ? "Store your bank account for fast withdrawals." : "Add money to your wallet."}</p>
+    </section>
+    <div class="funds-balance card">
+      <span>Wallet Balance</span>
+      <b>₹ ${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
+    </div>
+    <div id="funds-body"></div>`);
 
   const body = $("#funds-body");
 
