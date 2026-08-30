@@ -140,16 +140,14 @@ function router() {
   const parts = hash.split("/");
   const route = parts[0] || "";
   updateBottomNav(route);
-  const floatEl = $("#floating-actions");
-  if (floatEl) {
-    const hiddenRoutes = ["login", "register", "settings", "profile", "account"];
-    const hide = !currentUser || hiddenRoutes.includes(route);
-    floatEl.style.display = hide ? "none" : "flex";
-  }
-  if (route === "charts") renderCharts(page, parts[1]);
+  if (route === "chart" || route === "charts") renderCharts(page, parts[1]);
   else if (route === "funds") renderFunds(page, parts[1]);
   else if (route === "history") renderMyHistory(page, parts[1] || "entries");
   else if (route === "results") renderHistory(page, parts[1]);
+  else if (route === "notification") renderNotifications(page);
+  else if (route === "timetable") renderTimetable(page);
+  else if (route === "notice") renderNotice(page);
+  else if (route === "share") { shareApp(); renderHome(page); }
   else if (route === "settings") {
     if (currentUser) renderSettings(page);
     else renderLogin(page);
@@ -184,46 +182,35 @@ function updateBottomNav(route) {
 }
 
 function updateHeaderBalance() {
-  const chip = $("#header-bal");
+  const chip = $("#drawer-bal");
   if (!chip) return;
   if (currentUser) {
     const bal = walletBalance(currentUser.phone || currentUser.username);
     chip.textContent = "₹ " + bal.toLocaleString(undefined, { minimumFractionDigits: 2 });
-    chip.style.display = "";
   } else {
-    chip.style.display = "none";
+    chip.textContent = "₹ 0.00";
   }
 }
 
 function buildNav() {
-  const nav = $("#nav");
-  if (!nav) return;
-  const items = [
-    ["Home", "#/"],
-    ["Charts", "#/charts"],
-    ["Funds", "#/funds"],
-    ["History", "#/history"]
-  ];
-  nav.innerHTML = "";
-  for (const [label, href] of items) {
-    const a = document.createElement("a");
-    a.href = href;
-    a.textContent = label;
-    nav.appendChild(a);
-  }
-  const chip = document.createElement("a");
-  chip.className = "user-chip";
-  chip.href = currentUser ? "#/account" : "#/login";
+  const nameEl = $("#drawer-name");
+  const subEl = $("#drawer-sub");
+  const avEl = $("#drawer-avatar");
+  const logoutBtn = $("#drawer-logout");
+  const drawerIdentity = $("#side-drawer").querySelector(".drawer-identity");
   if (currentUser) {
-    const av = document.createElement("span");
-    av.className = "chip-avatar";
-    av.textContent = (currentUser.name || "U").trim().charAt(0).toUpperCase();
-    chip.appendChild(av);
-    chip.appendChild(document.createTextNode(currentUser.role === "admin" ? "ADMIN: " + currentUser.name : "USER: " + currentUser.name));
+    if (nameEl) nameEl.textContent = currentUser.name || "User";
+    if (subEl) subEl.textContent = currentUser.role === "admin" ? "ADMIN · " + (currentUser.phone || currentUser.username || "") : "USER · " + (currentUser.phone || currentUser.username || "");
+    if (avEl) avEl.textContent = (currentUser.name || "U").trim().charAt(0).toUpperCase();
+    if (drawerIdentity) drawerIdentity.style.cursor = "pointer";
+    if (logoutBtn) logoutBtn.style.display = "";
   } else {
-    chip.textContent = "Sign In";
+    if (nameEl) nameEl.textContent = "Guest";
+    if (subEl) subEl.textContent = "Tap here to sign in";
+    if (avEl) avEl.textContent = "?";
+    if (drawerIdentity) drawerIdentity.style.cursor = "pointer";
+    if (logoutBtn) logoutBtn.style.display = "none";
   }
-  nav.appendChild(chip);
   updateHeaderBalance();
 }
 
@@ -1990,6 +1977,120 @@ function renderPrivacy(page) {
     </div>`;
 }
 
+function openDrawer() {
+  const drawer = $("#side-drawer");
+  const overlay = $("#drawer-overlay");
+  if (!drawer) return;
+  drawer.classList.add("open");
+  drawer.setAttribute("aria-hidden", "false");
+  if (overlay) { overlay.hidden = false; }
+  document.body.classList.add("drawer-lock");
+}
+function closeDrawer() {
+  const drawer = $("#side-drawer");
+  const overlay = $("#drawer-overlay");
+  if (!drawer) return;
+  drawer.classList.remove("open");
+  drawer.setAttribute("aria-hidden", "true");
+  if (overlay) { overlay.hidden = true; }
+  document.body.classList.remove("drawer-lock");
+}
+
+function setupDrawer() {
+  const menuBtn = $("#menu-btn");
+  const drawerClose = $("#drawer-close");
+  const overlay = $("#drawer-overlay");
+  const logoutBtn = $("#drawer-logout");
+  const identity = $("#side-drawer") ? $("#side-drawer").querySelector(".drawer-identity") : null;
+  if (menuBtn) menuBtn.addEventListener("click", openDrawer);
+  if (drawerClose) drawerClose.addEventListener("click", closeDrawer);
+  if (overlay) overlay.addEventListener("click", closeDrawer);
+  if (identity) identity.addEventListener("click", () => { closeDrawer(); location.hash = currentUser ? "#/account" : "#/login"; });
+  const shareLink = document.querySelector('.drawer-nav a[href="#share"]');
+  if (shareLink) shareLink.addEventListener("click", (e) => { e.preventDefault(); closeDrawer(); shareApp(); });
+  if (logoutBtn) logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("matka.user");
+    currentUser = null;
+    buildNav();
+    closeDrawer();
+    location.hash = "#/login";
+  });
+  for (const a of document.querySelectorAll(".drawer-nav a")) {
+    a.addEventListener("click", () => { closeDrawer(); });
+  }
+}
+
+function shareApp() {
+  const url = location.origin + location.pathname;
+  const text = "MatkaLive — live matka results, charts & games (demo). Play responsibly. 18+.";
+  if (navigator.share) {
+    navigator.share({ title: "MatkaLive", text: text, url: url })
+      .catch(() => { navigator.clipboard && navigator.clipboard.writeText(url).then(() => alert("Link copied to clipboard.")).catch(() => {}); });
+  } else if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => alert("Link copied: " + url)).catch(() => alert(url));
+  } else {
+    alert(url);
+  }
+}
+
+function renderNotifications(page) {
+  const list = currentUser ? getActivityFor(currentUser) : [];
+  const items = list.length
+    ? list.map((a) => `
+        <div class="card panel-card" style="margin-bottom:8px">
+          <div class="notif-txt">${a.action}</div>
+          <div class="hint" style="font-size:0.72rem;color:var(--gold)">${new Date(a.date).toLocaleString()}</div>
+        </div>`).join("")
+    : `<div class="card panel-card"><div class="hint">No notifications yet. Sign in and place bids to see activity here.</div></div>`;
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> Alerts</div>
+      <h1>Notification</h1>
+      <p>Latest account activity and updates.</p>
+    </section>
+    ${items}`;
+}
+
+function renderTimetable(page) {
+  const rows = MARKETS.map((m) => `
+    <tr>
+      <td>${m.name}</td>
+      <td>${m.open}</td>
+      <td>${m.result}</td>
+    </tr>`).join("");
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> Time Table</div>
+      <h1>Market Time Table</h1>
+      <p>Opening and result times for all markets (24h).</p>
+    </section>
+    <div class="hist-card rates-wrap">
+      <table class="result-table">
+        <thead><tr><th>Market</th><th>Open</th><th>Result</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderNotice(page) {
+  const notices = store.get("matka.notices", []);
+  const items = notices && notices.length
+    ? notices.slice().reverse().map((n) => `
+        <div class="card panel-card" style="margin-bottom:10px">
+          <h3 style="margin:0 0 4px">${n.title || "Notice"}</h3>
+          <p class="hint" style="margin:0 0 6px">${n.body || ""}</p>
+          <div class="hint" style="font-size:0.72rem;color:var(--gold)">${n.date || ""}</div>
+        </div>`).join("")
+    : `<div class="card panel-card"><div class="hint">No notices posted.</div></div>`;
+  page.innerHTML = `
+    <section class="page-head">
+      <div class="panel-badge"><span class="dot"></span> Notice Board</div>
+      <h1>Notice Board</h1>
+      <p>Official announcements and updates.</p>
+    </section>
+    ${items}`;
+}
+
 window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
   const h = location.hash || "#/";
@@ -2051,6 +2152,7 @@ function refreshLiveResults() {
 }
 setInterval(refreshLiveResults, 60000);
 window.addEventListener("load", () => {
+  setupDrawer();
   buildNav();
   if (window.__syncReady instanceof Promise) {
     window.__syncReady.then(() => { buildNav(); router(); });

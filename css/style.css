@@ -100,7 +100,7 @@ a:hover { text-decoration: underline; }
 
 .nav .user-chip:hover { background: rgba(185, 144, 82, 0.2); }
 
-main { max-width: 1100px; margin: 0 auto; padding: 20px 16px 60px; }
+main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
 
 .live-badge {
   display: flex;
@@ -1860,41 +1860,152 @@ html, body { overflow-x: hidden; }
   .card-actions .btn { font-size: 0.8rem; padding: 9px 14px; }
 }
 
-/* Floating Add Money / Withdraw buttons — always visible on top */
-.floating-actions {
+/* ============ APP BAR + SIDE DRAWER ============ */
+.app-hamburger {
   position: fixed;
-  top: 62px;
-  right: 16px;
-  z-index: 200;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+  top: 14px;
+  left: 14px;
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: rgba(3, 11, 31, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--gold-light);
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s;
 }
-.float-btn {
+.app-hamburger:hover { transform: translateY(-1px); color: var(--gold-light); }
+.app-hamburger svg { display: block; }
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 210;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.side-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  max-width: 86vw;
+  z-index: 220;
+  background: linear-gradient(180deg, var(--navy), #0d1b42);
+  border-right: 1px solid var(--line);
+  box-shadow: 8px 0 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-105%);
+  transition: transform 0.28s ease;
+  overflow-y: auto;
+}
+.side-drawer.open { transform: translateX(0); }
+
+.drawer-head {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 11px 15px;
-  border-radius: 40px;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.drawer-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.drawer-close:hover { color: var(--gold-light); border-color: var(--gold); }
+
+.drawer-user {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.drawer-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+.drawer-identity .chip-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  margin: 0;
+  flex: none;
+}
+.drawer-who { min-width: 0; }
+.drawer-who b { display: block; color: var(--text); font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drawer-who span { font-size: 0.72rem; color: var(--muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.drawer-balance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.drawer-balance span { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.drawer-balance b { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 0.95rem; color: var(--green); }
+
+.drawer-nav {
+  padding: 10px 8px;
+  flex: 1;
+}
+.drawer-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  margin: 2px 0;
+  border-radius: 10px;
+  color: var(--text);
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: #fff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-  transition: transform 0.15s;
+  font-size: 0.92rem;
+  font-weight: 500;
   text-decoration: none;
+  transition: background 0.15s;
 }
-.float-btn:hover { transform: translateY(-2px); color: #fff; text-decoration: none; }
-.float-add {
-  background: linear-gradient(135deg, var(--green), #16a34a);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.drawer-nav a:hover { background: rgba(185, 144, 82, 0.12); color: var(--gold-light); }
+.drawer-nav a::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  flex: none;
 }
-.float-withdraw {
-  background: linear-gradient(135deg, var(--red), #b91c1c);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+
+.drawer-foot {
+  padding: 12px 16px 22px;
+  border-top: 1px solid var(--line);
 }
-@media (max-width: 480px) {
-  .floating-actions { top: 58px; right: 10px; gap: 8px; }
-  .float-btn { padding: 10px 12px; font-size: 0.78rem; }
+.drawer-logout {
+  width: 100%;
+  justify-content: center;
 }
+
+body.drawer-lock { overflow: hidden; }
+
+html[data-theme="light"] .app-hamburger { background: rgba(255, 255, 255, 0.9); }
+html[data-theme="light"] .side-drawer { background: linear-gradient(180deg, #f5f7ff, #eaf0ff); }
+
 
