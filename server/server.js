@@ -16,7 +16,10 @@ const MIME = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon",
   ".jpg": "image/jpeg",
-  ".webp": "image/webp"
+  ".webp": "image/webp",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".ogg": "video/ogg"
 };
 
 function readStore() {
