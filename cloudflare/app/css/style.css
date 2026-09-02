@@ -2249,3 +2249,33 @@ html[data-theme="night"] .funds-balance b { color: var(--gold); text-shadow: non
   font-weight: 700;
   line-height: 1.3;
 }
+
+.video-frame video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.video-admin-list { display: flex; flex-direction: column; gap: 12px; }
+.video-admin-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+}
+.video-admin-item video {
+  width: 170px;
+  max-width: 100%;
+  border-radius: 8px;
+  background: #000;
+}
+.video-admin-meta { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 2px; }
+.video-admin-meta b { font-size: 0.9rem; }
+.video-admin-meta small { color: var(--muted); }
+.video-admin-url { color: var(--gold); font-size: 0.8rem; word-break: break-all; }

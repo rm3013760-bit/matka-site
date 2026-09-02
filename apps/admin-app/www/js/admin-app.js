@@ -231,20 +231,26 @@ function renderTabVideos() {
   el.innerHTML = `
     <div class="card wide">
       <h3>How to Play Videos</h3>
-      <p class="hint">Add YouTube/support video links shown on the “How to Play” (Game Rates) page. Paste a full URL.</p>
+      <p class="hint">Upload a video file from your device. It is shown on the “How to Play” (Game Rates) page. Files are stored locally in this browser — keep each under ~3&nbsp;MB.</p>
       <form class="form" id="video-form">
         <label>Video Title <input name="title" required placeholder="e.g. How to Place a Bet"></label>
-        <label>Video URL (YouTube etc.) <input name="url" required placeholder="https://www.youtube.com/watch?v=..."></label>
-        <button class="btn" type="submit">Add Video</button>
+        <label>Video File
+          <input type="file" name="file" accept="video/mp4,video/webm,video/ogg" required>
+        </label>
+        <button class="btn" type="submit">Upload Video</button>
       </form>
     </div>
     <div class="card wide">
       <h3>Saved Videos (${list.length})</h3>
-      ${list.length ? `<div class="activity-list">
+      ${list.length ? `<div class="activity-list video-admin-list">
         ${list.map((v, i) => `
-          <div class="activity-row">
-            <span><b>${v.title}</b><br><small>${v.url}</small></span>
-            <span><button type="button" class="mini-del req-no" id="video-del-${i}">Remove</button></span>
+          <div class="video-admin-item">
+            ${v.data ? `<video controls preload="none" src="${v.data}"></video>` : `<a class="video-admin-url" href="${v.url}" target="_blank" rel="noopener">${v.url}</a>`}
+            <div class="video-admin-meta">
+              <b>${v.title}</b>
+              ${v.size ? `<small>${(v.size / 1024 / 1024).toFixed(2)} MB</small>` : ""}
+            </div>
+            <button type="button" class="mini-del req-no" id="video-del-${i}">Remove</button>
           </div>`).join("")}
       </div>` : `<p class="hint">No videos added yet.</p>`}
     </div>`;
@@ -252,12 +258,28 @@ function renderTabVideos() {
   if (form) form.onsubmit = (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
-    const url = (fd.get("url") || "").trim();
-    if (!/^https?:\/\//i.test(url)) { alert("Enter a full URL starting with http(s)://"); return; }
-    const videos = store.get("matka.videos", []);
-    videos.push({ title: (fd.get("title") || "How to Play").trim(), url, id: "v" + Date.now() });
-    store.set("matka.videos", videos);
-    renderTabVideos();
+    const title = (fd.get("title") || "How to Play").trim() || "How to Play";
+    const file = fd.get("file");
+    if (!file || !file.type) { alert("Please choose a video file."); return; }
+    const MAX = 3 * 1024 * 1024;
+    const used = list.reduce((s, x) => s + (x.size || 0), 0);
+    if (file.size > MAX) { alert("File too large. Keep it under ~3 MB (localStorage limit)."); return; }
+    if (used + file.size > 4.5 * 1024 * 1024) { alert("Total videos too large for browser storage. Remove some or use a smaller file."); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const videos = store.get("matka.videos", []);
+      videos.push({ title, data: reader.result, mime: file.type || "video/mp4", size: file.size, id: "v" + Date.now() });
+      try {
+        store.set("matka.videos", videos);
+      } catch (err) {
+        alert("Could not save — storage full. Use a smaller/shorter video.");
+        videos.pop();
+        return;
+      }
+      renderTabVideos();
+    };
+    reader.onerror = () => alert("Could not read the file.");
+    reader.readAsDataURL(file);
   };
   list.forEach((v, i) => {
     const d = document.getElementById("video-del-" + i);
