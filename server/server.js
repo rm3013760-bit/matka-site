@@ -41,16 +41,32 @@ function send(res, code, body) {
   res.end(JSON.stringify(body));
 }
 
-function readBody(req) {
+function readBody(req, maxBytes) {
   return new Promise((resolve) => {
     let raw = "";
     req.on("data", (c) => {
       raw += c;
-      if (raw.length > 8 * 1024 * 1024) req.destroy();
+      if (raw.length > (maxBytes || 8 * 1024 * 1024)) req.destroy();
     });
     req.on("end", () => resolve(raw));
     req.on("error", () => resolve(""));
   });
+}
+
+function commitAndPush(msg) {
+  // Fire-and-forget: commit new/updated files and push to GitHub (mirrors commit-push.sh).
+  const { execFile } = require("child_process");
+  const repo = __dirname + "/..";
+  const token = (() => { try { return fs.readFileSync(path.join(__dirname, "actions", "gh-token"), "utf8").trim(); } catch { return ""; } })();
+  if (!token) { record("upload commit skipped (no token)"); return; }
+  const run = (cmd, args, dir) => new Promise((resolve) => { execFile(cmd, args, { cwd: dir, timeout: 60000 }, (e) => resolve(!e)); });
+  (async () => {
+    await run("git", ["add", "-A"], repo);
+    await run("git", ["-c", "credential.helper=", "commit", "-q", "-m", msg], repo);
+    const url = "https://oauth2:" + token + "@github.com/rm3013760-bit/matka-site.git";
+    await run("git", ["-c", "credential.helper=", "push", "-q", url, "master"], repo);
+    record("upload git commit/push done: " + msg);
+  })().catch((e) => record("upload git push error " + (e && e.message)));
 }
 
 function serveStatic(req, res, urlPath) {
