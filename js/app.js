@@ -2121,9 +2121,22 @@ function renderFaq(page) {
 }
 
 function renderContact(page) {
+  const waNum = "918290594203";
+  const waLink = "https://wa.me/" + waNum + "?text=" + encodeURIComponent("Hi, I need support for the Matka site.");
   page.innerHTML = `
-    <section class="page-head"><h1>Contact Us</h1><p>We usually reply within 24 hours.</p></section>
+    <section class="page-head"><h1>Support</h1><p>We usually reply within 24 hours.</p></section>
+    <div class="card wa-card">
+      <div class="wa-row">
+        <img src="assets/icons/whatsapp.svg" alt="WhatsApp" class="wa-icon">
+        <div>
+          <h3>Chat on WhatsApp</h3>
+          <p class="wa-num">+91 82905 94203</p>
+        </div>
+      </div>
+      <a class="btn wa-btn" href="${waLink}" target="_blank" rel="noopener">Open WhatsApp</a>
+    </div>
     <form class="card form" id="contact-form">
+      <h3 style="margin-bottom:10px;">Or send a message</h3>
       <label>Name <input name="name" required></label>
       <label>Email <input name="email" type="email" required></label>
       <label>Message <textarea name="msg" rows="5" required></textarea></label>
