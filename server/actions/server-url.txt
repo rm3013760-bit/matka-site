@@ -1,1 +1,1 @@
-https://unless-suburban-sara-smith.trycloudflare.com
+https://api.trycloudflare.com
