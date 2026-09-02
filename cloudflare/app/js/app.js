@@ -2103,7 +2103,7 @@ function renderAbout(page) {
     <div class="content">
       <p><strong>MatkaLive</strong> is a results & information platform that keeps track of results across 30+ markets, including daily schedules, open/close panels, Jodi pairs, and 14-day chart history.</p>
       <p>This is a demonstration build created for showcasing product design and functionality. It does not offer, process, or facilitate any betting, wagering, or real-money transactions. All results shown are sample data unless manually updated by the administrator.</p>
-      <p>For any questions, reach out via the <a href="#/contact">contact page</a>.</p>
+      <p>For any questions, reach us on <a href="https://wa.me/918290594203" target="_blank" rel="noopener">WhatsApp</a>.</p>
     </div>`;
 }
 
@@ -2122,21 +2122,11 @@ function renderFaq(page) {
 
 function renderContact(page) {
   page.innerHTML = `
-    <section class="page-head"><h1>Contact Us</h1><p>For quick help, use the WhatsApp button in the bottom menu.</p></section>
-    <form class="card form" id="contact-form">
-      <label>Name <input name="name" required></label>
-      <label>Email <input name="email" type="email" required></label>
-      <label>Message <textarea name="msg" rows="5" required></textarea></label>
-      <button class="btn" type="submit">Send Message</button>
-    </form>`;
-  $("#contact-form").onsubmit = (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const msgs = store.get("matka.messages", []);
-    msgs.push({ name: fd.get("name"), email: fd.get("email"), msg: fd.get("msg"), date: todayKey() });
-    store.set("matka.messages", msgs);
-    page.innerHTML = `<section class="page-head"><h1>Message Sent</h1><p>Thanks ${fd.get("name")}, we'll get back to you at ${fd.get("email")}.</p></section>`;
-  };
+    <section class="page-head"><h1>Contact</h1><p>Get support directly on WhatsApp.</p></section>
+    <div class="wa-center">
+      <p class="wa-num">+91 82905 94203</p>
+      <a class="wa-btn" href="https://wa.me/918290594203" target="_blank" rel="noopener">Chat on WhatsApp</a>
+    </div>`;
 }
 
 function renderPrivacy(page) {

@@ -2198,3 +2198,21 @@ html[data-theme="night"] .pad-display, html[data-theme="night"] .funds-balance {
 }
 html[data-theme="night"] .funds-balance b { color: var(--gold); text-shadow: none; }
 
+
+/* ============ WHATSAPP CONTACT ============ */
+.wa-center { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 24px 16px; text-align: center; }
+.wa-num { font-size: 1.15rem; font-weight: 800; color: var(--gold); margin: 0; }
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #25d366;
+  color: #06281b;
+  font-weight: 800;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+.wa-btn:hover { background: #1fc25a; color: #06281b; text-decoration: none; }
