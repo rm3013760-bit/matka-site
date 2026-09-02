@@ -998,3 +998,24 @@ auto-push failed: To https://github.com/rm3013760-bit/matka-site.git
 [live] sara567 fallback: 0/0 markets
 [live] wrote "live_results.json" (29/29 markets, 234670 bytes)
 publish-url: unchanged https://unless-suburban-sara-smith.trycloudflare.com
+auto-push failed: To https://github.com/rm3013760-bit/matka-site.git
+22:31:30 tunnel: public check failed, backing off 10min
+[live] api board failed: The operation was aborted due to timeout (falling back to sara567 scrape)
+[live] sita-morning failed: fetch failed
+[live] star-tara-morning failed: fetch failed
+[live] milan-morning failed: fetch failed
+[live] sridevi failed: fetch failed
+[live] kalyan-morning failed: fetch failed
+[live] sita-day failed: fetch failed
+[live] star-tara-day failed: fetch failed
+[live] milan-day failed: fetch failed
+[live] kalyan-main failed: fetch failed
+[live] sita-night failed: fetch failed
+[live] sridevi-night failed: fetch failed
+[live] star-tara-night failed: fetch failed
+[live] milan-night failed: fetch failed
+[live] kalyan-night failed: fetch failed
+[live] main-bazar failed: fetch failed
+[live] sara567 fallback: 291/29 markets
+[live] wrote "live_results.json" (291/29 markets, 246165 bytes)
+publish-url: unchanged https://unless-suburban-sara-smith.trycloudflare.com
