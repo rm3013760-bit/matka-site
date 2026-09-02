@@ -136,6 +136,7 @@ function marketPlayStatus(market) {
 function router() {
   const page = $("#page");
   if (!page) return;
+  blockIfNeeded();
   const hash = location.hash.replace(/^#\/?/, "");
   const parts = hash.split("/");
   const route = parts[0] || "";
@@ -1352,6 +1353,30 @@ function completeLogin(u) {
   location.hash = "#/profile";
 }
 
+function userBlocked() {
+  if (!currentUser) return false;
+  const phone = currentUser.phone || "";
+  const users = store.get("matka.users", []);
+  const u = phone
+    ? users.find((x) => x.phone && x.phone.replace(/\D/g, "") === String(phone).replace(/\D/g, ""))
+    : users.find((x) => x.username === currentUser.username);
+  return !!(u && u.blocked);
+}
+
+function blockIfNeeded() {
+  if (currentUser && userBlocked()) {
+    if (localStorage.getItem("matka.blockedNotified") !== "1") {
+      localStorage.setItem("matka.blockedNotified", "1");
+      alert("Your account has been blocked by the administrator. Please contact support.");
+    }
+    localStorage.removeItem("matka.user");
+    currentUser = null;
+    buildNav();
+  } else if (currentUser) {
+    localStorage.removeItem("matka.blockedNotified");
+  }
+}
+
 function logActivity(user, action) {
   const log = store.get("matka.activities", []);
   log.unshift({ phone: user.phone || user.username, action: action, date: new Date().toISOString() });
@@ -2283,6 +2308,7 @@ function renderNotice(page) {
 
 window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
+  if (currentUser && userBlocked()) { blockIfNeeded(); router(); return; }
   const h = location.hash || "#/";
   if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
 });
