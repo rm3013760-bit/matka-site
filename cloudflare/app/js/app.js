@@ -176,7 +176,7 @@ function router() {
 function updateBottomNav(route) {
   const bn = document.getElementById("bottom-nav");
   if (!bn) return;
-  const map = { "": "/", home: "/", charts: "charts", market: "charts", funds: "funds", history: "history", entries: "history", deposits: "history", withdrawals: "history" };
+  const map = { "": "/", home: "/", myBids: "my-bids", "my-bids": "my-bids", passbook: "passbook", funds: "funds", contact: "contact", charts: "charts" };
   const activeKey = map[route] ?? "";
   for (const a of bn.querySelectorAll("a")) {
     a.classList.toggle("active", a.dataset.active === activeKey);
