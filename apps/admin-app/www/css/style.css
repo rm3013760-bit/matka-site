@@ -2279,3 +2279,21 @@ html[data-theme="night"] .funds-balance b { color: var(--gold); text-shadow: non
 .video-admin-meta b { font-size: 0.9rem; }
 .video-admin-meta small { color: var(--muted); }
 .video-admin-url { color: var(--gold); font-size: 0.8rem; word-break: break-all; }
+
+.user-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.user-toggle:hover { opacity: 0.88; }
+.user-toggle:active { transform: scale(0.96); }
+.user-toggle.block { background: #b91c1c; color: #fff; box-shadow: 0 2px 8px rgba(185, 28, 28, 0.3); }
+.user-toggle.unblock { background: #15803d; color: #fff; box-shadow: 0 2px 8px rgba(21, 128, 61, 0.3); }

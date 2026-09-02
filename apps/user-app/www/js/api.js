@@ -150,6 +150,7 @@
       const id = String(p.mobile || p.loginid || "").toLowerCase();
       const u = users.find((x) => x.username.toLowerCase() === id || getPhone(x) === id.replace(/\D/g, "") || (x.email || "").toLowerCase() === id);
       if (!u || u.password !== p.password) return fail("Invalid credentials");
+      if (u.blocked) return fail("Your account has been blocked. Please contact support.");
       return ok({ user_id: getPhone(u), name: u.name, mobile: getPhone(u), role: u.role }, "Login successful");
     },
     request_otp: (p) => {
