@@ -342,6 +342,20 @@ function renderHomeGames() {
 }
 
 function renderGames(page) {
+  const videos = store.get("matka.videos", []);
+  const videoHTML = videos.length ? `
+    <div class="hist-card rates-wrap">
+      <h3>Tutorial Videos</h3>
+      <div class="video-gallery">
+        ${videos.map((v) => {
+          const embed = v.url.replace(/^.*(?:youtu\.be\/|v=)([\w-]{11}).*$/, "https://www.youtube.com/embed/$1");
+          const isYT = /\.youtube\.com\/embed\/|youtu\.be\//.test(embed);
+          return isYT
+            ? `<div class="video-item"><div class="video-frame"><iframe src="${embed}" title="${v.title.replace(/"/g, "&quot;")}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><b>${v.title}</b></div>`
+            : `<a class="video-item video-link" href="${v.url}" target="_blank" rel="noopener"><div class="video-frame"><svg viewBox="0 0 24 24" width="46" height="46" fill="#B99052"><path d="M8 5v14l11-7z"/></svg></div><b>${v.title}</b></a>`;
+        }).join("")}
+      </div>
+    </div>` : "";
   page.innerHTML = `
     <section class="page-head">
       <div class="panel-badge"><span class="dot"></span> Rules</div>
@@ -383,6 +397,7 @@ function renderGames(page) {
       </div>
       <p class="hint">Starline draws run every hour. Disawar markets: ${DISAWAR_MARKETS.join(" · ")}.</p>
     </div>
+    ${videoHTML}
     <div class="howto-grid">
       <div class="howto-step"><b>1</b><h4>Pick a Market</h4><p>Open Play and select any market from the live board.</p></div>
       <div class="howto-step"><b>2</b><h4>Choose a Game</h4><p>Single Digit, Jodi, Pana, Sangam, Family or Motor.</p></div>

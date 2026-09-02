@@ -224,6 +224,52 @@ function renderTabWithdrawals() {
   renderWithdrawalsInto(document.getElementById("wd-list"));
 }
 
+function renderTabVideos() {
+  const el = $("#tab-videos");
+  if (!el) return;
+  const list = store.get("matka.videos", []);
+  el.innerHTML = `
+    <div class="card wide">
+      <h3>How to Play Videos</h3>
+      <p class="hint">Add YouTube/support video links shown on the “How to Play” (Game Rates) page. Paste a full URL.</p>
+      <form class="form" id="video-form">
+        <label>Video Title <input name="title" required placeholder="e.g. How to Place a Bet"></label>
+        <label>Video URL (YouTube etc.) <input name="url" required placeholder="https://www.youtube.com/watch?v=..."></label>
+        <button class="btn" type="submit">Add Video</button>
+      </form>
+    </div>
+    <div class="card wide">
+      <h3>Saved Videos (${list.length})</h3>
+      ${list.length ? `<div class="activity-list">
+        ${list.map((v, i) => `
+          <div class="activity-row">
+            <span><b>${v.title}</b><br><small>${v.url}</small></span>
+            <span><button type="button" class="mini-del req-no" id="video-del-${i}">Remove</button></span>
+          </div>`).join("")}
+      </div>` : `<p class="hint">No videos added yet.</p>`}
+    </div>`;
+  const form = $("#video-form");
+  if (form) form.onsubmit = (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const url = (fd.get("url") || "").trim();
+    if (!/^https?:\/\//i.test(url)) { alert("Enter a full URL starting with http(s)://"); return; }
+    const videos = store.get("matka.videos", []);
+    videos.push({ title: (fd.get("title") || "How to Play").trim(), url, id: "v" + Date.now() });
+    store.set("matka.videos", videos);
+    renderTabVideos();
+  };
+  list.forEach((v, i) => {
+    const d = document.getElementById("video-del-" + i);
+    if (d) d.onclick = () => {
+      const videos = store.get("matka.videos", []);
+      videos.splice(i, 1);
+      store.set("matka.videos", videos);
+      renderTabVideos();
+    };
+  });
+}
+
 
 function renderDashboard() {
   if (!adminUser) { renderLogin(); return; }
@@ -245,6 +291,8 @@ function renderDashboard() {
           <button type="button" class="side-btn" data-tab="wallet">Wallet & Top-Ups</button>
           <span class="side-group">Withdrawals</span>
           <button type="button" class="side-btn" data-tab="withdrawals">Withdrawal Requests</button>
+          <span class="side-group">Content</span>
+          <button type="button" class="side-btn" data-tab="videos">How to Play Videos</button>
           <span class="side-group">System</span>
           <button type="button" class="side-btn" data-tab="api">API Console</button>
           <div class="side-foot">
@@ -262,13 +310,14 @@ function renderDashboard() {
         <div class="admin-grid" id="tab-users" style="display:none"></div>
         <div class="admin-grid wallet-grid" id="tab-wallet" style="display:none"></div>
         <div class="admin-grid" id="tab-withdrawals" style="display:none"></div>
+        <div class="admin-grid" id="tab-videos" style="display:none"></div>
         <div class="admin-grid" id="tab-api" style="display:none"></div>
       </main>
     </section>`;
 
   $("#logout").onclick = () => { localStorage.removeItem("matka.admin"); adminUser = null; renderLogin(); };
 
-  const ALL_TABS = ["dashboard", "update", "bulk", "json", "markets", "users", "wallet", "withdrawals", "api"];
+  const ALL_TABS = ["dashboard", "update", "bulk", "json", "markets", "users", "wallet", "withdrawals", "videos", "api"];
   window.switchTab = (tab) => {
     for (const t of ALL_TABS) {
       const el = $("#tab-" + t);
@@ -288,7 +337,21 @@ function renderDashboard() {
   renderTabMarkets();
   renderTabUsers();
   renderTabWithdrawals();
+  renderTabVideos();
   renderTabApi();
+  window.addEventListener("sync-updated", () => {
+    if (!adminUser) return;
+    renderTabDashboard();
+    renderTabUpdate();
+    renderTabBulk();
+    renderTabJson();
+    renderTabWallet();
+    renderTabMarkets();
+    renderTabUsers();
+    renderTabWithdrawals();
+    renderTabVideos();
+    renderTabApi();
+  });
 }
 
 function renderTabDashboard() {
@@ -321,7 +384,7 @@ function renderTabDashboard() {
       <button type="button" class="chip" data-go="markets">Add Market</button>
       <button type="button" class="chip" data-go="wallet">Top-Up Requests</button>
       <button type="button" class="chip" data-go="withdrawals">Withdrawals</button>
-      <button type="button" class="chip" data-go="api">API Console</button>
+      <button type="button" class="chip" data-go="videos">How to Play Videos</button>
     </div>
     <div class="card wide">
       <h3>Pending Actions</h3>
