@@ -224,72 +224,112 @@ function renderTabWithdrawals() {
   renderWithdrawalsInto(document.getElementById("wd-list"));
 }
 
+function videoSrc(v) {
+  return location.origin + v.url;
+}
+
 function renderTabVideos() {
   const el = $("#tab-videos");
   if (!el) return;
-  const list = store.get("matka.videos", []);
+  const base = (typeof Sync !== "undefined" && Sync.serverBase && Sync.serverBase()) || "";
   el.innerHTML = `
     <div class="card wide">
       <h3>How to Play Videos</h3>
-      <p class="hint">Upload a video file from your device. It is shown on the “How to Play” (Game Rates) page. Files are stored locally in this browser — keep each under ~3&nbsp;MB.</p>
-      <form class="form" id="video-form">
+      <p class="hint">Upload a video file. It is saved on the server and shown on the “How to Play” (Game Rates) page. Keep files under ~6&nbsp;MB.</p>
+      ${base ? `
+      <form class="form" id="video-form" autocomplete="off">
         <label>Video Title <input name="title" required placeholder="e.g. How to Place a Bet"></label>
         <label>Video File
           <input type="file" name="file" accept="video/mp4,video/webm,video/ogg" required>
         </label>
-        <button class="btn" type="submit">Upload Video</button>
+        <button class="btn" type="submit" id="video-submit">Upload Video</button>
       </form>
+      <p class="hint" id="video-status" style="min-height:1.2em"></p>` : `
+      <p class="hint err">Server not reachable — uploads need the sync server (tunnel) to be online. Video retrieval still works from GitHub Pages.</p>
+      <div class="form"><button class="btn" type="button" id="video-refresh">Refresh List</button></div>`}
     </div>
     <div class="card wide">
-      <h3>Saved Videos (${list.length})</h3>
-      ${list.length ? `<div class="activity-list video-admin-list">
-        ${list.map((v, i) => `
-          <div class="video-admin-item">
-            ${v.data ? `<video controls preload="none" src="${v.data}"></video>` : `<a class="video-admin-url" href="${v.url}" target="_blank" rel="noopener">${v.url}</a>`}
-            <div class="video-admin-meta">
-              <b>${v.title}</b>
-              ${v.size ? `<small>${(v.size / 1024 / 1024).toFixed(2)} MB</small>` : ""}
-            </div>
-            <button type="button" class="mini-del req-no" id="video-del-${i}">Remove</button>
-          </div>`).join("")}
-      </div>` : `<p class="hint">No videos added yet.</p>`}
+      <h3>Saved Videos <span id="video-count"></span></h3>
+      <div id="video-list"><p class="hint">Loading…</p></div>
     </div>`;
+  const refresh = () => {
+    const elv = $("#video-count");
+    const elList = $("#video-list");
+    fetch("assets/videos/index.json?t=" + Date.now(), { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((json) => {
+        const list = (json && json.videos) || [];
+        if (elv) elv.textContent = "(" + list.length + ")";
+        if (elList) {
+          elList.innerHTML = list.length ? `<div class="activity-list video-admin-list">
+            ${list.map((v, i) => `
+              <div class="video-admin-item">
+                <video controls preload="none" src="${videoSrc(v)}"></video>
+                <div class="video-admin-meta">
+                  <b>${v.title}</b>
+                  <small>${((v.size || 0) / 1024 / 1024).toFixed(2)} MB</small>
+                </div>
+                <button type="button" class="mini-del req-no" id="video-del-${i}" data-url="${v.url}" data-id="${v.id || ""}">Remove</button>
+              </div>`).join("")}
+          </div>` : `<p class="hint">No videos uploaded yet.</p>`;
+          Array.prototype.forEach.call(elList.querySelectorAll("[id^=video-del-]"), (b) => {
+            b.onclick = () => {
+              const id = b.getAttribute("data-id");
+              const url = b.getAttribute("data-url");
+              if (!base) { alert("Server not reachable — can’t remove from server."); return; }
+              if (!id) { location.reload(); return; }
+              b.disabled = true; b.textContent = "…";
+              fetch(base + "/api/delete/video", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "x-sync-token": "matka-demo-2026" },
+                body: JSON.stringify({ id })
+              }).then((r) => r.json()).then((res) => {
+                if (res.ok) { refresh(); } else { alert((res && res.message) || "Remove failed"); b.disabled = false; b.textContent = "Remove"; }
+              }).catch(() => { alert("Remove failed — server unreachable."); b.disabled = false; b.textContent = "Remove"; });
+            };
+          });
+        }
+      })
+      .catch(() => { if (elList) elList.innerHTML = `<p class="hint">No videos yet.</p>`; });
+  };
   const form = $("#video-form");
   if (form) form.onsubmit = (e) => {
     e.preventDefault();
-    const fd = new FormData(e.target);
-    const title = (fd.get("title") || "How to Play").trim() || "How to Play";
-    const file = fd.get("file");
-    if (!file || !file.type) { alert("Please choose a video file."); return; }
-    const MAX = 3 * 1024 * 1024;
-    const used = list.reduce((s, x) => s + (x.size || 0), 0);
-    if (file.size > MAX) { alert("File too large. Keep it under ~3 MB (localStorage limit)."); return; }
-    if (used + file.size > 4.5 * 1024 * 1024) { alert("Total videos too large for browser storage. Remove some or use a smaller file."); return; }
+    const btn = $("#video-submit");
+    const status = $("#video-status");
+    const file = form.querySelector('input[name="file"]').files[0];
+    const title = (form.querySelector('input[name="title"]').value || "").trim() || "How to Play";
+    if (!file) { if (status) status.textContent = "Please choose a video file."; return; }
+    if (file.size > 6 * 1024 * 1024) { if (status) status.textContent = "File too large — keep under ~6 MB."; return; }
+    btn.disabled = true; btn.textContent = "Uploading…";
+    if (status) status.textContent = "Uploading, this may take a moment…";
     const reader = new FileReader();
     reader.onload = () => {
-      const videos = store.get("matka.videos", []);
-      videos.push({ title, data: reader.result, mime: file.type || "video/mp4", size: file.size, id: "v" + Date.now() });
-      try {
-        store.set("matka.videos", videos);
-      } catch (err) {
-        alert("Could not save — storage full. Use a smaller/shorter video.");
-        videos.pop();
-        return;
-      }
-      renderTabVideos();
+      fetch(base + "/api/upload/video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-sync-token": "matka-demo-2026" },
+        body: JSON.stringify({ title, base64: reader.result })
+      }).then((r) => r.json()).then((res) => {
+        if (res.ok) {
+          if (status) status.textContent = "Saved! Optimizing on the server… refreshing list.";
+          form.reset();
+          refresh();
+          const t = setInterval(() => { fetch("assets/videos/index.json?t=" + Date.now(), { cache: "no-store" }).then((r) => r.json()).then((j) => { if ((j.videos || []).some((v) => v.id === res.id)) { clearInterval(t); refresh(); } }).catch(() => {}); }, 3000);
+        } else {
+          if (status) status.textContent = "Upload failed: " + ((res && res.message) || "server error");
+        }
+        btn.disabled = false; btn.textContent = "Upload Video";
+      }).catch(() => {
+        if (status) status.textContent = "Upload failed — server unreachable (tunnel down?).";
+        btn.disabled = false; btn.textContent = "Upload Video";
+      });
     };
-    reader.onerror = () => alert("Could not read the file.");
+    reader.onerror = () => { if (status) status.textContent = "Could not read the file."; btn.disabled = false; btn.textContent = "Upload Video"; };
     reader.readAsDataURL(file);
   };
-  list.forEach((v, i) => {
-    const d = document.getElementById("video-del-" + i);
-    if (d) d.onclick = () => {
-      const videos = store.get("matka.videos", []);
-      videos.splice(i, 1);
-      store.set("matka.videos", videos);
-      renderTabVideos();
-    };
-  });
+  const rbtn = $("#video-refresh");
+  if (rbtn) rbtn.onclick = refresh;
+  refresh();
 }
 
 

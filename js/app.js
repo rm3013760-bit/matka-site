@@ -341,20 +341,31 @@ function renderHomeGames() {
   }
 }
 
-function renderGames(page) {
-  const videos = store.get("matka.videos", []);
-  const videoHTML = videos.length ? `
-    <div class="hist-card rates-wrap">
+function renderTutorialVideos(page) {
+  const container = document.getElementById("tutorial-videos");
+  if (!container) return;
+  Promise.all([
+    fetch("assets/videos/index.json?t=" + Date.now(), { cache: "no-store" }).then((r) => (r.ok ? r.json() : Promise.reject())).catch(() => ({ videos: [] })),
+    Promise.resolve(store.get("matka.videos", []))
+  ]).then(([remote, local]) => {
+    let list = ((remote && remote.videos) || []).slice();
+    for (const v of local || []) {
+      if (v.data && !list.some((x) => x.id === v.id)) list.push(v);
+    }
+    container.innerHTML = list.length ? `
       <h3>Tutorial Videos</h3>
       <div class="video-gallery">
-        ${videos.map((v) => {
-          if (v.data) {
-            return `<div class="video-item"><div class="video-frame"><video controls preload="metadata" src="${v.data}"></video></div><b>${v.title}</b></div>`;
-          }
-          return `<a class="video-item video-link" href="${v.url}" target="_blank" rel="noopener"><div class="video-frame"><svg viewBox="0 0 24 24" width="46" height="46" fill="#B99052"><path d="M8 5v14l11-7z"/></svg></div><b>${v.title}</b></a>`;
+        ${list.map((v) => {
+          if (v.data) return `<div class="video-item"><div class="video-frame"><video controls preload="metadata" src="${v.data}"></video></div><b>${v.title}</b></div>`;
+          const src = v.url ? location.origin + v.url : "#";
+          return `<a class="video-item video-link" href="${src}" target="_blank" rel="noopener"><div class="video-frame"><video controls preload="metadata" src="${src}"></video></div><b>${v.title}</b></a>`;
         }).join("")}
-      </div>
-    </div>` : "";
+      </div>` : "";
+  });
+}
+
+function renderGames(page) {
+  const videoHTML = `<div id="tutorial-videos" class="hist-card rates-wrap"></div>`;
   page.innerHTML = `
     <section class="page-head">
       <div class="panel-badge"><span class="dot"></span> Rules</div>
@@ -411,6 +422,8 @@ function renderGames(page) {
         ${FAMILY_PAIRS.map((f, i) => `<div class="family-card"><b>${i + 1}</b><span>${f[0]} & ${f[1]}</span></div>`).join("")}
       </div>
     </section>`;
+
+  renderTutorialVideos(page);
 
   for (const b of page.querySelectorAll("[data-play-game]")) {
     b.addEventListener("click", () => openStyleMenu({ game: b.dataset.playGame, anchor: b }));

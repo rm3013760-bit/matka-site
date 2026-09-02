@@ -139,6 +139,82 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
+  if (req.method === "POST" && p === "/api/upload/video") {
+    if (req.headers["x-sync-token"] !== TOKEN) {
+      record("POST /api/upload/video REJECTED (bad token)");
+      send(res, 403, { ok: false, message: "Invalid sync token" });
+      return;
+    }
+    const raw = await readBody(req, 10 * 1024 * 1024);
+    let title, b64, ext = "mp4";
+    try {
+      const body = JSON.parse(raw);
+      title = String(body.title || "How to Play").trim().slice(0, 120) || "How to Play";
+      b64 = String(body.base64 || "");
+      if (body.ext) ext = String(body.ext).replace(/[^a-z0-9]/gi, "").toLowerCase();
+    } catch (e) { send(res, 400, { ok: false, message: "Bad body" }); return; }
+    if (!b64 || !/^data:/.test(b64)) { send(res, 400, { ok: false, message: "No file data (expects base64 data URL)" }); return; }
+    const comma = b64.indexOf(",");
+    const mime = b64.slice(5, comma).split(";")[0];
+    if (!/video\/(mp4|webm|ogg)/.test(mime)) { send(res, 400, { ok: false, message: "Unsupported type: " + mime }); return; }
+    ext = mime.replace("video/", "") || ext;
+    const buf = Buffer.from(b64.slice(comma + 1), "base64");
+    const maxBytes = 8 * 1024 * 1024;
+    if (buf.length === 0 || buf.length > maxBytes) {
+      send(res, 413, { ok: false, message: "Video must be under 8 MB" });
+      return;
+    }
+    const id = "v" + Date.now();
+    const file = id + "." + ext;
+    const dir = path.join(ROOT, "assets", "videos");
+    fs.mkdirSync(dir, { recursive: true });
+    try {
+      fs.writeFileSync(path.join(dir, file), buf);
+    } catch (e) {
+      record("upload WRITE FAIL " + (e && e.message));
+      send(res, 500, { ok: false, message: "Could not write file" });
+      return;
+    }
+    const url = "/assets/videos/" + file;
+    const st = readStore();
+    let meta;
+    try { meta = JSON.parse(st["matka.videos"]); } catch { meta = null; }
+    if (!Array.isArray(meta)) meta = [];
+    meta.push({ title, file, url, size: buf.length, id });
+    st["matka.videos"] = JSON.stringify(meta);
+    writeStore(st);
+    fs.writeFileSync(path.join(dir, "index.json"), JSON.stringify({ videos: meta }));
+    record("POST /api/upload/video saved " + file + " (" + buf.length + " bytes)");
+    send(res, 200, { ok: true, file, url, id, count: meta.length });
+    commitAndPush("auto: add video " + file);
+    return;
+  }
+  if (req.method === "POST" && p === "/api/delete/video") {
+    if (req.headers["x-sync-token"] !== TOKEN) {
+      record("POST /api/delete/video REJECTED (bad token)");
+      send(res, 403, { ok: false, message: "Invalid sync token" });
+      return;
+    }
+    let id = "";
+    try { id = JSON.parse(await readBody(req, 1 * 1024 * 1024)).id; } catch { send(res, 400, { ok: false, message: "Bad body" }); return; }
+    const st = readStore();
+    let meta; try { meta = JSON.parse(st["matka.videos"]); } catch { meta = null; }
+    if (!Array.isArray(meta)) { send(res, 404, { ok: false, message: "None found" }); return; }
+    const hit = meta.find((m) => m.id === id);
+    const rest = meta.filter((m) => m.id !== id);
+    if (hit) {
+      try { fs.unlinkSync(path.join(ROOT, "assets", "videos", hit.file)); } catch {}
+      st["matka.videos"] = JSON.stringify(rest);
+      writeStore(st);
+      fs.writeFileSync(path.join(ROOT, "assets", "videos", "index.json"), JSON.stringify({ videos: rest }));
+      record("POST /api/delete/video " + id);
+      send(res, 200, { ok: true, count: rest.length });
+      commitAndPush("auto: remove video " + id);
+    } else {
+      send(res, 404, { ok: false, message: "Not found" });
+    }
+    return;
+  }
   if (req.method === "GET" && p === "/api/health") {
     send(res, 200, { ok: true, app: "matkalive-sync" });
     return;
