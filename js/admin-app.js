@@ -245,6 +245,8 @@ function renderDashboard() {
           <button type="button" class="side-btn" data-tab="wallet">Wallet & Top-Ups</button>
           <span class="side-group">Withdrawals</span>
           <button type="button" class="side-btn" data-tab="withdrawals">Withdrawal Requests</button>
+          <span class="side-group">Content</span>
+          <button type="button" class="side-btn" data-tab="videos">How to Play Videos</button>
           <span class="side-group">System</span>
           <button type="button" class="side-btn" data-tab="api">API Console</button>
           <div class="side-foot">
@@ -262,13 +264,14 @@ function renderDashboard() {
         <div class="admin-grid" id="tab-users" style="display:none"></div>
         <div class="admin-grid wallet-grid" id="tab-wallet" style="display:none"></div>
         <div class="admin-grid" id="tab-withdrawals" style="display:none"></div>
+        <div class="admin-grid" id="tab-videos" style="display:none"></div>
         <div class="admin-grid" id="tab-api" style="display:none"></div>
       </main>
     </section>`;
 
   $("#logout").onclick = () => { localStorage.removeItem("matka.admin"); adminUser = null; renderLogin(); };
 
-  const ALL_TABS = ["dashboard", "update", "bulk", "json", "markets", "users", "wallet", "withdrawals", "api"];
+  const ALL_TABS = ["dashboard", "update", "bulk", "json", "markets", "users", "wallet", "withdrawals", "videos", "api"];
   window.switchTab = (tab) => {
     for (const t of ALL_TABS) {
       const el = $("#tab-" + t);
@@ -288,6 +291,7 @@ function renderDashboard() {
   renderTabMarkets();
   renderTabUsers();
   renderTabWithdrawals();
+  renderTabVideos();
   renderTabApi();
   window.addEventListener("sync-updated", () => {
     if (!adminUser) return;
@@ -299,6 +303,7 @@ function renderDashboard() {
     renderTabMarkets();
     renderTabUsers();
     renderTabWithdrawals();
+    renderTabVideos();
     renderTabApi();
   });
 }
