@@ -848,7 +848,7 @@ function renderTabUsers(results) {
       <h3>Registered Users</h3>
       <p class="hint">Block a user to instantly stop them logging in and using the app. Tap ”Block” / ”Unblock” on any row.</p>
       <div class="table-wrap"><table class="result-table">
-        <thead><tr><th>Name</th><th>Phone</th><th>Password</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+        <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
         <tbody id="user-rows"></tbody>
       </table></div>
     </div>`;
@@ -858,13 +858,12 @@ function renderTabUsers(results) {
     return `<tr>
       <td><strong>${u.name}</strong></td>
       <td>${u.phone || "—"}</td>
-      <td><code>${u.password || "—"}</code></td>
       <td>${u.email || "—"}</td>
       <td>${u.role}</td>
       <td><span class="req-status ${blocked ? "req-rejected" : "req-confirmed"}">${blocked ? "BLOCKED" : "ACTIVE"}</span></td>
       <td><button type="button" class="user-toggle ${blocked ? "unblock" : "block"}" data-i="${i}">${blocked ? "Unblock" : "Block"}</button></td>
     </tr>`;
-  }).join("") : `<tr><td colspan="7" class="empty">No users yet.</td></tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty">No users yet.</td></tr>`;
   tbody.querySelectorAll(".user-toggle").forEach((b) => {
     b.onclick = () => {
       const i = Number(b.dataset.i);
