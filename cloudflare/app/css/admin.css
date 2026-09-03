@@ -296,32 +296,35 @@
   .wallet-cols { grid-template-columns: 1fr; }
 }
 
-/* ================= PHONE-SPECIFIC =================
-   Designed specifically for phones so no tab, button or
-   table ever overflows the screen width (no page-level
-   horizontal scrolling). Also applies to small tablets. */
+/* ============================================================
+   MOBILE-REDESIGNED ADMIN — simple, clean and organised for phone.
+   Scoped to small screens; desktop/admin-on-laptop is untouched.
+   ============================================================ */
 @media (max-width: 640px) {
 
+  /* ————— global: nothing overflows ————— */
   html, body { max-width: 100%; overflow-x: hidden; }
-  body { font-size: 15px; }
+  body { font-size: 15px; background: var(--bg, #040a1c); }
 
-  /* ---------- top bar ---------- */
-  .topbar-inner { flex-wrap: wrap; gap: 8px; padding: 10px 12px; }
-  .logo { font-size: 1.02rem; white-space: normal; }
-  .logo small { font-size: 0.5rem; letter-spacing: 2px; }
+  * { box-sizing: border-box; }
+  img, svg, iframe, video, canvas { max-width: 100%; }
+
+  /* ————— top bar ————— */
+  .topbar-inner { gap: 8px; padding: 9px 14px; }
+  .logo { font-size: 1rem; white-space: normal; }
+  .logo small { font-size: 0.48rem; letter-spacing: 2px; }
   .topbar .nav a {
-    font-size: 0.78rem;
+    font-size: 0.76rem;
     padding: 6px 10px;
     white-space: nowrap;
   }
-  .topbar .nav { flex-wrap: wrap; gap: 6px; }
 
-  /* ---------- shell ---------- */
-  .admin-shell { width: 100%; padding: 12px 10px 24px; }
-  .admin-main { width: 100%; }
+  /* ————— shell ————— */
+  .admin-shell { width: 100%; padding: 10px 0 26px; gap: 10px; }
+  .admin-main { width: 100%; padding: 0 12px; }
 
-  /* ---------- side nav = horizontal tab bar (fits, no page overflow) ---------- */
-  .admin-side, .side-nav { width: 100%; max-width: 100%; }
+  /* ————— tab bar: unified segmented pill strip ————— */
+  .admin-side { width: 100%; }
   .side-nav {
     display: flex;
     flex-direction: row;
@@ -329,7 +332,11 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     gap: 6px;
-    padding: 8px;
+    margin: 0 0 12px;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
     scrollbar-width: none;
   }
   .side-nav::-webkit-scrollbar { display: none; }
@@ -337,79 +344,112 @@
     flex: 0 0 auto;
     width: auto;
     white-space: nowrap;
-    font-size: 0.78rem;
-    padding: 8px 12px;
-    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    padding: 8px 13px;
+    border-radius: 10px;
   }
-  .side-btn.active { box-shadow: none; }
+  .side-btn.active {
+    background: linear-gradient(135deg, var(--gold), var(--gold3));
+    color: var(--navy);
+    box-shadow: var(--glow-gold);
+  }
   .side-group, .side-foot { display: none; }
 
-  /* ---------- stat cards: 2-3 per row, no overflow ---------- */
+  /* ————— stat cards: clean 2-up grid ————— */
   .admin-stats {
-    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    margin-bottom: 14px;
   }
-  .stat-card { padding: 12px 10px; }
+  .stat-card {
+    border-radius: 16px;
+    padding: 14px 12px;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.12);
+  }
   .stat-card .stat-num {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     word-break: break-word;
     overflow-wrap: anywhere;
   }
   .stat-card .stat-label { font-size: 0.66rem; letter-spacing: 0.3px; }
 
-  /* ---------- quick action buttons: wrap, never overflow ---------- */
-  .quick-actions { gap: 6px; }
+  /* ————— quick actions: tidy wrap chips ————— */
+  .quick-actions { gap: 6px; margin-bottom: 14px; }
   .quick-actions .chip,
-  .card .chip {
+  .admin-grid .card .chip {
     white-space: normal;
     overflow-wrap: anywhere;
     text-align: center;
     font-size: 0.78rem;
-    padding: 7px 11px;
+    padding: 9px 12px;
+    border-radius: 11px;
   }
 
-  /* ---------- cards & grids ---------- */
+  /* ————— cards ————— */
   .admin-grid { display: block; }
-  .admin-grid .card, .admin-grid .card.wide { max-width: 100%; padding: 16px 14px; margin: 0 0 14px; }
-  .admin-grid .card h3 { font-size: 0.92rem; }
-
-  /* ---------- forms & buttons ---------- */
-  .form-row { grid-template-columns: 1fr; }
-  input, select, textarea, .btn, .form input, .form select, .form textarea {
+  .admin-grid .card,
+  .admin-grid .card.wide {
     max-width: 100%;
+    padding: 16px 15px;
+    margin: 0 0 14px;
+    border-radius: 16px;
+  }
+  .admin-grid .card h3 { font-size: 0.95rem; margin-bottom: 12px; }
+  .admin-grid .card > p.hint { font-size: 0.78rem; }
+
+  /* ————— forms ————— */
+  .form-row { grid-template-columns: 1fr; }
+  .form input, .form select, .form textarea {
+    font-size: 1rem;
+    padding: 12px 13px;
     min-width: 0;
   }
-  .btn, .mini-del, .user-toggle {
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-  .card-actions { flex-wrap: wrap; gap: 8px; }
 
-  /* ---------- tables: confined horizontal scroll, never page-wide ---------- */
+  /* ————— buttons ————— */
+  .btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.95rem;
+    padding: 13px 16px;
+    white-space: normal;
+  }
+  .btn, .mini-del, .user-toggle { box-sizing: border-box; }
+  .card-actions { gap: 8px; }
+  .user-toggle { flex: 0 0 auto; }
+
+  /* ————— tables: readable list cards, confined scroll ————— */
   .table-wrap {
     display: block;
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
   }
   .result-table { min-width: 0; max-width: 100%; }
   .result-table th, .result-table td {
     white-space: nowrap;
-    font-size: 0.78rem;
-    padding: 8px 8px;
+    font-size: 0.76rem;
+    padding: 10px 9px;
   }
-  .result-table td code { display: inline-block; max-width: 120px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
+  .result-table th { font-size: 0.68rem; }
+  .result-table td code {
+    display: inline-block;
+    max-width: 110px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+  }
 
-  /* ---------- lists / rows ---------- */
+  /* ————— lists / rows ————— */
   .activity-list { width: 100%; }
-  .activity-row { flex-wrap: wrap; }
+  .activity-row { flex-wrap: wrap; gap: 6px; padding: 10px 12px; }
   .activity-row > span { min-width: 0; }
-  .video-admin-item { flex-wrap: wrap; }
-  .video-admin-item video { width: 100%; }
+  .video-admin-item { flex-wrap: wrap; gap: 8px; }
+  .video-admin-item video { width: 100%; border-radius: 10px; }
   .video-admin-meta { min-width: 0; flex: 1 1 auto; }
 
-  /* ---------- generic: nothing sticks out ---------- */
-  img, svg, iframe, video, canvas { max-width: 100%; }
-  main, article, section, div, form, label { max-width: 100%; }
+  /* ————— keep anything unexpected inside the screen ————— */
+  main, article, section, div, form, label, table, tr, td, th { max-width: 100%; }
 }
