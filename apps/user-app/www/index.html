@@ -147,5 +147,34 @@
     apply(current());
   })();
   </script>
+  <script>
+  (function () {
+    function loadedV(name) {
+      var el = document.querySelector('link[href*="' + name + '"]') || document.querySelector('script[src*="' + name + '"]');
+      if (!el) return null;
+      var m = (el.getAttribute("href") || el.getAttribute("src") || "").match(/[?&]v=([^&]+)/);
+      return m ? m[1] : null;
+    }
+    var assets = ["style.css", "app.js", "sync.js", "data.js", "api.js"];
+    var current = {};
+    assets.forEach(function (a) { current[a] = loadedV(a); });
+    function check() {
+      fetch("index.html?up=" + Date.now(), { cache: "no-store", credentials: "same-origin" })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var changed = false;
+          assets.forEach(function (a) {
+            var re = new RegExp(a + '\\?v=([0-9]+)');
+            var m2 = html.match(re);
+            var latest = m2 ? m2[1] : null;
+            if (current[a] !== null && latest !== null && latest !== current[a]) changed = true;
+          });
+          if (changed) location.reload();
+        })
+        .catch(function () {});
+    }
+    setInterval(check, 20000);
+  })();
+  </script>
 </body>
 </html>
