@@ -584,7 +584,7 @@ function renderBoardBids(page, cfg, bName) {
           </div>
           <div class="bb-side">
             <b>₹ ${b.point.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
-            <span>${fmtDateNice(b.date)}</span>
+            <span>${fmtDateNice((b.date || "").slice(0, 10))}</span>
           </div>
         </div>`).join("")}</div>`;
   page.innerHTML = `
@@ -1240,7 +1240,7 @@ function boardBidsBody(cfg, bName) {
       </div>
       <div class="bb-side">
         <b>₹ ${b.point.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
-        <span>${fmtDateNice(b.date)}</span>
+        <span>${fmtDateNice((b.date || "").slice(0, 10))}</span>
       </div>
     </div>`).join("")}</div>
     <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>`;
