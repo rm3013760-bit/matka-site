@@ -302,7 +302,9 @@ function renderHomeRows(cat) {
     const row = document.createElement("div");
     row.className = "s5-row";
     const hasResult = result && result.announced;
-    const jodi = hasResult ? result.jodi + result.jodi2 : "--";
+    const jodi = hasResult
+      ? (result.jodi == null || result.jodi2 == null ? "-" : String(result.jodi) + String(result.jodi2))
+      : "--";
     const pan1 = hasResult ? result.panel : "---";
     const pan2 = hasResult ? result.panel2 || "--" : "---";
     const playable = !hasResult;
