@@ -1564,7 +1564,7 @@ body { padding-bottom: 76px; }
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px 12px;
-  background: rgba(10, 21, 53, 0.35);
+  background: var(--card);
 }
 .s5-right-box {
   flex: 0 0 auto;
@@ -1573,7 +1573,7 @@ body { padding-bottom: 76px; }
   justify-content: center;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: rgba(10, 21, 53, 0.35);
+  background: var(--card);
   min-width: 96px;
 }
 .s5-mkt { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
