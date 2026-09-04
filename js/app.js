@@ -189,8 +189,20 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "games") renderGames(page);
-  else if (route === "starline") renderStarline(page);
-  else if (route === "jackpot") renderJackpot(page);
+  else if (route === "starline" || route === "jackpot") {
+    const bName = route;
+    const bCfg = bName === "starline" ? STARLINE_BOARD : JACKPOT_BOARD;
+    const sub = parts[1] || "";
+    const tk = parts[2] || "";
+    const gp = parts[3] || "";
+    if (sub === "result") renderBoardResult(page, bCfg, bName);
+    else if (sub === "bids") renderBoardBids(page, bCfg, bName);
+    else if (sub === "play" && tk && !gp) renderBoardPick(page, bCfg, bName, tk);
+    else if (sub === "play" && tk && gp) renderBoardBet(page, bCfg, bName, tk, gp);
+    else if (sub === "play") renderBoardPick(page, bCfg, bName, "now");
+    else if (bName === "starline") renderStarline(page);
+    else renderJackpot(page);
+  }
   else if (route === "profile") renderProfile(page);
   else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
@@ -499,15 +511,15 @@ function renderBoard(page, cfg, title) {
       <a class="board-back" href="#/">← Home</a>
     </div>
     <div class="board-tabs">
-      <span class="on">RESULT HISTORY</span>
-      <span>BID HISTORY</span>
+      <a href="#/${star ? "starline" : "jackpot"}/result">RESULT HISTORY</a>
+      <a href="#/${star ? "starline" : "jackpot"}/bids">BID HISTORY</a>
     </div>
     <div class="board-chips">
       ${cfg.games.map((g) => `<span class="b-chip"><b>${g.name}</b><small>${g.range}</small></span>`).join("")}
     </div>
     <div class="board-list">${rows}</div>`;
   for (const b of page.querySelectorAll("[data-board-play]")) {
-    b.addEventListener("click", () => openStyleMenu({ game: cfg.playGame, anchor: b }));
+    b.addEventListener("click", () => { location.hash = "#/${star ? "starline" : "jackpot"}/play/" + b.dataset.boardPlay.replace(/^[a-z]+-/, ""); });
   }
 }
 

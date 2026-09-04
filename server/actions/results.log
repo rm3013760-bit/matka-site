@@ -2002,3 +2002,9 @@ auto-push ok 13:56
 [live] wrote "live_results.json" (11/29 markets, 235464 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=37
 publish-url: unchanged https://dressing-bell-rim-differ.trycloudflare.com
+auto-push ok 13:59
+[live] api board: 11/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (11/29 markets, 235464 bytes)
+[updater] today=2026-09-04 added starline=1 jackpot=0 liveMarkets=38
+publish-url: unchanged https://dressing-bell-rim-differ.trycloudflare.com
