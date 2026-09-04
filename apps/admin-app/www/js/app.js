@@ -301,7 +301,7 @@ function renderHomeRows(cat) {
     const playable = !hasResult;
     const bidBtn = playable
       ? `<button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>`
-      : `<span class="s5-bid disabled" aria-disabled="true">DONE</span>`;
+      : `<span class="s5-bid disabled" aria-disabled="true">CLOSED</span>`;
     row.innerHTML = `
       <div class="s5-top">
         <div class="s5-mkt">
