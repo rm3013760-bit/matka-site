@@ -316,8 +316,8 @@ function renderHomeRows(cat) {
         </div>
         <div class="s5-number">${pan1} - ${jodi} - ${pan2}</div>
         <div class="s5-times">
-          <span class="s5-time"><em>Open Bids</em><b>${market.open}</b></span>
-          <span class="s5-time"><em>Closed Bids</em><b>${market.close}</b></span>
+          <span class="s5-time"><em>Open</em><b>${market.open}</b></span>
+          <span class="s5-time"><em>Closed</em><b>${market.close}</b></span>
         </div>
       </div>
       <div class="s5-right-box">

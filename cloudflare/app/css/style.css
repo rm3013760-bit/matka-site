@@ -1597,7 +1597,7 @@ body { padding-bottom: 76px; }
 }
 .s5-time b {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.86rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text);
 }
