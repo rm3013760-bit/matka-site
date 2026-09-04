@@ -2722,7 +2722,10 @@ window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
   if (currentUser && userBlocked()) { blockIfNeeded(); router(); return; }
   const h = location.hash || "#/";
-  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || h.startsWith("#/starline") || h.startsWith("#/jackpot")) router();
+  const isBoardLive = h === "#/starline" || h === "#/jackpot" ||
+    h.startsWith("#/starline/result") || h.startsWith("#/starline/bids") ||
+    h.startsWith("#/jackpot/result") || h.startsWith("#/jackpot/bids");
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || isBoardLive) router();
 });
 (function syncFoot() {
   const el = document.getElementById("foot-sync-url");

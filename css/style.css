@@ -1861,6 +1861,92 @@ body { padding-bottom: 76px; }
 }
 .bw-play:hover { transform: scale(1.04); }
 
+/* ---- Board: tabs as links ---- */
+.board-tabs a { display: inline-block; padding: 8px 2px; font-size: 0.78rem; font-weight: 800; letter-spacing: 1px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; }
+.board-tabs a.on { color: var(--gold-light); border-bottom-color: var(--gold); }
+
+/* ---- Board page head ---- */
+.board-page-head { position: relative; padding-left: 56px; text-align: left; }
+.board-page-head h1 { font-size: 1.25rem; }
+
+/* ---- Result history ---- */
+.br-datepicker { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; flex-wrap: wrap; }
+.br-datepicker label { font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; }
+.br-datepicker input[type="date"] { background: rgba(20, 32, 70, 0.9); color: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-family: "Inter", sans-serif; font-size: 0.78rem; }
+.br-list { display: flex; flex-direction: column; padding: 6px 16px 20px; }
+.br-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 4px; border-bottom: 1px solid var(--line); }
+.br-time { font-size: 0.82rem; font-weight: 700; color: var(--muted); min-width: 96px; }
+.br-num { font-family: "Inter", sans-serif; font-size: 0.95rem; font-weight: 900; letter-spacing: 1px; color: var(--gold-light); }
+.br-num.br-future { color: var(--muted); }
+
+/* ---- Bid history ---- */
+.bb-empty { text-align: center; padding: 70px 24px 30px; color: var(--muted); }
+.bb-empty-title { font-size: 0.95rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.bb-empty-sub { font-size: 0.8rem; }
+.bb-list { display: flex; flex-direction: column; padding: 4px 16px; }
+.bb-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 4px; border-bottom: 1px solid var(--line); }
+.bb-main { display: flex; flex-direction: column; gap: 4px; }
+.bb-main b { font-size: 0.85rem; color: var(--white); }
+.bb-main span { font-size: 0.72rem; color: var(--muted); }
+.bb-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.bb-side b { font-size: 0.85rem; color: var(--gold-light); }
+.bb-side span { font-size: 0.68rem; color: var(--muted); }
+.bb-pager { display: flex; align-items: center; justify-content: center; gap: 18px; padding: 18px 0 24px; color: var(--muted); }
+.bb-pager button { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 6px 14px; font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+.bb-pager button:disabled { opacity: 0.4; cursor: default; }
+.bb-pager span { font-size: 0.82rem; font-weight: 700; color: var(--white); }
+
+/* ---- Game pick (Play) ---- */
+.board-back-back { margin: 14px; display: inline-block; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.bp-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 4px; }
+.bp-title { display: flex; align-items: baseline; gap: 8px; }
+.bp-title span { font-size: 0.9rem; font-weight: 800; color: var(--white); }
+.bp-title b { font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; color: var(--muted); }
+.bp-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 14px 16px 24px; }
+.bp-tile { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; text-align: left; padding: 16px 14px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(135deg, rgba(20, 32, 70, 0.9), rgba(13, 22, 50, 0.9)); color: var(--white); cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+.bp-tile b { font-size: 0.9rem; font-weight: 800; }
+.bp-tile small { font-size: 0.7rem; color: var(--muted); font-weight: 700; }
+.bp-tile em { font-size: 0.72rem; font-style: normal; font-weight: 800; color: var(--gold-light); margin-top: 4px; }
+.bp-tile:hover { transform: translateY(-2px); }
+
+/* ---- Bet entry ---- */
+.board-back-fixed { position: absolute; top: 58px; left: 12px; z-index: 5; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-decoration: none; }
+.bb2-head { display: flex; align-items: center; justify-content: space-between; padding: 54px 16px 4px; }
+.bb2-modes { display: flex; gap: 6px; padding: 12px 16px 4px; }
+.bb2-modes .seg { flex: 1; }
+.bb2-fields { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 4px; }
+.bb2-fields label { font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; }
+.bb2-fields input { background: rgba(20, 32, 70, 0.9); color: var(--white); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font-family: "Inter", sans-serif; font-size: 0.95rem; }
+.bb2-add { font-family: "Inter", sans-serif; font-size: 0.82rem; font-weight: 800; letter-spacing: 1px; color: var(--navy); background: linear-gradient(135deg, var(--gold), var(--gold3)); border: none; border-radius: 12px; padding: 12px; cursor: pointer; margin-top: 6px; box-shadow: var(--glow-gold); }
+.bb2-table { padding: 8px 16px; }
+.bb2-thead, .bb2-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr 0.7fr; gap: 6px; align-items: center; }
+.bb2-row:not(:only-child) { border-bottom: 1px solid var(--line); }
+.bb2-thead span { font-size: 0.68rem; font-weight: 800; letter-spacing: 0.5px; color: var(--muted); padding: 10px 0; }
+.bb2-num { font-family: "Inter", sans-serif; font-size: 0.9rem; font-weight: 800; color: var(--gold-light); }
+.bb2-type { font-size: 0.68rem; color: var(--muted); }
+.bb2-point { font-size: 0.82rem; font-weight: 700; color: var(--white); }
+.bb2-del { background: none; border: 1px solid rgba(255, 80, 80, 0.4); color: #ff6b6b; border-radius: 8px; padding: 5px 8px; font-size: 0.66rem; cursor: pointer; }
+.bb2-norow { font-size: 0.78rem; color: var(--muted); padding: 20px 0; text-align: center; }
+.bb2-bar { display: flex; align-items: center; gap: 8px; padding: 14px 16px 24px; border-top: 1px solid var(--line); }
+.bb2-label { font-size: 0.72rem; color: var(--muted); font-weight: 700; }
+.bb2-bar b { font-size: 0.85rem; color: var(--white); margin-right: 6px; }
+.bb2-submit { margin-left: auto; }
+
+/* ---- Special mode ---- */
+.bb2-modes2 { padding: 10px 16px 0; }
+.bs-date { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.bs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 12px; padding: 12px 16px 20px; }
+.bs-grid.bs-jodi { grid-template-columns: 1fr; max-height: 60vh; overflow-y: auto; }
+.bs-digit, .bs-pair { display: flex; align-items: center; gap: 8px; background: rgba(20, 32, 70, 0.6); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.bs-digit span, .bs-pair span { font-family: "Inter", sans-serif; font-size: 0.85rem; font-weight: 800; color: var(--gold-light); min-width: 22px; }
+.bs-digit input, .bs-pair input { flex: 1; background: none; border: none; border-bottom: 1px solid var(--line); color: var(--white); font-family: "Inter", sans-serif; font-size: 0.85rem; padding: 4px; text-align: center; }
+
+/* ---- Insufficient balance ---- */
+.bf-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
+.bf-panel { background: linear-gradient(160deg, var(--navy2, #1a2858), var(--navy, #101a3c)); border: 1px solid var(--line); border-radius: 16px; padding: 26px 24px; text-align: center; max-width: 320px; width: 100%; box-shadow: var(--glow-gold); }
+.bf-panel b { font-size: 1.05rem; color: var(--white); }
+.bf-panel p { font-size: 0.82rem; color: var(--muted); margin: 10px 0 18px; }
+
 .digit-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
 .digit-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 12px; max-height: 340px; overflow-y: auto; }
 .pad-d {
@@ -2077,6 +2163,17 @@ html, body { overflow-x: hidden; }
   .b-chip { padding: 6px 10px; }
   .b-chip b { font-size: 0.66rem; }
   .b-chip small { font-size: 0.56rem; }
+  .board-page-head { padding-left: 48px; }
+  .board-page-head h1 { font-size: 1.1rem; }
+  .bp-tile { padding: 13px 12px; }
+  .bp-tile b { font-size: 0.82rem; }
+  .bb2-thead, .bb2-row { grid-template-columns: 1.2fr 1fr 1fr 0.7fr; }
+  .bb2-fields { padding-left: 12px; padding-right: 12px; }
+  .bb2-table { padding-left: 12px; padding-right: 12px; }
+  .bb2-bar { padding-left: 12px; padding-right: 12px; }
+  .bs-grid { padding-left: 12px; padding-right: 12px; }
+  .br-list, .bb-list { padding-left: 12px; padding-right: 12px; }
+  .bp-grid { padding-left: 12px; padding-right: 12px; }
 }
 
 /* ============ APP BAR + SIDE DRAWER ============ */
