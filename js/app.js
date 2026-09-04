@@ -1128,7 +1128,7 @@ function renderBidCenter(page, tab) {
   updateHeaderBalance();
   const active = BIDCENTER_TABS.some((t) => t.id === tab) ? tab : "bid";
   const tabs = BIDCENTER_TABS.map((t) =>
-    `<a href="#/my-bids/${t.id}" class="bctab${t.id === active ? " on" : ""}">${t.label}</a>`).join("");
+    `<a href="#/my-bids/${t.id}" class="bctab${t.id === active ? " on" : ""}" data-id="${t.id}">${t.label}</a>`).join("");
   const body = bidCenterBody(active);
   page.innerHTML = `
     <section class="page-head board-page-head">
