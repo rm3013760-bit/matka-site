@@ -128,23 +128,31 @@
   </nav>
   <script>
   (function () {
-    var toggle = document.getElementById("theme-toggle");
-    if (!toggle) return;
-    var THEMES = ["dark", "light", "night"];
-    function apply(theme) {
-      document.documentElement.setAttribute("data-theme", theme);
-      for (var i = 0; i < THEMES.length; i++) toggle.classList.toggle("t-" + THEMES[i], THEMES[i] === theme);
-      try { localStorage.setItem("matka.theme", theme); } catch (e) {}
+    function loadedV(name) {
+      var el = document.querySelector('link[href*="' + name + '"]') || document.querySelector('script[src*="' + name + '"]');
+      if (!el) return null;
+      var m = (el.getAttribute("href") || el.getAttribute("src") || "").match(/[?&]v=([^&]+)/);
+      return m ? m[1] : null;
     }
-    function current() {
-      var t = document.documentElement.getAttribute("data-theme");
-      return THEMES.indexOf(t) >= 0 ? t : "dark";
+    var assets = ["style.css", "app.js", "sync.js", "data.js", "api.js"];
+    var current = {};
+    assets.forEach(function (a) { current[a] = loadedV(a); function esc(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");} });
+    function check() {
+      fetch("index.html?up=" + Date.now(), { cache: "no-store", credentials: "same-origin" })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var changed = false;
+          assets.forEach(function (a) {
+            var re = new RegExp(esc(a) + '[^"\\'']*[?&]v=([^"\\'']+)');
+            var m2 = html.match(re);
+            var latest = m2 ? m2[1] : null;
+            if (current[a] !== null && latest !== null && latest !== current[a]) changed = true;
+          });
+          if (changed) location.reload();
+        })
+        .catch(function () {});
     }
-    toggle.addEventListener("click", function () {
-      var idx = (THEMES.indexOf(current()) + 1) % THEMES.length;
-      apply(THEMES[idx]);
-    });
-    apply(current());
+    setInterval(check, 20000);
   })();
   </script>
 </body>
