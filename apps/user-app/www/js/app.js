@@ -29,12 +29,17 @@ let liveFileOverlay = null;
 
 function getResults() {
   const results = store.get("matka.results", {});
-  const live = liveFileOverlay || store.get("matka.live_results", null) || {};
-  for (const mid of Object.keys(live)) {
-    for (const date of Object.keys(live[mid] || {})) {
-      results[mid + "|" + date] = Object.assign({ date: date }, live[mid][date]);
+  const synced = store.get("matka.live_results", null) || {};
+  const overlay = liveFileOverlay || {};
+  const apply = (live) => {
+    for (const mid of Object.keys(live || {})) {
+      for (const date of Object.keys(live[mid] || {})) {
+        results[mid + "|" + date] = Object.assign({ date: date }, live[mid][date]);
+      }
     }
-  }
+  };
+  apply(synced);
+  apply(overlay);
   return results;
 }
 
@@ -111,27 +116,6 @@ const JACKPOT_BOARD = {
   playGame: "jodi"
 };
 
-function boardHash(str) {
-  let s = 0;
-  for (let i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) >>> 0;
-  return s;
-}
-function boardResult(idKey) {
-  const h = boardHash(idKey);
-  if (idKey.indexOf("starline") === 0) {
-    const panna = String(100 + (h % 900));
-    return { panel: panna, jodi: String(h % 10), announced: true };
-  }
-  return { jodi: String(h % 100).padStart(2, "0"), announced: true };
-}
-function boardRow(id, t) {
-  const [hh, mm] = t.split(":").map(Number);
-  const mkt = new Date();
-  mkt.setHours(hh, mm, 0, 0);
-  const closed = Date.now() >= mkt.getTime();
-  const result = closed ? boardResult(id + "|" + todayKey()) : null;
-  return { id, time: t, status: closed ? "CLOSED" : "RUNNING NOW", result };
-}
 function fmtBoardTime(t) {
   const [hh, mm] = t.split(":").map(Number);
   const ampm = hh >= 12 ? "PM" : "AM";
@@ -491,15 +475,16 @@ function renderBoard(page, cfg, title) {
   seedDemoResults();
   updateHeaderBalance();
   const bal = currentUser ? walletBalance(currentUser.phone || currentUser.username) : 0;
+  const star = title.toLowerCase() === "starline";
   const rows = cfg.times.map((t) => {
     const id = title.toLowerCase() + "-" + t.replace(":", "");
-    const r = boardRow(id, t);
-    const closed = r.status === "CLOSED";
+    const r = getResult(id, todayKey());
+    const closed = !!(r && r.announced);
     const num = closed
-      ? (title.toLowerCase() === "starline" ? r.result.panel + " - " + r.result.jodi : r.result.jodi)
-      : (title.toLowerCase() === "starline" ? "*** - *" : "--");
+      ? (star ? (r.panel || "***") + " - " + (r.jodi || "*") : (r.jodi ? String(r.jodi) : "--"))
+      : (star ? "*** - *" : "--");
     return `<div class="board-row">
-      <span class="bw-time">${fmtBoardTime(r.time)}</span>
+      <span class="bw-time">${fmtBoardTime(t)}</span>
       <span class="bw-status ${closed ? "st-closed" : "st-run"}">${closed ? "CLOSED" : "RUNNING NOW"}</span>
       <span class="bw-num">${num}</span>
       <button type="button" class="bw-play" data-board-play="${id}">Play</button>
@@ -2460,7 +2445,7 @@ window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
   if (currentUser && userBlocked()) { blockIfNeeded(); router(); return; }
   const h = location.hash || "#/";
-  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || h.startsWith("#/starline") || h.startsWith("#/jackpot")) router();
 });
 (function syncFoot() {
   const el = document.getElementById("foot-sync-url");

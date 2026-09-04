@@ -29,12 +29,17 @@ let liveFileOverlay = null;
 
 function getResults() {
   const results = store.get("matka.results", {});
-  const live = liveFileOverlay || store.get("matka.live_results", null) || {};
-  for (const mid of Object.keys(live)) {
-    for (const date of Object.keys(live[mid] || {})) {
-      results[mid + "|" + date] = Object.assign({ date: date }, live[mid][date]);
+  const synced = store.get("matka.live_results", null) || {};
+  const overlay = liveFileOverlay || {};
+  const apply = (live) => {
+    for (const mid of Object.keys(live || {})) {
+      for (const date of Object.keys(live[mid] || {})) {
+        results[mid + "|" + date] = Object.assign({ date: date }, live[mid][date]);
+      }
     }
-  }
+  };
+  apply(synced);
+  apply(overlay);
   return results;
 }
 
@@ -2440,7 +2445,7 @@ window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
   if (currentUser && userBlocked()) { blockIfNeeded(); router(); return; }
   const h = location.hash || "#/";
-  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results")) router();
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || h.startsWith("#/starline") || h.startsWith("#/jackpot")) router();
 });
 (function syncFoot() {
   const el = document.getElementById("foot-sync-url");
