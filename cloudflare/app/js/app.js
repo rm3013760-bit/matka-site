@@ -92,6 +92,53 @@ function getTodayResults() {
   }));
 }
 
+/* ---------- STARLINE & JACKPOT boards (demo) ---------- */
+const STARLINE_BOARD = {
+  times: ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],
+  games: [
+    { name: "SINGLE DIGIT",   range: "10-100" },
+    { name: "SINGLE PANA",    range: "10-1600" },
+    { name: "DOUBLE PANA",    range: "10-3200" },
+    { name: "TRIPLE PANA",    range: "10-10000" }
+  ],
+  playGame: "single"
+};
+const JACKPOT_BOARD = {
+  times: ["10:30","11:30","12:30","13:30","14:30","15:30","16:30","17:30","18:30","19:30","20:30","21:30","22:30","23:30"],
+  games: [
+    { name: "JODI DIGIT",     range: "10-1000" }
+  ],
+  playGame: "jodi"
+};
+
+function boardHash(str) {
+  let s = 0;
+  for (let i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) >>> 0;
+  return s;
+}
+function boardResult(idKey) {
+  const h = boardHash(idKey);
+  if (idKey.indexOf("starline") === 0) {
+    const panna = String(100 + (h % 900));
+    return { panel: panna, jodi: String(h % 10), announced: true };
+  }
+  return { jodi: String(h % 100).padStart(2, "0"), announced: true };
+}
+function boardRow(id, t) {
+  const [hh, mm] = t.split(":").map(Number);
+  const mkt = new Date();
+  mkt.setHours(hh, mm, 0, 0);
+  const closed = Date.now() >= mkt.getTime();
+  const result = closed ? boardResult(id + "|" + todayKey()) : null;
+  return { id, time: t, status: closed ? "CLOSED" : "RUNNING NOW", result };
+}
+function fmtBoardTime(t) {
+  const [hh, mm] = t.split(":").map(Number);
+  const ampm = hh >= 12 ? "PM" : "AM";
+  const hr = hh % 12 === 0 ? 12 : hh % 12;
+  return hr + ":" + String(mm).padStart(2, "0") + " " + ampm;
+}
+
 function $(sel) {
   return document.querySelector(sel);
 }
@@ -158,6 +205,8 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "games") renderGames(page);
+  else if (route === "starline") renderStarline(page);
+  else if (route === "jackpot") renderJackpot(page);
   else if (route === "profile") renderProfile(page);
   else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
@@ -230,11 +279,11 @@ function renderHome(page, opts) {
 
   page.innerHTML = `
     <div class="sara-tiles">
-      <a class="sara-tile sara-tile-starline" href="#/games">
+      <a class="sara-tile sara-tile-starline" href="#/starline">
         <span class="sara-tile-ico">★</span>
         <span class="sara-tile-name">MATKA STARLINE</span>
       </a>
-      <a class="sara-tile sara-tile-jackpot" href="#/charts">
+      <a class="sara-tile sara-tile-jackpot" href="#/jackpot">
         <span class="sara-tile-ico">▲</span>
         <span class="sara-tile-name">MATKA JACKPOT</span>
       </a>
@@ -436,6 +485,52 @@ function renderGames(page) {
   for (const b of page.querySelectorAll("[data-play-game]")) {
     b.addEventListener("click", () => openStyleMenu({ game: b.dataset.playGame, anchor: b }));
   }
+}
+
+function renderBoard(page, cfg, title) {
+  seedDemoResults();
+  updateHeaderBalance();
+  const bal = currentUser ? walletBalance(currentUser.phone || currentUser.username) : 0;
+  const rows = cfg.times.map((t) => {
+    const id = title.toLowerCase() + "-" + t.replace(":", "");
+    const r = boardRow(id, t);
+    const closed = r.status === "CLOSED";
+    const num = closed
+      ? (title.toLowerCase() === "starline" ? r.result.panel + " - " + r.result.jodi : r.result.jodi)
+      : (title.toLowerCase() === "starline" ? "*** - *" : "--");
+    return `<div class="board-row">
+      <span class="bw-time">${fmtBoardTime(r.time)}</span>
+      <span class="bw-status ${closed ? "st-closed" : "st-run"}">${closed ? "CLOSED" : "RUNNING NOW"}</span>
+      <span class="bw-num">${num}</span>
+      <button type="button" class="bw-play" data-board-play="${id}">Play</button>
+    </div>`;
+  }).join("");
+  page.innerHTML = `
+    <div class="board-head">
+      <div>
+        <h1>${title}</h1>
+        <span class="board-bal">₹ ${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+      </div>
+      <a class="board-back" href="#/">← Home</a>
+    </div>
+    <div class="board-tabs">
+      <span class="on">RESULT HISTORY</span>
+      <span>BID HISTORY</span>
+    </div>
+    <div class="board-chips">
+      ${cfg.games.map((g) => `<span class="b-chip"><b>${g.name}</b><small>${g.range}</small></span>`).join("")}
+    </div>
+    <div class="board-list">${rows}</div>`;
+  for (const b of page.querySelectorAll("[data-board-play]")) {
+    b.addEventListener("click", () => openStyleMenu({ game: cfg.playGame, anchor: b }));
+  }
+}
+
+function renderStarline(page) {
+  renderBoard(page, STARLINE_BOARD, "STARLINE");
+}
+function renderJackpot(page) {
+  renderBoard(page, JACKPOT_BOARD, "JACKPOT");
 }
 
 function fmtDateNice(dateStr) {

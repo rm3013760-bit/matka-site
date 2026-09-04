@@ -279,11 +279,11 @@ function renderHome(page, opts) {
 
   page.innerHTML = `
     <div class="sara-tiles">
-      <a class="sara-tile sara-tile-starline" href="#/games">
+      <a class="sara-tile sara-tile-starline" href="#/starline">
         <span class="sara-tile-ico">★</span>
         <span class="sara-tile-name">MATKA STARLINE</span>
       </a>
-      <a class="sara-tile sara-tile-jackpot" href="#/charts">
+      <a class="sara-tile sara-tile-jackpot" href="#/jackpot">
         <span class="sara-tile-ico">▲</span>
         <span class="sara-tile-name">MATKA JACKPOT</span>
       </a>
@@ -485,6 +485,52 @@ function renderGames(page) {
   for (const b of page.querySelectorAll("[data-play-game]")) {
     b.addEventListener("click", () => openStyleMenu({ game: b.dataset.playGame, anchor: b }));
   }
+}
+
+function renderBoard(page, cfg, title) {
+  seedDemoResults();
+  updateHeaderBalance();
+  const bal = currentUser ? walletBalance(currentUser.phone || currentUser.username) : 0;
+  const rows = cfg.times.map((t) => {
+    const id = title.toLowerCase() + "-" + t.replace(":", "");
+    const r = boardRow(id, t);
+    const closed = r.status === "CLOSED";
+    const num = closed
+      ? (title.toLowerCase() === "starline" ? r.result.panel + " - " + r.result.jodi : r.result.jodi)
+      : (title.toLowerCase() === "starline" ? "*** - *" : "--");
+    return `<div class="board-row">
+      <span class="bw-time">${fmtBoardTime(r.time)}</span>
+      <span class="bw-status ${closed ? "st-closed" : "st-run"}">${closed ? "CLOSED" : "RUNNING NOW"}</span>
+      <span class="bw-num">${num}</span>
+      <button type="button" class="bw-play" data-board-play="${id}">Play</button>
+    </div>`;
+  }).join("");
+  page.innerHTML = `
+    <div class="board-head">
+      <div>
+        <h1>${title}</h1>
+        <span class="board-bal">₹ ${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+      </div>
+      <a class="board-back" href="#/">← Home</a>
+    </div>
+    <div class="board-tabs">
+      <span class="on">RESULT HISTORY</span>
+      <span>BID HISTORY</span>
+    </div>
+    <div class="board-chips">
+      ${cfg.games.map((g) => `<span class="b-chip"><b>${g.name}</b><small>${g.range}</small></span>`).join("")}
+    </div>
+    <div class="board-list">${rows}</div>`;
+  for (const b of page.querySelectorAll("[data-board-play]")) {
+    b.addEventListener("click", () => openStyleMenu({ game: cfg.playGame, anchor: b }));
+  }
+}
+
+function renderStarline(page) {
+  renderBoard(page, STARLINE_BOARD, "STARLINE");
+}
+function renderJackpot(page) {
+  renderBoard(page, JACKPOT_BOARD, "JACKPOT");
 }
 
 function fmtDateNice(dateStr) {
