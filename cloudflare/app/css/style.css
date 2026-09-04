@@ -1947,6 +1947,22 @@ body { padding-bottom: 76px; }
 .bf-panel b { font-size: 1.05rem; color: var(--white); }
 .bf-panel p { font-size: 0.82rem; color: var(--muted); margin: 10px 0 18px; }
 
+/* ---- Bid Center (6-tab Sara-style section) ---- */
+.bctab-bar { display: flex; gap: 4px; padding: 8px 12px 0; overflow-x: auto; scrollbar-width: none; }
+.bctab-bar::-webkit-scrollbar { display: none; }
+.bctab { flex: 0 0 auto; padding: 9px 14px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.6px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.bctab.on { color: var(--gold-light); border-bottom-color: var(--gold); }
+.bctab:hover { color: var(--gold-light); }
+.bctab-bar + .hist-stats, .bctab-bar + .gr-list, .bctab-bar + .bb-empty, .bctab-bar + .bb-list, .bctab-bar + .br-list, .bctab-bar + .hist-card { margin-top: 4px; }
+
+/* ---- Game Result rows ---- */
+.gr-list { display: flex; flex-direction: column; padding: 4px 16px 20px; }
+.gr-row { display: flex; align-items: center; gap: 8px; padding: 13px 4px; border-bottom: 1px solid var(--line); }
+.gr-mkt { flex: 1; font-size: 0.82rem; font-weight: 800; color: var(--white); }
+.gr-time { flex: 0 0 auto; font-size: 0.72rem; font-weight: 700; color: var(--muted); min-width: 62px; }
+.gr-num { flex: 0 0 auto; font-family: "Inter", sans-serif; font-size: 0.92rem; font-weight: 900; letter-spacing: 1px; color: var(--gold-light); min-width: 84px; text-align: right; }
+.gr-num.gr-future { color: var(--muted); }
+
 .digit-pad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
 .digit-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-top: 12px; max-height: 340px; overflow-y: auto; }
 .pad-d {
@@ -2174,6 +2190,10 @@ html, body { overflow-x: hidden; }
   .bs-grid { padding-left: 12px; padding-right: 12px; }
   .br-list, .bb-list { padding-left: 12px; padding-right: 12px; }
   .bp-grid { padding-left: 12px; padding-right: 12px; }
+  .bctab { font-size: 0.66rem; padding: 8px 11px; }
+  .gr-list { padding-left: 12px; padding-right: 12px; }
+  .gr-mkt { font-size: 0.76rem; }
+  .gr-num { font-size: 0.84rem; min-width: 74px; }
 }
 
 /* ============ APP BAR + SIDE DRAWER ============ */
