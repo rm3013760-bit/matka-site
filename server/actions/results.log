@@ -2104,53 +2104,9 @@ auto-push ok 15:17
 [live] wrote "live_results.json" (13/29 markets, 236033 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
 publish-url: unchanged https://tube-george-pda-sure.trycloudflare.com
-[updater] today=2026-09-04 added starline=1 jackpot=1 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=42
-[updater] today=2026-09-04 added starline=0 jackpot=1 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
-[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
+auto-push ok 15:20
+[live] api board: 18/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (18/29 markets, 236688 bytes)
+[updater] today=2026-09-04 added starline=1 jackpot=2 liveMarkets=43
+publish-url: unchanged https://tube-george-pda-sure.trycloudflare.com
