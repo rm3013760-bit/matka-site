@@ -176,7 +176,7 @@ function router() {
   else if (route === "funds") renderFunds(page, parts[1]);
   else if (route === "history") renderMyHistory(page, parts[1] || "entries");
   else if (route === "results") renderHistory(page, parts[1]);
-  else if (route === "my-bids") renderMyBids(page);
+  else if (route === "my-bids" || route === "bids") renderBidCenter(page, parts[1] || "bid");
   else if (route === "passbook") renderPassbook(page);
   else if (route === "notification") renderNotifications(page);
   else if (route === "timetable") renderTimetable(page);
@@ -1113,9 +1113,41 @@ function renderMyHistory(page, tab) {
   </div>`;
 }
 
-function renderMyBids(page) {
+const BIDCENTER_TABS = [
+  { id: "bid",            label: "BID HISTORY" },
+  { id: "game-result",    label: "GAME RESULT" },
+  { id: "starline-bid",   label: "STARLINE BID" },
+  { id: "starline-result",label: "STARLINE RESULT" },
+  { id: "jackpot-bid",    label: "JACKPOT BID" },
+  { id: "jackpot-result", label: "JACKPOT RESULT" }
+];
+
+function renderBidCenter(page, tab) {
   if (!currentUser) { renderLogin(page); return; }
   resolveBets();
+  updateHeaderBalance();
+  const active = BIDCENTER_TABS.some((t) => t.id === tab) ? tab : "bid";
+  const tabs = BIDCENTER_TABS.map((t) =>
+    `<a href="#/my-bids/${t.id}" class="bctab${t.id === active ? " on" : ""}">${t.label}</a>`).join("");
+  const body = bidCenterBody(active);
+  page.innerHTML = `
+    <section class="page-head board-page-head">
+      <h1>My Bids</h1>
+    </section>
+    <div class="bctab-bar">${tabs}</div>
+    ${body}`;
+}
+
+function bidCenterBody(tab) {
+  if (tab === "game-result") return gameResultBody();
+  if (tab === "starline-bid") return boardBidsBody(STARLINE_BOARD, "starline");
+  if (tab === "starline-result") return boardResultsBody(STARLINE_BOARD, "starline");
+  if (tab === "jackpot-bid") return boardBidsBody(JACKPOT_BOARD, "jackpot");
+  if (tab === "jackpot-result") return boardResultsBody(JACKPOT_BOARD, "jackpot");
+  return myBidsBody();
+}
+
+function myBidsBody() {
   const u = currentUser;
   const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
   const won = bets.filter((b) => b.status === "won");
@@ -1142,21 +1174,80 @@ function renderMyBids(page) {
         </div>`;
     }
   } else {
-    rows = `<p class="empty">No bids yet. Place one from the Home page.</p>`;
+    rows = `<div class="bb-empty">
+      <p class="bb-empty-title">No Bid History Found</p>
+      <p class="bb-empty-sub">You haven't placed any bids yet</p>
+    </div>`;
   }
-  page.innerHTML = `
-    <section class="page-head">
-      <div class="panel-badge"><span class="dot"></span> ${u.name}</div>
-      <h1>My Bids</h1>
-      <p>All your placed bids.</p>
-    </section>
+  return `
     <div class="hist-stats">
       <div class="hist-stat"><b>${bets.length}</b><span>Total Bids</span></div>
       <div class="hist-stat"><b>${bets.filter((b) => b.status === "pending").length}</b><span>In Play</span></div>
       <div class="hist-stat"><b>₹ ${bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>In Play Amt</span></div>
       <div class="hist-stat"><b>₹ ${won.reduce((s, b) => s + b.stake * b.odds, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Won</span></div>
     </div>
-    <div class="hist-card"><div class="hist-list">${rows}</div></div>`;
+    <div class="hist-card"><div class="hist-list">${rows}</div></div>
+    <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>`;
+}
+
+function gameResultBody() {
+  const today = getTodayResults();
+  const rows = today.map(({ market, result }) => {
+    const announced = result && result.announced;
+    const jodi = announced && result.jodi != null && result.jodi2 != null ? String(result.jodi) + String(result.jodi2) : (announced ? "-" : "--");
+    const pan = announced ? String(result.panel) : "---";
+    const val = announced ? `${pan} - ${jodi}` : "--- --";
+    return `<div class="gr-row">
+      <span class="gr-mkt">${market.name}</span>
+      <span class="gr-time">${fmtBoardTime(market.result || market.close || "00:00")}</span>
+      <span class="gr-num ${announced ? "" : "gr-future"}">${val}</span>
+    </div>`;
+  }).join("");
+  return `<div class="gr-list">${rows}</div>`;
+}
+
+function boardResultsBody(cfg, bName) {
+  const selDate = todayKey();
+  const rows = cfg.times.map((t) => {
+    const id = bName + "-" + boardTimeKey(t);
+    const r = getResult(id, selDate);
+    const announced = !!(r && r.announced);
+    const star = bName === "starline";
+    const val = announced
+      ? (star ? (r.panel + "-" + r.jodi) : String(r.jodi))
+      : (star ? "***-*" : "**");
+    return `<div class="br-row">
+      <span class="br-time">${fmtBoardTime(t)}</span>
+      <span class="br-num ${announced ? "" : "br-future"}">${val}</span>
+    </div>`;
+  }).join("");
+  return `<div class="br-list">${rows}</div>`;
+}
+
+function boardBidsBody(cfg, bName) {
+  const list = (store.get("matka.bids_board", []) || []).filter((b) => b.board === bName);
+  if (!list.length) {
+    return `<div class="bb-empty">
+      <p class="bb-empty-title">No ${bName === "starline" ? "Starline" : "Jackpot"} Bid History Found</p>
+      <p class="bb-empty-sub">You haven't placed any ${bName === "starline" ? "starline" : "jackpot"} bids yet</p>
+    </div>`;
+  }
+  return `<div class="bb-list">${list.slice(0, 8).map((b) => `
+    <div class="bb-row">
+      <div class="bb-main">
+        <b>${b.gameName}</b>
+        <span>${boardDrawLabel(cfg, b.timeKey)} · ${b.numbers.map((n) => n.num).join(", ")}</span>
+      </div>
+      <div class="bb-side">
+        <b>₹ ${b.point.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
+        <span>${fmtDateNice(b.date)}</span>
+      </div>
+    </div>`).join("")}</div>
+    <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>`;
+}
+
+function renderMyBids(page) {
+  renderBidCenter(page, "bid");
 }
 
 function renderPassbook(page) {
