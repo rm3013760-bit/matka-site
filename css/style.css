@@ -450,6 +450,23 @@ main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
   white-space: nowrap;
 }
 
+.style-ico {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  color: var(--gold);
+  background: rgba(185, 144, 82, 0.12);
+  border: 1px solid rgba(185, 144, 82, 0.28);
+}
+
+.style-btn .style-txt { flex: 1 1 auto; min-width: 0; }
+.style-btn .style-txt b { word-break: break-word; }
+
+
 .btn-big { width: 100%; padding: 14px; font-size: 1rem; letter-spacing: 2px; border-radius: 12px; }
 
 @keyframes slideDown {

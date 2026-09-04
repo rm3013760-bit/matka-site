@@ -1399,6 +1399,40 @@ function walletTx(phone, limit) {
   return tx.filter((t) => t.phone === phone).slice(0, limit || 15);
 }
 
+const STYLE_ICONS = {
+  "single": '<path d="M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0-16 0"/><circle cx="12" cy="12" r="2.2"/>',
+  "jodi": '<path d="M8 6a6 6 0 0 1 6 6a6 6 0 0 1-6 6"/><circle cx="17" cy="17" r="3.4"/>',
+  "single-patti": '<path d="M12 4.5L20 19H4z"/><path d="M12 11v3M12 17.4v.1"/>',
+  "double-patti": '<path d="M8 7l4-2.6L16 7v4L12 13.6 8 11z"/><path d="M8 15l4-2.6L16 15v4L12 21.6 8 19z"/>',
+  "triple-patti": '<path d="M12 4l2.6 3.5L12 11 9.4 7.5z"/><path d="M5 11l2.6 3.5L5 18 2.4 14.5z"/><path d="M19 11l2.6 3.5L19 18l-2.6-3.5z"/>',
+  "half-sangam": '<path d="M12 3l9 9-9 9-9-9z"/><circle cx="12" cy="12" r="2.2"/>',
+  "full-sangam": '<path d="M12 3l9 9-9 9-9-9z"/><circle cx="12" cy="6.6" r="1.6"/><circle cx="17.4" cy="12" r="1.6"/><circle cx="12" cy="17.4" r="1.6"/><circle cx="6.6" cy="12" r="1.6"/>',
+  "family-pair": '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="18" r="2.2"/>',
+  "pana-family": '<circle cx="6" cy="6" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="18" r="2.2"/>',
+  "motor": '<path d="M13 2L4.5 13.5H11L9.5 22 19 8.5h-6.5z"/>',
+  "jodi-close": '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>'
+};
+
+const STYLE_GAME_ICON = {
+  "single": "single",
+  "jodi": "jodi",
+  "single-patti": "single-patti",
+  "double-patti": "double-patti",
+  "triple-patti": "triple-patti",
+  "half-sangam": "half-sangam",
+  "full-sangam": "full-sangam",
+  "family-pair": "family-pair",
+  "pana-family": "pana-family",
+  "motor": "motor",
+  "jodi-close": "jodi-close"
+};
+
+function iconForStyle(style) {
+  const key = STYLE_GAME_ICON[style.game] || "single";
+  const inner = STYLE_ICONS[key] || STYLE_ICONS["single"];
+  return `<span class="style-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg></span>`;
+}
+
 function openStyleMenu(opts) {
   const panel = document.createElement("div");
   panel.className = "style-backdrop";
@@ -1444,7 +1478,7 @@ function openStyleMenu(opts) {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "style-btn";
-    b.innerHTML = `<b>${s.label}</b><small>${g.odds}</small>`;
+    b.innerHTML = `${iconForStyle(s)}<span class="style-txt"><b>${s.label}</b></span><small>${g.odds}</small>`;
     b.onclick = () => {
       panel.remove();
       location.hash = "#/bid/" + s.id + "/" + market;
