@@ -1622,12 +1622,24 @@ body { padding-bottom: 76px; }
 .s5-bid-small { padding: 6px 12px; font-size: 0.62rem; }
 
 .s5-bid.disabled {
-  background: rgba(128, 128, 128, 0.12);
-  color: var(--muted);
-  border: 1px solid var(--line);
+  background: rgba(248, 113, 113, 0.14);
+  color: var(--red);
+  border: 1px solid rgba(248, 113, 113, 0.45);
   box-shadow: none;
   cursor: not-allowed;
   font-size: 0.66rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.s5-bid.disabled::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.22);
 }
 .s5-bid.disabled:hover { transform: none; }
 
