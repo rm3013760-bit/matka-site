@@ -1430,7 +1430,7 @@ const STYLE_GAME_ICON = {
 function iconForStyle(style) {
   const key = STYLE_GAME_ICON[style.game] || "single";
   const inner = STYLE_ICONS[key] || STYLE_ICONS["single"];
-  return `<span class="style-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg></span>`;
+  return `<span class="style-ico c-${key}"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg></span>`;
 }
 
 function openStyleMenu(opts) {
