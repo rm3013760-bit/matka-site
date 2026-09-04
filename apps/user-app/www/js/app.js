@@ -297,26 +297,28 @@ function renderHomeRows(cat) {
     if (hasResult) { tagTxt = "RESULT"; tagCls = "t-open"; }
     else if (status === "open") { tagTxt = "OPEN"; tagCls = "t-open"; }
     else if (status === "closed") { tagTxt = "CLOSED"; tagCls = "t-closed"; }
-    const tag = `<span class="s5-tag ${tagCls}">${tagTxt}</span>`;
     const playable = !hasResult;
     const bidBtn = playable
       ? `<button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>`
       : `<span class="s5-bid disabled" aria-disabled="true">CLOSED</span>`;
+    const tag = `<span class="s5-tag ${tagCls}">${tagTxt}</span>`;
     row.innerHTML = `
-      <div class="s5-top">
+      <div class="s5-left">
         <div class="s5-mkt">
           <b>${market.name}</b>
           <small>OPEN ${market.open} \u00b7 CLOSE ${market.close}</small>
         </div>
-        ${tag}
-      </div>
-      <div class="s5-btm">
-        <div class="s5-jodi"><em>JODI</em><b>${jodi}</b><small>PANNA ${pan1} - ${pan2}</small></div>
-        <div class="s5-oc">
-          <span class="s5-open"><i>OPEN</i>${pan1}</span>
-          <span class="s5-close"><i>CLOSE</i>${pan2}</span>
+        <div class="s5-nums">
+          <div class="s5-jodi"><em>JODI</em><b>${jodi}</b><small>PANNA ${pan1} - ${pan2}</small></div>
+          <div class="s5-oc">
+            <span class="s5-open"><i>OPEN</i>${pan1}</span>
+            <span class="s5-close"><i>CLOSE</i>${pan2}</span>
+          </div>
         </div>
+      </div>
+      <div class="s5-right">
         ${bidBtn}
+        ${tag}
       </div>`;
     row.addEventListener("click", () => (location.hash = "#/market/" + market.id));
     const playBtn = row.querySelector(".s5-bid[data-play-market]");
