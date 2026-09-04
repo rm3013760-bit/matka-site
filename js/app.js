@@ -1493,7 +1493,7 @@ function openStyleMenu(opts) {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "style-btn";
-    b.innerHTML = `${iconForStyle(s)}<span class="style-txt"><b>${s.label}</b></span><small>${g.odds}</small>`;
+    b.innerHTML = `${iconForStyle(s)}<span class="style-txt"><b>${s.label}</b></span>`;
     b.onclick = () => {
       panel.remove();
       location.hash = "#/bid/" + s.id + "/" + market;
