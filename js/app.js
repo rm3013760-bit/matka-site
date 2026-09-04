@@ -291,19 +291,12 @@ function renderHomeRows(cat) {
     const jodi = hasResult ? result.jodi + result.jodi2 : "--";
     const pan1 = hasResult ? result.panel : "---";
     const pan2 = hasResult ? result.panel2 || "--" : "---";
-    const status = marketPlayStatus(market);
-    let tagTxt = "PENDING";
-    let tagCls = "t-closed";
-    if (hasResult) { tagTxt = "RESULT"; tagCls = "t-open"; }
-    else if (status === "open") { tagTxt = "OPEN"; tagCls = "t-open"; }
-    else if (status === "closed") { tagTxt = "CLOSED"; tagCls = "t-closed"; }
     const playable = !hasResult;
     const bidBtn = playable
       ? `<button type="button" class="s5-bid" data-play-market="${market.id}">PLAY</button>`
       : `<span class="s5-bid disabled" aria-disabled="true">CLOSED</span>`;
-    const tag = `<span class="s5-tag ${tagCls}">${tagTxt}</span>`;
     row.innerHTML = `
-      <div class="s5-left">
+      <div class="s5-left-box">
         <div class="s5-mkt">
           <b>${market.name}</b>
           <small>OPEN ${market.open} \u00b7 CLOSE ${market.close}</small>
@@ -316,9 +309,8 @@ function renderHomeRows(cat) {
           </div>
         </div>
       </div>
-      <div class="s5-right">
+      <div class="s5-right-box">
         ${bidBtn}
-        ${tag}
       </div>`;
     row.addEventListener("click", () => (location.hash = "#/market/" + market.id));
     const playBtn = row.querySelector(".s5-bid[data-play-market]");
