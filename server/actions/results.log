@@ -2082,3 +2082,9 @@ auto-push ok 15:07
 [live] wrote "live_results.json" (12/29 markets, 235905 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
 publish-url: unchanged https://mass-kevin-walt-heart.trycloudflare.com
+auto-push ok 15:10
+[live] api board: 12/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (12/29 markets, 235905 bytes)
+[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
+publish-url: no server-url.txt
