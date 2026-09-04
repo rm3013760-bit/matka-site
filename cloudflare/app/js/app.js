@@ -1489,11 +1489,10 @@ function openStyleMenu(opts) {
   const grid = panel.querySelector("#style-grid");
   const styles = opts && opts.game ? BID_STYLES.filter((s) => s.game === opts.game) : BID_STYLES;
   for (const s of styles) {
-    const g = GAMES.find((x) => x.id === s.game);
     const b = document.createElement("button");
     b.type = "button";
     b.className = "style-btn";
-    b.innerHTML = `${iconForStyle(s)}<span class="style-txt"><b>${s.label}</b></span><small>${g.odds}</small>`;
+    b.innerHTML = `${iconForStyle(s)}<span class="style-txt"><b>${s.label}</b></span>`;
     b.onclick = () => {
       panel.remove();
       location.hash = "#/bid/" + s.id + "/" + market;

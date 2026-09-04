@@ -417,47 +417,45 @@ main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
 
 .style-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
-  max-height: 52vh;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 58vh;
   overflow-y: auto;
 }
 
 .style-btn {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
-  padding: 12px;
+  padding: 14px 8px;
   background: var(--card-solid);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   color: var(--text);
   transition: var(--tr);
 }
 
 .style-btn:hover { border-color: var(--gold); transform: translateY(-1px); }
 
-.style-btn b { font-size: 0.85rem; }
-
-.style-btn small {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--gold);
-  white-space: nowrap;
+.style-btn b {
+  font-size: 0.85rem;
+  line-height: 1.25;
+  font-weight: 600;
+  word-break: break-word;
 }
 
 .style-ico {
   flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
+  width: 56px;
+  height: 56px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 11px;
+  border-radius: 14px;
   background: rgba(185, 144, 82, 0.12);
   border: 1px solid rgba(185, 144, 82, 0.28);
   color: var(--gold);
@@ -478,10 +476,9 @@ main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
 .style-ico.c-motor        { background: rgba(248,113,113,0.16); border-color: rgba(248,113,113,0.4); color:#f87171; }
 .style-ico.c-jodi-close   { background: rgba(167,139,250,0.16); border-color: rgba(167,139,250,0.4); color:#a78bfa; }
 
-.style-ico.sara img { width: 26px; height: 26px; object-fit: contain; }
+.style-ico.sara img { width: 34px; height: 30px; object-fit: contain; }
 
-.style-btn .style-txt { flex: 1 1 auto; min-width: 0; }
-.style-btn .style-txt b { word-break: break-word; }
+.style-btn .style-txt { flex: 0 0 auto; min-width: 0; width: 100%; }
 
 
 
@@ -1106,6 +1103,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
   .nav a:not(.user-chip) { display: none; }
   .topbar { padding: 10px 14px; }
   .topbar-right { margin-left: auto; }
+  .style-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .seg-row {
   display: flex;
