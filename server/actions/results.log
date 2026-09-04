@@ -2148,3 +2148,9 @@ auto-push ok 16:52
 [live] wrote "live_results.json" (19/29 markets, 237070 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
 publish-url: unchanged https://black-ceo-voluntary-gospel.trycloudflare.com
+auto-push ok 16:55
+[live] api board: 19/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (19/29 markets, 237070 bytes)
+[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=43
+publish-url: unchanged https://black-ceo-voluntary-gospel.trycloudflare.com
