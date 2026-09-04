@@ -92,6 +92,53 @@ function getTodayResults() {
   }));
 }
 
+/* ---------- STARLINE & JACKPOT boards (demo) ---------- */
+const STARLINE_BOARD = {
+  times: ["10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],
+  games: [
+    { name: "SINGLE DIGIT",   range: "10-100" },
+    { name: "SINGLE PANA",    range: "10-1600" },
+    { name: "DOUBLE PANA",    range: "10-3200" },
+    { name: "TRIPLE PANA",    range: "10-10000" }
+  ],
+  playGame: "single"
+};
+const JACKPOT_BOARD = {
+  times: ["10:30","11:30","12:30","13:30","14:30","15:30","16:30","17:30","18:30","19:30","20:30","21:30","22:30","23:30"],
+  games: [
+    { name: "JODI DIGIT",     range: "10-1000" }
+  ],
+  playGame: "jodi"
+};
+
+function boardHash(str) {
+  let s = 0;
+  for (let i = 0; i < str.length; i++) s = (s * 31 + str.charCodeAt(i)) >>> 0;
+  return s;
+}
+function boardResult(idKey) {
+  const h = boardHash(idKey);
+  if (idKey.indexOf("starline") === 0) {
+    const panna = String(100 + (h % 900));
+    return { panel: panna, jodi: String(h % 10), announced: true };
+  }
+  return { jodi: String(h % 100).padStart(2, "0"), announced: true };
+}
+function boardRow(id, t) {
+  const [hh, mm] = t.split(":").map(Number);
+  const mkt = new Date();
+  mkt.setHours(hh, mm, 0, 0);
+  const closed = Date.now() >= mkt.getTime();
+  const result = closed ? boardResult(id + "|" + todayKey()) : null;
+  return { id, time: t, status: closed ? "CLOSED" : "RUNNING NOW", result };
+}
+function fmtBoardTime(t) {
+  const [hh, mm] = t.split(":").map(Number);
+  const ampm = hh >= 12 ? "PM" : "AM";
+  const hr = hh % 12 === 0 ? 12 : hh % 12;
+  return hr + ":" + String(mm).padStart(2, "0") + " " + ampm;
+}
+
 function $(sel) {
   return document.querySelector(sel);
 }
@@ -158,6 +205,8 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "games") renderGames(page);
+  else if (route === "starline") renderStarline(page);
+  else if (route === "jackpot") renderJackpot(page);
   else if (route === "profile") renderProfile(page);
   else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
