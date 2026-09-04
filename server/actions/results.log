@@ -2216,3 +2216,11 @@ auto-push ok 17:26
 [live] wrote "live_results.json" (19/29 markets, 237194 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=44
 publish-url: unchanged https://spears-preferences-sufficiently-female.trycloudflare.com
+auto-push ok 17:29
+18:13:39 tunnel: public check failed, backing off 10min
+18:13:39 tunnel: public check failed, backing off 10min
+[live] api board: 19/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (19/29 markets, 237239 bytes)
+[updater] today=2026-09-04 added starline=1 jackpot=1 liveMarkets=46
+publish-url: unchanged https://spears-preferences-sufficiently-female.trycloudflare.com
