@@ -2224,3 +2224,9 @@ auto-push ok 17:29
 [live] wrote "live_results.json" (19/29 markets, 237239 bytes)
 [updater] today=2026-09-04 added starline=1 jackpot=1 liveMarkets=46
 publish-url: unchanged https://spears-preferences-sufficiently-female.trycloudflare.com
+auto-push ok 18:13
+[live] api board: 19/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (19/29 markets, 237413 bytes)
+[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=46
+publish-url: unchanged https://spears-preferences-sufficiently-female.trycloudflare.com
