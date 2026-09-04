@@ -189,8 +189,20 @@ function router() {
   else if (route === "login") renderLogin(page);
   else if (route === "register") renderRegister(page);
   else if (route === "games") renderGames(page);
-  else if (route === "starline") renderStarline(page);
-  else if (route === "jackpot") renderJackpot(page);
+  else if (route === "starline" || route === "jackpot") {
+    const bName = route;
+    const bCfg = bName === "starline" ? STARLINE_BOARD : JACKPOT_BOARD;
+    const sub = parts[1] || "";
+    const tk = parts[2] || "";
+    const gp = parts[3] || "";
+    if (sub === "result") renderBoardResult(page, bCfg, bName);
+    else if (sub === "bids") renderBoardBids(page, bCfg, bName);
+    else if (sub === "play" && tk && !gp) renderBoardPick(page, bCfg, bName, tk);
+    else if (sub === "play" && tk && gp) renderBoardBet(page, bCfg, bName, tk, gp);
+    else if (sub === "play") renderBoardPick(page, bCfg, bName, "now");
+    else if (bName === "starline") renderStarline(page);
+    else renderJackpot(page);
+  }
   else if (route === "profile") renderProfile(page);
   else if (route === "bid") renderBidPage(page, parts[1] || "single", parts[2]);
   else if (route === "play") renderBidPage(page, parts[1] || "single", parts[2]);
@@ -499,15 +511,15 @@ function renderBoard(page, cfg, title) {
       <a class="board-back" href="#/">← Home</a>
     </div>
     <div class="board-tabs">
-      <span class="on">RESULT HISTORY</span>
-      <span>BID HISTORY</span>
+      <a href="#/${star ? "starline" : "jackpot"}/result">RESULT HISTORY</a>
+      <a href="#/${star ? "starline" : "jackpot"}/bids">BID HISTORY</a>
     </div>
     <div class="board-chips">
       ${cfg.games.map((g) => `<span class="b-chip"><b>${g.name}</b><small>${g.range}</small></span>`).join("")}
     </div>
     <div class="board-list">${rows}</div>`;
   for (const b of page.querySelectorAll("[data-board-play]")) {
-    b.addEventListener("click", () => openStyleMenu({ game: cfg.playGame, anchor: b }));
+    b.addEventListener("click", () => { location.hash = "#/" + (star ? "starline" : "jackpot") + "/play/" + b.dataset.boardPlay.replace(/^[a-z]+-/, ""); });
   }
 }
 
@@ -517,6 +529,271 @@ function renderStarline(page) {
 function renderJackpot(page) {
   renderBoard(page, JACKPOT_BOARD, "JACKPOT");
 }
+
+/* ---------- Board game catalogs (matching Sara 567) ---------- */
+const BOARD_GAMES = {
+  starline: [
+    { id: "single",              name: "Single Digit",     range: "10-100",    pay: "9.5x",  kind: "digit" },
+    { id: "single-bulk",         name: "Single Digit Bulk",range: "10-100",    pay: "9.5x",  kind: "digit-bulk" },
+    { id: "single-panna",        name: "Single Panna",     range: "10-1600",   pay: "150x",  kind: "panna" },
+    { id: "single-panna-bulk",   name: "Single Panna Bulk",range: "10-1600",   pay: "150x",  kind: "panna-bulk" },
+    { id: "double-panna",        name: "Double Panna",     range: "10-3200",   pay: "300x",  kind: "panna2" },
+    { id: "double-panna-bulk",   name: "Double Panna Bulk",range: "10-3200",   pay: "300x",  kind: "panna2-bulk" },
+    { id: "triple-panna",        name: "Triple Panna",     range: "10-10000",  pay: "700x",  kind: "panna3" },
+    { id: "panna-family",        name: "Panna Family",     range: "10-10000",  pay: "",      kind: "family" }
+  ],
+  jackpot: [
+    { id: "jodi",                name: "Jodi",             range: "10-1000",   pay: "96x",   kind: "jodi" },
+    { id: "jodi-bulk",           name: "Jodi Bulk",        range: "10-1000",   pay: "96x",   kind: "jodi-bulk" },
+    { id: "jodi-family",         name: "Jodi Family",      range: "10-1000",   pay: "",      kind: "jodifamily" },
+    { id: "red-jodi",            name: "Red Jodi",         range: "10-1000",   pay: "500x",  kind: "redjodi" }
+  ]
+};
+const BOARD_ENTER = { digit: "Enter Single Digit", jodi: "Enter Jodi Digit", panna: "Enter Panna", panna2: "Enter Double Panna", panna3: "Enter Triple Panna", "digit-bulk": "Enter Digits", "jodi-bulk": "Enter Jodis", "panna-bulk": "Enter Pannas", "panna2-bulk": "Enter Pannas", "panna3-bulk": "Enter Pannas", family: "Enter Pannas", jodifamily: "Enter Jodis", redjodi: "Enter Red Jodi" };
+function boardTimeKey(t) { return t.replace(":", ""); }
+function boardDrawLabel(board, tk) {
+  const t = board.times.find((x) => boardTimeKey(x) === tk);
+  return t ? fmtBoardTime(t) : fmtBoardTime("00:00");
+}
+
+function renderBoardResult(page, cfg, bName) {
+  seedDemoResults();
+  updateHeaderBalance();
+  const selDate = store.get("matka.board_result_date", todayKey());
+  const rows = cfg.times.map((t) => {
+    const id = bName + "-" + boardTimeKey(t);
+    const r = getResult(id, selDate);
+    const announced = !!(r && r.announced);
+    const star = bName === "starline";
+    const val = announced
+      ? (star ? (r.panel + "-" + r.jodi) : String(r.jodi))
+      : (star ? "***-*" : "**");
+    return `<div class="br-row">
+      <span class="br-time">${fmtBoardTime(t)}</span>
+      <span class="br-num ${announced ? "" : "br-future"}">${val}</span>
+    </div>`;
+  }).join("");
+  page.innerHTML = `
+    <section class="page-head board-page-head">
+      <a class="board-back" href="#/${bName}">← Back</a>
+      <h1>${bName === "starline" ? "Starline Result" : "Dishawar Result"}</h1>
+      <div class="br-datepicker">
+        <label for="br-date">Select Date</label>
+        <input type="date" id="br-date" value="${selDate}" max="${todayKey()}">
+      </div>
+    </section>
+    <div class="br-list">${rows}</div>`;
+  const di = page.querySelector("#br-date");
+  if (di) di.addEventListener("change", () => {
+    store.set("matka.board_result_date", di.value);
+    renderBoardResult($("#page"), cfg, bName);
+  });
+}
+
+function renderBoardBids(page, cfg, bName) {
+  updateHeaderBalance();
+  const list = (store.get("matka.bids_board", []) || []).filter((b) => b.board === bName);
+  const body = !list.length
+    ? `<div class="bb-empty">
+        <p class="bb-empty-title">No ${bName === "starline" ? "Starline" : "Jackpot"} Bid History Found</p>
+        <p class="bb-empty-sub">You haven't placed any ${bName === "starline" ? "starline" : "jackpot"} bids yet</p>
+      </div>`
+    : `<div class="bb-list">${list.slice(0, 8).map((b) => `
+        <div class="bb-row">
+          <div class="bb-main">
+            <b>${b.gameName}</b>
+            <span>${boardDrawLabel(cfg, b.timeKey)} · ${b.numbers.map((n) => n.num).join(", ")}</span>
+          </div>
+          <div class="bb-side">
+            <b>₹ ${b.point.toLocaleString(undefined, { minimumFractionDigits: 2 })}</b>
+            <span>${fmtDateNice(b.date)}</span>
+          </div>
+        </div>`).join("")}</div>`;
+  page.innerHTML = `
+    <section class="page-head board-page-head">
+      <a class="board-back" href="#/${bName}">← Back</a>
+      <h1>${bName === "starline" ? "Starline" : "Jackpot"} Bid History</h1>
+    </section>
+    ${body}
+    <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>`;
+}
+
+function renderBoardPick(page, cfg, bName, tk) {
+  seedDemoResults();
+  updateHeaderBalance();
+  const bal = currentUser ? walletBalance(currentUser.phone || currentUser.username) : 0;
+  const tl = boardDrawLabel(cfg, tk);
+  const games = BOARD_GAMES[bName];
+  page.innerHTML = `
+    <a class="board-back board-back-fixed" href="#/${bName}">← Back</a>
+    <div class="bp-head">
+      <div class="bp-title"><span>${tl}</span><b>${bName === "starline" ? "STARLINE" : "JACKPOT"}</b></div>
+      <span class="board-bal">₹ ${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+    </div>
+    <div class="bp-grid">
+      ${games.map((g) => `
+        <button type="button" class="bp-tile" data-bp="${g.id}">
+          <b>${g.name}</b>
+          ${g.range ? `<small>${g.range}</small>` : ""}
+          ${g.pay ? `<em>${g.pay}</em>` : ""}
+        </button>`).join("")}
+    </div>`;
+  for (const t of page.querySelectorAll("[data-bp]")) {
+    t.addEventListener("click", () => { location.hash = `#/${bName}/play/${tk}/${t.dataset.bp}`; });
+  }
+}
+
+function renderBoardBet(page, cfg, bName, tk, gameId) {
+  seedDemoResults();
+  updateHeaderBalance();
+  const game = (BOARD_GAMES[bName] || []).find((g) => g.id === gameId) || BOARD_GAMES[bName][0];
+  const bal = currentUser ? walletBalance(currentUser.phone || currentUser.username) : 0;
+  const tl = boardDrawLabel(cfg, tk);
+  const field = BOARD_ENTER[game.kind] || "Enter Number";
+  const jodiKind = game.kind.indexOf("jodi") === 0;
+  const special = store.get("matka.board_special_" + gameId, "0") === "1";
+  page.innerHTML = `
+    <a class="board-back board-back-fixed" href="#/${bName}/play/${tk}">← Back</a>
+    <div class="bb2-head">
+      <div class="bp-title"><span>${tl} - ${game.name}</span></div>
+      <span class="board-bal">₹ ${bal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+    </div>
+    <div class="bb2-modes">
+      <button type="button" class="seg ${special ? "" : "active"}" data-m="0">Easy Mode</button>
+      <button type="button" class="seg ${special ? "active" : ""}" data-m="1">Special Mode</button>
+    </div>
+    <div id="bb2-body"></div>
+    <div class="bb2-bar">
+      <span class="bb2-label">Bids</span><b id="bb2-bids">0</b>
+      <span class="bb2-label">· Points</span><b id="bb2-points">₹ 0.00</b>
+      <button type="button" class="btn btn-green bb2-submit" id="bb2-submit">Submit</button>
+    </div>`;
+  const segs = page.querySelectorAll("[data-m]");
+  for (const s of segs) {
+    s.addEventListener("click", () => {
+      store.set("matka.board_special_" + gameId, s.dataset.m);
+      renderBoardBet($("#page"), cfg, bName, tk, gameId);
+    });
+  }
+  if (special) renderBoardSpecial(page, cfg, bName, tk, game, bal);
+  else renderBoardEasy(page, cfg, bName, tk, game, bal, field);
+}
+
+function renderBoardEasy(page, cfg, bName, tk, game, bal, field) {
+  const nums = [];
+  const jodiKind = game.kind.indexOf("jodi") === 0;
+  const showType = jodiKind;
+  const renderTable = () => {
+    const tb = page.querySelector("#bb2-tbody");
+    if (!tb) return;
+    tb.innerHTML = nums.length
+      ? nums.map((n, i) => `
+        <div class="bb2-row">
+          <span class="bb2-num">${n.num}</span>
+          ${showType ? `<span class="bb2-type">${game.name}</span>` : ""}
+          <span class="bb2-point">${n.point}</span>
+          <button type="button" class="bb2-del" data-i="${i}">Delete</button>
+        </div>`).join("")
+      : `<div class="bb2-norow">No bids added yet</div>`;
+    const tot = nums.reduce((s, n) => s + (n.point || 0), 0);
+    const cnt = page.querySelector("#bb2-bids"); if (cnt) cnt.textContent = String(nums.length);
+    const totEl = page.querySelector("#bb2-points"); if (totEl) totEl.textContent = "₹ " + tot.toLocaleString(undefined, { minimumFractionDigits: 2 });
+    page.querySelectorAll("[data-i]").forEach((d) => d.addEventListener("click", () => { nums.splice(Number(d.dataset.i), 1); renderTable(); }));
+  };
+  page.querySelector("#bb2-body").innerHTML = `
+    <div class="bb2-fields">
+      <label>${field}</label>
+      <input type="text" id="bb2-num" inputmode="numeric" placeholder="${jodiKind ? "e.g. 45" : "e.g. 7"}">
+      <label>Enter Point</label>
+      <input type="number" id="bb2-point" inputmode="decimal" placeholder="e.g. 10">
+      <button type="button" class="bb2-add" id="bb2-add">Add</button>
+    </div>
+    <div class="bb2-table">
+      <div class="bb2-thead">
+        ${jodiKind ? "<span>Jodi</span>" : "<span>Ank</span>"}
+        ${showType ? "<span>Type</span>" : ""}
+        <span>Point</span><span>Delete</span>
+      </div>
+      <div id="bb2-tbody"></div>
+    </div>`;
+  page.querySelector("#bb2-add").addEventListener("click", () => {
+    const nv = (page.querySelector("#bb2-num").value || "").trim();
+    const pv = parseFloat(page.querySelector("#bb2-point").value);
+    if (!nv || !(pv > 0)) { alert("Enter a valid number and point."); return; }
+    nums.push({ num: nv, point: pv });
+    page.querySelector("#bb2-num").value = "";
+    page.querySelector("#bb2-point").value = "";
+    renderTable();
+  });
+  page.querySelector("#bb2-submit").addEventListener("click", () => {
+    if (!currentUser) { alert("Please login to place bids."); location.hash = "#/login"; return; }
+    if (!nums.length) { alert("Add at least one bid."); return; }
+    const total = nums.reduce((s, n) => s + (n.point || 0), 0);
+    if (!(bal > 0) || total > bal) { showBoardNoFund(page, cfg, bName, tk, game.id, total, nums, game); return; }
+    const tx = store.get("matka.wallet", []);
+    tx.push({ phone: currentUser.phone || currentUser.username, userName: currentUser.name, amount: -total, note: game.name + " · " + bName + " " + tk, by: currentUser.name, date: new Date().toISOString() });
+    store.set("matka.wallet", tx);
+    const bids = store.get("matka.bids_board", []);
+    bids.push({ id: Date.now(), board: bName, timeKey: tk, game: game.id, gameName: game.name, numbers: nums.map((n) => ({ num: n.num, point: n.point })), point: total, date: new Date().toISOString(), status: "pending" });
+    store.set("matka.bids_board", bids);
+    alert("Bid placed! It resolves when the " + bName + " result is declared.");
+    location.hash = "#/" + bName;
+  });
+  renderTable();
+}
+
+function showBoardNoFund(page, cfg, bName, tk, gameId, total, nums, game) {
+  const d = document.createElement("div");
+  d.className = "bf-backdrop";
+  d.innerHTML = `<div class="bf-panel">
+    <b>Insufficient Balance</b>
+    <p>Please add fund to continue.</p>
+    <button type="button" class="btn" id="bf-ok">OK</button>
+  </div>`;
+  document.body.appendChild(d);
+  d.querySelector("#bf-ok").onclick = () => { d.remove(); location.hash = "#/funds/add"; };
+  d.addEventListener("click", (e) => { if (e.target === d) d.remove(); });
+}
+
+function renderBoardSpecial(page, cfg, bName, tk, game, bal) {
+  const jodiKind = game.kind.indexOf("jodi") === 0;
+  let grid = "";
+  if (jodiKind) {
+    for (let i = 0; i < 100; i += 2) {
+      const a = String(i).padStart(2, "0"), b2 = String(i + 1).padStart(2, "0");
+      grid += `<div class="bs-pair"><span>${a}</span><span>${b2}</span><input type="number" data-j="${a}" placeholder="₹"><input type="number" data-j="${b2}" placeholder="₹"></div>`;
+    }
+  } else {
+    for (let i = 0; i <= 9; i++) grid += `<div class="bs-digit"><span>${i}</span><input type="number" data-d="${i}" placeholder="₹"></div>`;
+  }
+  page.querySelector("#bb2-body").innerHTML = `
+    <div class="bb2-modes2">
+      <div class="bs-date">Date: ${fmtDateNice(todayKey())}</div>
+    </div>
+    <div class="bs-grid ${jodiKind ? "bs-jodi" : ""}">${grid}</div>`;
+  const submit = () => {
+    if (!currentUser) { alert("Please login to place bids."); location.hash = "#/login"; return; }
+    const sel = [];
+    if (jodiKind) page.querySelectorAll("[data-j]").forEach((inp) => { const v = parseFloat(inp.value); if (v > 0) sel.push({ num: inp.dataset.j, point: v }); });
+    else page.querySelectorAll("[data-d]").forEach((inp) => { const v = parseFloat(inp.value); if (v > 0) sel.push({ num: inp.dataset.d, point: v }); });
+    if (!sel.length) { alert("Enter points for at least one number."); return; }
+    const total = sel.reduce((s, n) => s + n.point, 0);
+    if (bal > 0 && total <= bal) {
+      const tx = store.get("matka.wallet", []);
+      tx.push({ phone: currentUser.phone || currentUser.username, userName: currentUser.name, amount: -total, note: game.name + " (Special) · " + bName + " " + tk, by: currentUser.name, date: new Date().toISOString() });
+      store.set("matka.wallet", tx);
+      const bids = store.get("matka.bids_board", []);
+      bids.push({ id: Date.now(), board: bName, timeKey: tk, game: game.id, gameName: game.name, numbers: sel, point: total, date: new Date().toISOString(), status: "pending" });
+      store.set("matka.bids_board", bids);
+      alert("Bid placed! It resolves when the " + bName + " result is declared.");
+      location.hash = "#/" + bName;
+    } else {
+      showBoardNoFund(page, cfg, bName, tk, game.id, total, sel, game);
+    }
+  };
+  page.querySelector("#bb2-submit").addEventListener("click", submit);
+}
+
 
 function fmtDateNice(dateStr) {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -2445,7 +2722,10 @@ window.addEventListener("hashchange", () => { buildNav(); router(); });
 window.addEventListener("sync-updated", () => {
   if (currentUser && userBlocked()) { blockIfNeeded(); router(); return; }
   const h = location.hash || "#/";
-  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || h.startsWith("#/starline") || h.startsWith("#/jackpot")) router();
+  const isBoardLive = h === "#/starline" || h === "#/jackpot" ||
+    h.startsWith("#/starline/result") || h.startsWith("#/starline/bids") ||
+    h.startsWith("#/jackpot/result") || h.startsWith("#/jackpot/bids");
+  if (h === "#/" || h.startsWith("#/home") || h.startsWith("#/market") || h.startsWith("#/charts") || h.startsWith("#/history") || h.startsWith("#/games") || h.startsWith("#/results") || isBoardLive) router();
 });
 (function syncFoot() {
   const el = document.getElementById("foot-sync-url");
