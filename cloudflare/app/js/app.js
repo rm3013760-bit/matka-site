@@ -229,13 +229,27 @@ function renderHome(page, opts) {
   const cats = ["All", "Main Bazar", "Day", "Night"];
 
   page.innerHTML = `
-    <div class="cat-chips" id="cat-chips">
-      ${cats.map((c) => `<button type="button" class="cat-chip ${c === "All" ? "on" : ""}" data-cat="${c}">${c}</button>`).join("")}
+    <div class="sara-tiles">
+      <a class="sara-tile sara-tile-starline" href="#/games">
+        <span class="sara-tile-ico">★</span>
+        <span class="sara-tile-name">MATKA STARLINE</span>
+      </a>
+      <a class="sara-tile sara-tile-jackpot" href="#/charts">
+        <span class="sara-tile-ico">▲</span>
+        <span class="sara-tile-name">MATKA JACKPOT</span>
+      </a>
+    </div>
+    <div class="sara-money">
+      <a class="sara-mbtn m-add" href="#/funds/add">ADD MONEY</a>
+      <a class="sara-mbtn m-withdraw" href="#/funds/withdraw">WITHDRAW</a>
     </div>
     <div class="s5-section matka-results">
       <div class="s5-head">
         <h2>MATKA RESULT</h2>
         <a href="#/charts">VIEW ALL</a>
+      </div>
+      <div class="cat-chips" id="cat-chips">
+        ${cats.map((c) => `<button type="button" class="cat-chip ${c === "All" ? "on" : ""}" data-cat="${c}">${c}</button>`).join("")}
       </div>
       <div class="s5-list" id="home-rows"></div>
     </div>
