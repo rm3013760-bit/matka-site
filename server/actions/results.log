@@ -2324,3 +2324,9 @@ auto-push ok 18:54
 [live] wrote "live_results.json" (20/29 markets, 237651 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=47
 publish-url: unchanged https://dublin-track-accent-stroke.trycloudflare.com
+auto-push ok 18:57
+[live] api board: 20/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (20/29 markets, 237651 bytes)
+[updater] today=2026-09-04 added starline=1 jackpot=0 liveMarkets=48
+publish-url: unchanged https://dublin-track-accent-stroke.trycloudflare.com
