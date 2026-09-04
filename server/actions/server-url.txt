@@ -1,1 +1,1 @@
-https://nav-angeles-mountain-chairman.trycloudflare.com
+https://api.trycloudflare.com

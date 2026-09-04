@@ -1651,3 +1651,39 @@ auto-push failed: To https://github.com/rm3013760-bit/matka-site.git
 [live] sara567 fallback: 0/0 markets
 [live] wrote "live_results.json" (0/29 markets, 233240 bytes)
 publish-url: unchanged https://nav-angeles-mountain-chairman.trycloudflare.com
+auto-push failed: To https://github.com/rm3013760-bit/matka-site.git
+05:23:10 tunnel: new url https://api.trycloudflare.com (published)
+05:25:32 tunnel: public check failed, backing off 10min
+[live] api board failed: The operation was aborted due to timeout (falling back to sara567 scrape)
+[live] sita-morning failed: The operation was aborted due to timeout
+[live] star-tara-morning failed: The operation was aborted due to timeout
+[live] milan-morning failed: The operation was aborted due to timeout
+[live] sridevi failed: The operation was aborted due to timeout
+[live] kalyan-morning failed: The operation was aborted due to timeout
+[live] sita-day failed: The operation was aborted due to timeout
+[live] star-tara-day failed: The operation was aborted due to timeout
+[live] milan-day failed: The operation was aborted due to timeout
+[live] kalyan-main failed: The operation was aborted due to timeout
+[live] sita-night failed: The operation was aborted due to timeout
+[live] sridevi-night failed: The operation was aborted due to timeout
+[live] star-tara-night failed: The operation was aborted due to timeout
+[live] milan-night failed: The operation was aborted due to timeout
+[live] kalyan-night failed: The operation was aborted due to timeout
+[live] main-bazar failed: The operation was aborted due to timeout
+[live] andhra-morning failed: The operation was aborted due to timeout
+[live] andhra-day failed: The operation was aborted due to timeout
+[live] andhra-night failed: The operation was aborted due to timeout
+[live] kamal-morning failed: The operation was aborted due to timeout
+[live] kamal-day failed: The operation was aborted due to timeout
+[live] kamal-night failed: The operation was aborted due to timeout
+[live] madhur-morning failed: The operation was aborted due to timeout
+[live] madhur-day failed: The operation was aborted due to timeout
+[live] rajdhani-day failed: The operation was aborted due to timeout
+[live] rajdhani-night failed: The operation was aborted due to timeout
+[live] time-bazar failed: fetch failed
+[live] supreme-day failed: fetch failed
+[live] supreme-night failed: fetch failed
+[live] mahadevi failed: fetch failed
+[live] sara567 fallback: 0/29 markets
+[live] wrote "live_results.json" (0/29 markets, 233240 bytes)
+publish-url: unchanged https://api.trycloudflare.com
