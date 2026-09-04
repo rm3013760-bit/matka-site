@@ -2088,3 +2088,13 @@ auto-push ok 15:10
 [live] wrote "live_results.json" (12/29 markets, 235905 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
 publish-url: no server-url.txt
+auto-push ok 15:13
+15:14:15 tunnel: new url https://tube-george-pda-sure.trycloudflare.com (published)
+15:14:15 tunnel: public check failed, backing off 10min
+15:14:15 tunnel: new url https://tube-george-pda-sure.trycloudflare.com (published)
+15:14:15 tunnel: public check failed, backing off 10min
+[live] api board: 12/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (12/29 markets, 235905 bytes)
+[updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
+publish-url: unchanged https://tube-george-pda-sure.trycloudflare.com
