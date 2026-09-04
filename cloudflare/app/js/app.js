@@ -311,10 +311,6 @@ function renderHome(page, opts) {
       </div>
       <p class="hint">Entertainment picks only — not predictions or advice. Demo content.</p>
     </div>
-    <div class="s5-section games-play">
-      <div class="s5-head"><h2>MATKA GAMES</h2><a href="#/games">GAME RATES</a></div>
-      <div class="s5-games" id="home-games"></div>
-    </div>
     <section class="quick-links">
       <a href="#/charts">Jodi Chart</a>
       <a href="#/history">My History</a>
@@ -332,7 +328,6 @@ function renderHome(page, opts) {
     });
   }
   renderHomeRows("All");
-  renderHomeGames();
 
   updateHeaderBalance();
 }
@@ -374,23 +369,6 @@ function renderHomeRows(cat) {
     const playBtn = row.querySelector(".s5-bid[data-play-market]");
     if (playBtn) playBtn.addEventListener("click", (e) => { e.stopPropagation(); openStyleMenu({ market: market.id, anchor: playBtn }); });
     homeRows.appendChild(row);
-  }
-}
-
-function renderHomeGames() {
-  const homeGames = $("#home-games");
-  if (!homeGames) return;
-  for (const g of GAMES) {
-    const c = document.createElement("div");
-    c.className = "s5-game";
-    c.innerHTML = `
-      <b>${g.code}</b>
-      <strong>${g.name}</strong>
-      <small>${g.odds}</small>
-      <button type="button" class="s5-bid s5-bid-small" data-play-game="${g.id}">PLAY</button>`;
-    const pb = c.querySelector("[data-play-game]");
-    pb.addEventListener("click", () => openStyleMenu({ game: g.id, anchor: pb }));
-    homeGames.appendChild(c);
   }
 }
 
