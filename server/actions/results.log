@@ -2104,3 +2104,4 @@ auto-push ok 15:17
 [live] wrote "live_results.json" (13/29 markets, 236033 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=40
 publish-url: unchanged https://tube-george-pda-sure.trycloudflare.com
+[updater] today=2026-09-04 added starline=1 jackpot=1 liveMarkets=42
