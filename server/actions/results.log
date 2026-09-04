@@ -2258,3 +2258,9 @@ auto-push ok 18:26
 [live] wrote "live_results.json" (19/29 markets, 237413 bytes)
 [updater] today=2026-09-04 added starline=0 jackpot=0 liveMarkets=46
 publish-url: unchanged https://timothy-recorded-cnet-kent.trycloudflare.com
+auto-push ok 18:29
+[live] api board: 19/29 markets from sattamatkaapi.live
+[live] sara567 fallback: 0/0 markets
+[live] wrote "live_results.json" (19/29 markets, 237413 bytes)
+[updater] today=2026-09-04 added starline=0 jackpot=1 liveMarkets=47
+publish-url: unchanged https://timothy-recorded-cnet-kent.trycloudflare.com
