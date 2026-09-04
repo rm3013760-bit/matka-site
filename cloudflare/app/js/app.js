@@ -1427,8 +1427,23 @@ const STYLE_GAME_ICON = {
   "jodi-close": "jodi-close"
 };
 
+const STYLE_SARA_ICON = {
+  "single": "assets/icons/sara/single.png",
+  "jodi": "assets/icons/sara/jodi.png",
+  "single-patti": "assets/icons/sara/single-pana.png",
+  "double-patti": "assets/icons/sara/double-pana.png",
+  "triple-patti": "assets/icons/sara/triple-pana.png",
+  "half-sangam": "assets/icons/sara/half-sangam.png",
+  "full-sangam": "assets/icons/sara/full-sangam.png",
+  "motor": "assets/icons/sara/motor.png"
+};
+
 function iconForStyle(style) {
   const key = STYLE_GAME_ICON[style.game] || "single";
+  const sara = STYLE_SARA_ICON[key];
+  if (sara) {
+    return `<span class="style-ico sara c-${key}"><img src="${sara}" alt="${style.label || ""}" width="21" height="21"></span>`;
+  }
   const inner = STYLE_ICONS[key] || STYLE_ICONS["single"];
   return `<span class="style-ico c-${key}"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${inner}</svg></span>`;
 }
