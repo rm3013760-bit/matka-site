@@ -4,6 +4,9 @@ REPO="/Users/rajkumarmeena/matka-site"
 cd "$REPO" || exit 1
 /usr/local/bin/node server/fetch-results.js --to-file live_results.json || { echo "$(date '+%H:%M') fetch failed, keeping last data" >> server/actions/results.log; exit 0; }
 
+# STARLINE & JACKPOT result updater (server-authoritative board results)
+/usr/local/bin/node server/actions/starline-updater.js >> server/actions/results.log 2>&1
+
 CLOUD_FILE="$REPO/server/actions/cloud-url"
 if [ -s "$CLOUD_FILE" ]; then
   CLOUD=$(cat "$CLOUD_FILE")

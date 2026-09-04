@@ -27,19 +27,20 @@ while [ $attempt -le $max_attempts ]; do
     console.log(n);
   ' "$today" 2>/dev/null || echo 0)
 
-  log "attempt $attempt: $fresh/29 markets fresh for $today"
+    log "attempt $attempt: $fresh/29 markets fresh for $today"
 
   if [ "$fresh" -ge "$FRESH_MARKETS_REQUIRED" ]; then
     log "data is fresh"
     break
-  fi
-
-  # Not fresh enough -> upstream blocked/throttled. Back off, then retry.
+  fi  # Not fresh enough -> upstream blocked/throttled. Back off, then retry.
   wait=$((attempt*20))
   log "not fresh yet (blocked/throttled?). retrying in ${wait}s"
   sleep "$wait"
   attempt=$((attempt+1))
 done
+
+# STARLINE & JACKPOT result updater (server-authoritative board results)
+node server/actions/starline-updater.js >> server/actions/results.log 2>&1
 
 # No matter whether fresh or not, commit whatever changed (so we never
 # silently stop publishing). Commit-push is no-op if nothing changed.
