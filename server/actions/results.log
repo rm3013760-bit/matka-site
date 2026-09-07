@@ -6015,3 +6015,12 @@ auto-push ok 19:34
 [live] wrote "live_results.json" (469/29 markets, 279853 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://registered-represent-guests-beast.trycloudflare.com
+auto-push ok 19:37
+19:39:15 tunnel: public check failed after 6 tries, restarting tunnel
+19:39:46 tunnel: new url https://leadership-canberra-western-supervision.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+19:41:17 tunnel: public check failed after 6 tries, restarting tunnel
+[live] sara567 fallback: 355/29 markets
+[live] wrote "live_results.json" (355/29 markets, 279853 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://leadership-canberra-western-supervision.trycloudflare.com
