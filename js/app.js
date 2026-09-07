@@ -1003,7 +1003,7 @@ function renderLedger(page) {
       <div class="hist-row">
         <div class="hist-date">
           <span class="hd-day">${b.gameName}</span>
-          <span class="hd-date">${(b.date || "").slice(0, 10)}</span>
+          <span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span>
         </div>
         <span class="hist-session ${session.cls}">${session.txt}</span>
         <span class="hist-market">${marketName}</span>
@@ -1070,7 +1070,7 @@ function renderMyHistory(page, tab) {
         <div class="hist-row">
           <div class="hist-date">
             <span class="hd-day">${styleLabel}</span>
-            <span class="hd-date">${(b.date || "").slice(0, 10)}</span>
+            <span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span>
           </div>
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
@@ -1177,7 +1177,7 @@ function myBidsBody() {
       const marketName = bidMarket(b);
       rows += `
         <div class="hist-row">
-          <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${(b.date || "").slice(0, 10)}</span></div>
+          <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span></div>
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
