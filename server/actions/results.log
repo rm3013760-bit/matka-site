@@ -6103,3 +6103,11 @@ auto-push ok 20:13
 [live] wrote "live_results.json" (467/29 markets, 280048 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://ranging-called-usd-recall.trycloudflare.com
+auto-push ok 20:17
+20:17:39 tunnel: public check failed after 6 tries, restarting tunnel
+20:18:07 tunnel: new url https://volumes-marion-unlike-acdbentity.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 440/29 markets
+[live] wrote "live_results.json" (440/29 markets, 280048 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: published https://volumes-marion-unlike-acdbentity.trycloudflare.com
