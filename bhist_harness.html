@@ -105,6 +105,10 @@
   <script src="js/api.js?v=37"></script>
   
 <script>
+var _sb = localStorage.setItem.bind(localStorage);
+var _log = [];
+localStorage.setItem = function(k, v){ if (k === "matka.bets") _log.push("set@t" + Math.floor(performance.now()) + "=" + String(v).slice(0,60)); return _sb(k, v); };
+window.__betlog = _log;
 var users = JSON.parse(localStorage.getItem("matka.users") || "[]");
 if (!users.some(function(x){ return x.phone === "9876543210"; }))
   users.push({ name: "Test User", username: "tester", phone: "9876543210", password: "1234", mpin: "1234" });
@@ -114,17 +118,10 @@ window.addEventListener("load", function(){
   setTimeout(function(){
     currentUser = { username: "tester", name: "Test User", role: "user", joined: "2026", email: "", phone: "9876543210" };
     localStorage.setItem("matka.user", JSON.stringify(currentUser));
-    API.call("place_bid_atomicv1", {
-      mobile: "9876543210",
-      market_id: "kalyan-main",
-      game_type: "single",
-      number: "5",
-      amount: 100,
-      style: "single"
-    }).then(function(res){
-      localStorage.setItem("bidres", JSON.stringify(res));
-      location.hash = "#/my-bids/bid";
-    }).catch(function(e){ localStorage.setItem("biderr", String(e && e.message || e)); });
+    location.hash = "#/my-bids/bid";
+    setTimeout(function(){
+      document.title = "LOG " + (window.__betlog||[]).join(" ;; ");
+    }, 1500);
   }, 800);
 });
 </script>
@@ -201,13 +198,5 @@ window.addEventListener("load", function(){
     setInterval(check, 5000);
   })();
   </script>
-
-<script>
-setTimeout(function(){
-  var rows = document.querySelectorAll("#mybids-body .hist-row").length;
-  var stats = document.querySelector("#mybids-body .hist-stat b") ? document.querySelector("#mybids-body .hist-stat b").textContent : "none";
-  document.title = "FLOW bidres=" + (localStorage.getItem("bidres")||"---") + " err=" + (localStorage.getItem("biderr")||"") + " rows=" + rows + " total=" + stats + " bets=" + (JSON.parse(localStorage.getItem("matka.bets")||"[]").length);
-}, 5000);
-</script>
 </body>
 </html>

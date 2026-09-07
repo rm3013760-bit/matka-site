@@ -6209,3 +6209,11 @@ auto-push ok 20:57
 [live] wrote "live_results.json" (439/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=1 jackpot=0 liveMarkets=57
 publish-url: unchanged https://katie-mistakes-thru-bracket.trycloudflare.com
+auto-push ok 21:01
+21:01:47 tunnel: public check failed after 6 tries, restarting tunnel
+21:02:18 tunnel: new url https://bullet-alter-psp-occasional.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 429/29 markets
+[live] wrote "live_results.json" (429/29 markets, 280425 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://bullet-alter-psp-occasional.trycloudflare.com
