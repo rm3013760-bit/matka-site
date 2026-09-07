@@ -6071,3 +6071,11 @@ auto-push ok 19:54
 [live] wrote "live_results.json" (453/29 markets, 279972 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://fitted-merchandise-commissioners-see.trycloudflare.com
+auto-push ok 19:58
+19:59:31 tunnel: public check failed after 6 tries, restarting tunnel
+20:00:04 tunnel: new url https://representing-usgs-spider-shaped.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 456/29 markets
+[live] wrote "live_results.json" (456/29 markets, 279972 bytes)
+[updater] today=2026-09-07 added starline=1 jackpot=0 liveMarkets=57
+publish-url: unchanged https://representing-usgs-spider-shaped.trycloudflare.com

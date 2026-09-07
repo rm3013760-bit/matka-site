@@ -1008,6 +1008,7 @@ function renderLedger(page) {
         <span class="hist-session ${session.cls}">${session.txt}</span>
         <span class="hist-market">${marketName}</span>
         <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
+        <div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits">₹ ${Number(b.stake).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div>
         <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
       </div>`;
     list.appendChild(div.firstElementChild);
@@ -1074,6 +1075,7 @@ function renderMyHistory(page, tab) {
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
+          <div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits">₹ ${Number(b.stake).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div>
           <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
         </div>`;
       list.appendChild(div.firstElementChild);
@@ -1179,6 +1181,7 @@ function myBidsBody() {
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
+          <div class="hpanel"><span class="hpanel-label">Amount</span><span class="hpanel-digits">₹ ${Number(b.stake).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span></div>
           <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
         </div>`;
     }

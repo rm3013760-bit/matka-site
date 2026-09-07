@@ -109,22 +109,22 @@ var users = JSON.parse(localStorage.getItem("matka.users") || "[]");
 if (!users.some(function(x){ return x.phone === "9876543210"; }))
   users.push({ name: "Test User", username: "tester", phone: "9876543210", password: "1234", mpin: "1234" });
 localStorage.setItem("matka.users", JSON.stringify(users));
-var bets = [
-  { id: 1, phone: "9876543210", userName: "Test", marketId: "sita-morning", marketName: "SITA MORNING", game: "single", gameName: "Single Digit", numbers: { num: "5" }, stake: 100, odds: 9.6, status: "won", style: "single", date: "2026-09-07T10:00:00.000Z" },
-  { id: 2, phone: "9876543210", userName: "Test", marketId: "kalyan-main",  marketName: "KALYAN",      game: "jodi-close", gameName: "Jodi Close", numbers: { num: "12" }, stake: 200, odds: 96, status: "lost", style: "jodi-close", date: "2026-09-07T11:00:00.000Z" },
-  { id: 3, phone: "9876543210", userName: "Test", marketId: "main-bazar",   marketName: "MAIN BAZAR",  game: "single", gameName: "Single Digit", numbers: { num: "7" }, stake: 50, odds: 9.6, status: "pending", style: "single", date: "2026-09-06T10:00:00.000Z" }
-];
-localStorage.setItem("matka.bets", JSON.stringify(bets));
-localStorage.setItem("matka.user", JSON.stringify({ name: "Test User", username: "tester", phone: "9876543210" }));
+localStorage.setItem("matka.user", JSON.stringify({ username: "tester", name: "Test User", phone: "9876543210" }));
 window.addEventListener("load", function(){
   setTimeout(function(){
     currentUser = { username: "tester", name: "Test User", role: "user", joined: "2026", email: "", phone: "9876543210" };
     localStorage.setItem("matka.user", JSON.stringify(currentUser));
+    var bets = [
+      { id: 1, phone: "9876543210", userName: "Test", marketId: "sita-morning", marketName: "SITA MORNING", game: "single", gameName: "Single Digit", numbers: { num: "5" }, stake: 100, odds: 9.6, status: "won", style: "single", date: "2026-09-07T10:00:00.000Z" },
+      { id: 2, phone: "9876543210", userName: "Test", marketId: "kalyan-main",  marketName: "KALYAN",      game: "jodi-close", gameName: "Jodi Close", numbers: { num: "12" }, stake: 200, odds: 96, status: "lost", style: "jodi-close", date: "2026-09-07T11:00:00.000Z" },
+      { id: 3, phone: "9876543210", userName: "Test", marketId: "main-bazar",   marketName: "MAIN BAZAR",  game: "single", gameName: "Single Digit", numbers: { num: "7" }, stake: 50, odds: 9.6, status: "pending", style: "single", date: "2026-09-06T10:00:00.000Z" }
+    ];
+    localStorage.setItem("matka.bets", JSON.stringify(bets));
     location.hash = "#/my-bids/bid";
     setTimeout(function(){
-      document.title = "BETS=" + store.get("matka.bets", []).length + " CU=" + (currentUser?currentUser.phone:"N");
-    }, 1500);
-  }, 700);
+      document.title = "BETS=" + store.get("matka.bets", []).length;
+    }, 1200);
+  }, 800);
 });
 </script>
 <script src="js/app.js?v=75"></script>
