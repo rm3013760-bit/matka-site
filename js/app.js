@@ -995,7 +995,7 @@ function renderLedger(page) {
       b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
       b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
     const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-    const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+    const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
     const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
     const session = bidSession(b);
     const marketName = bidMarket(b);
@@ -1060,7 +1060,7 @@ function renderMyHistory(page, tab) {
         b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
         b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
       const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
       const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
       const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
       const session = bidSession(b);
@@ -1168,7 +1168,7 @@ function myBidsBody() {
         b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
         b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
       const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
       const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
       const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
       const session = bidSession(b);
