@@ -6079,3 +6079,13 @@ auto-push ok 19:58
 [live] wrote "live_results.json" (456/29 markets, 279972 bytes)
 [updater] today=2026-09-07 added starline=1 jackpot=0 liveMarkets=57
 publish-url: unchanged https://representing-usgs-spider-shaped.trycloudflare.com
+auto-push ok 20:01
+20:01:35 tunnel: public check failed after 6 tries, restarting tunnel
+20:02:04 tunnel: new url https://conversion-phases-decimal-mate.trycloudflare.com (published)
+20:03:35 tunnel: public check failed after 6 tries, restarting tunnel
+20:04:06 tunnel: new url https://conscious-laugh-interval-colleague.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 366/29 markets
+[live] wrote "live_results.json" (366/29 markets, 280048 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://conscious-laugh-interval-colleague.trycloudflare.com
