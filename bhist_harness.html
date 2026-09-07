@@ -105,13 +105,6 @@
   <script src="js/api.js?v=37"></script>
   
 <script>
-var _sb = localStorage.setItem.bind(localStorage);
-var _log = [];
-localStorage.setItem = function(k, v){
-  if (k === "matka.bets" && (JSON.parse(v||"[]").length > 0)) _log.push(String(v).slice(0,80));
-  return _sb(k, v);
-};
-window.__betlog = _log;
 var users = JSON.parse(localStorage.getItem("matka.users") || "[]");
 if (!users.some(function(x){ return x.phone === "9876543210"; }))
   users.push({ name: "Test User", username: "tester", phone: "9876543210", password: "1234", mpin: "1234" });
@@ -123,7 +116,7 @@ window.addEventListener("load", function(){
     localStorage.setItem("matka.user", JSON.stringify(currentUser));
     location.hash = "#/history";
     setTimeout(function(){
-      document.title = "H " + JSON.parse(localStorage.getItem("matka.bets")||"[]").length + " " + (window.__betlog[0]||"none");
+      document.title = "HIST rows=" + document.querySelectorAll("#myhist-body .hist-row").length + " bets=" + JSON.parse(localStorage.getItem("matka.bets")||"[]").length;
     }, 1500);
   }, 800);
 });

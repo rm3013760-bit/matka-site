@@ -6223,3 +6223,9 @@ auto-push ok 21:04
 [live] wrote "live_results.json" (476/29 markets, 280425 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://bullet-alter-psp-occasional.trycloudflare.com
+auto-push ok 21:07
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 521/29 markets
+[live] wrote "live_results.json" (521/29 markets, 280425 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://bullet-alter-psp-occasional.trycloudflare.com
