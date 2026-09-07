@@ -1,0 +1,3 @@
+tunnel.sh: line 77: 30647 Terminated: 15          "$cloudflared" tunnel --no-autoupdate --url http://localhost:8777 > /tmp/cloudflared.log 2>&1
+tunnel.sh: line 77: 31624 Terminated: 15          "$cloudflared" tunnel --no-autoupdate --url http://localhost:8777 > /tmp/cloudflared.log 2>&1
+tunnel.sh: line 77: 33382 Terminated: 15          "$cloudflared" tunnel --no-autoupdate --url http://localhost:8777 > /tmp/cloudflared.log 2>&1

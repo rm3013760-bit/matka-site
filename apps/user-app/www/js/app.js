@@ -1323,7 +1323,41 @@ function renderFunds(page, tab) {
   const body = $("#funds-body");
 
   if (tabName === "hub") {
-    body.innerHTML = "";
+    const depList = myRequests.slice(0, 10);
+    const wdList = wds.slice(0, 10);
+    body.innerHTML = `
+      <div class="card panel-card">
+        <h3>Deposit History</h3>
+        <div class="activity-list">
+          ${depList.length ? depList.map((r) => `
+            <div class="activity-row">
+              <span>
+                <span class="funds-tx-amt">₹ ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <small class="funds-tx-meta">· ${r.method || "UPI"} · Ref: ${r.ref || "—"}</small>
+              </span>
+              <small class="tx-right">
+                <small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small>
+                <small class="funds-tx-date">${fmtDateNice((r.date || "").slice(0, 10))}</small>
+              </small>
+            </div>`).join("") : `<p class="hint">No deposits yet.</p>`}
+        </div>
+      </div>
+      <div class="card panel-card">
+        <h3>Withdrawal History</h3>
+        <div class="activity-list">
+          ${wdList.length ? wdList.map((w) => `
+            <div class="activity-row">
+              <span>
+                <span class="funds-tx-amt">₹ ${w.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <small class="funds-tx-meta">· ${w.method === "bank" ? (w.bankName || "Bank") + " · " + (w.accNo || "") : "UPI · " + (w.upi || "")}</small>
+              </span>
+              <small class="tx-right">
+                <small class="req-status req-${w.status}">${String(w.status || "pending").toUpperCase()}</small>
+                <small class="funds-tx-date">${fmtDateNice((w.date || "").slice(0, 10))}</small>
+              </small>
+            </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`}
+        </div>
+      </div>`;
     return;
   }
 

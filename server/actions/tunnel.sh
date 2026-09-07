@@ -27,6 +27,19 @@ health() {
   curl -s -o /dev/null -w "%{http_code}" --max-time 8 "http://localhost:8777/api/health" 2>/dev/null
 }
 
+# Quick tunnels take ~10-60s to become publicly reachable after creation.
+# Retry several times before declaring the URL dead, so we don't kill a
+# healthy-but-still-warming-up tunnel (the previous 1-second check did).
+reachable() {
+  local url="$1" i code
+  for i in 1 2 3 4 5 6; do
+    code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url/api/health" 2>/dev/null)
+    [ "$code" = "200" ] && return 0
+    sleep 15
+  done
+  return 1
+}
+
 start() {
   pkill -f "cloudflared tunnel --no-autoupdate --url" 2>/dev/null
   sleep 2
@@ -49,11 +62,16 @@ while true; do
   if [ -n "$URL" ] && { [ ! -f "$RAW" ] || [ "$(cat "$RAW" 2>/dev/null)" != "$URL" ]; }; then
     publish "$URL"
   fi
-  if ! curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$(cat "$RAW")/api/health" 2>/dev/null | grep -q 200; then
-    log "public check failed, backing off 10min"
-    pkill -f "cloudflared tunnel --no-autoupdate --url" 2>/dev/null
-    sleep 600
+  PUB="$RAW"
+  if [ -n "$(cat "$PUB" 2>/dev/null)" ]; then
+    if reachable "$(cat "$PUB")"; then
+      sleep 60
+    else
+      log "public check failed after 6 tries, restarting tunnel"
+      pkill -f "cloudflared tunnel --no-autoupdate --url" 2>/dev/null
+      sleep 20
+    fi
   else
-    sleep 60
+    sleep 30
   fi
 done
