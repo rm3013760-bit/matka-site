@@ -6089,3 +6089,8 @@ auto-push ok 20:01
 [live] wrote "live_results.json" (366/29 markets, 280048 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://conscious-laugh-interval-colleague.trycloudflare.com
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 471/29 markets
+[live] wrote "live_results.json" (471/29 markets, 280048 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://conscious-laugh-interval-colleague.trycloudflare.com
