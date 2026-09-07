@@ -779,6 +779,20 @@ function fmtDateNice(dateStr) {
   return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+function fmtDateTime(isoStr) {
+  if (!isoStr) return "";
+  const dt = new Date(isoStr);
+  if (isNaN(dt.getTime())) return String(isoStr).slice(0, 16).replace("T", " ");
+  return dt.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
+
 function histRowHTML(r, withMarket, isToday) {
   const jodi2 = r.jodi2 ? " · " + r.jodi2 : "";
   return `<div class="hist-row${isToday ? " today" : ""}">
@@ -1003,7 +1017,7 @@ function renderLedger(page) {
       <div class="hist-row">
         <div class="hist-date">
           <span class="hd-day">${b.gameName}</span>
-          <span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span>
+          <span class="hd-date">${fmtDateTime(b.date)}</span>
         </div>
         <span class="hist-session ${session.cls}">${session.txt}</span>
         <span class="hist-market">${marketName}</span>
@@ -1070,7 +1084,7 @@ function renderMyHistory(page, tab) {
         <div class="hist-row">
           <div class="hist-date">
             <span class="hd-day">${styleLabel}</span>
-            <span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span>
+            <span class="hd-date">${fmtDateTime(b.date)}</span>
           </div>
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
@@ -1177,7 +1191,7 @@ function myBidsBody() {
       const marketName = bidMarket(b);
       rows += `
         <div class="hist-row">
-          <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${String(b.date || "").slice(0, 16).replace("T", " ")}</span></div>
+          <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${fmtDateTime(b.date)}</span></div>
           <span class="hist-session ${session.cls}">${session.txt}</span>
           <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
