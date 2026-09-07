@@ -1285,7 +1285,7 @@ function renderFunds(page, tab) {
   const balance = walletBalance(u.phone);
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
-  const tabName = (tab === "add" || tab === "withdraw" || tab === "bank") ? tab : "hub";
+  const tabName = (tab === "add" || tab === "withdraw" || tab === "bank" || tab === "deposit-history" || tab === "withdrawal-history") ? tab : "hub";
   const savedBank = store.get("matka.bank." + u.phone, null);
   const accounts = store.get("matka.accounts." + u.phone, null) || {
     upi: (savedBank && savedBank.upi) || "",
@@ -1307,12 +1307,14 @@ function renderFunds(page, tab) {
       <a class="funds-btn f-add" href="#/funds/add">Add Funds</a>
       <a class="funds-btn f-withdraw" href="#/funds/withdraw">Withdraw Funds</a>
       <a class="funds-btn f-bank" href="#/funds/bank">Add Bank Account</a>
+      <a class="funds-btn f-dephist" href="#/funds/deposit-history">Deposit History</a>
+      <a class="funds-btn f-withhist" href="#/funds/withdrawal-history">Withdrawal History</a>
     </div>
     <div id="funds-body"></div>`
     : `
     <section class="page-head">
-      <h1>${tabName === "withdraw" ? "Withdrawals" : tabName === "bank" ? "Add Bank Account" : "Add Money"}</h1>
-      <p>${tabName === "withdraw" ? "Request a payout from your wallet." : tabName === "bank" ? "Store your bank account for fast withdrawals." : "Add money to your wallet."}</p>
+      <h1>${tabName === "withdraw" ? "Withdrawals" : tabName === "bank" ? "Add Bank Account" : tabName === "deposit-history" ? "Deposit History" : tabName === "withdrawal-history" ? "Withdrawal History" : "Add Money"}</h1>
+      <p>${tabName === "withdraw" ? "Request a payout from your wallet." : tabName === "bank" ? "Store your bank account for fast withdrawals." : tabName === "deposit-history" ? "Review your past deposit requests and their status." : tabName === "withdrawal-history" ? "Review your past withdrawal requests and their status." : "Add money to your wallet."}</p>
     </section>
     <div class="funds-balance card">
       <span>Wallet Balance</span>
@@ -1322,6 +1324,8 @@ function renderFunds(page, tab) {
       <a class="funds-btn f-add ${tabName === "add" ? "on" : ""}" href="#/funds/add">Add Funds</a>
       <a class="funds-btn f-withdraw ${tabName === "withdraw" ? "on" : ""}" href="#/funds/withdraw">Withdraw Funds</a>
       <a class="funds-btn f-bank ${tabName === "bank" ? "on" : ""}" href="#/funds/bank">Add Bank Account</a>
+      <a class="funds-btn f-dephist ${tabName === "deposit-history" ? "on" : ""}" href="#/funds/deposit-history">Deposit History</a>
+      <a class="funds-btn f-withhist ${tabName === "withdrawal-history" ? "on" : ""}" href="#/funds/withdrawal-history">Withdrawal History</a>
     </div>
     <div id="funds-body"></div>`);
 
@@ -1361,6 +1365,31 @@ function renderFunds(page, tab) {
                 <small class="funds-tx-date">${fmtDateNice((w.date || "").slice(0, 10))}</small>
               </small>
             </div>`).join("") : `<p class="hint">No withdrawal requests yet.</p>`}
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (tabName === "deposit-history" || tabName === "withdrawal-history") {
+    const list = tabName === "deposit-history" ? myRequests : wds;
+    const isDep = tabName === "deposit-history";
+    body.innerHTML = `
+      <div class="card panel-card">
+        <h3>${isDep ? "Deposit History" : "Withdrawal History"}</h3>
+        <div class="activity-list">
+          ${list.length ? list.map((r) => `
+            <div class="activity-row">
+              <span>
+                <span class="funds-tx-amt">₹ ${r.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <small class="funds-tx-meta">${isDep
+                  ? "· " + (r.method || "UPI") + " · Ref: " + (r.ref || "—")
+                  : "· " + (r.method === "bank" ? (r.bankName || "Bank") + " · " + (r.accNo || "") : "UPI · " + (r.upi || ""))}</small>
+              </span>
+              <small class="tx-right">
+                <small class="req-status req-${r.status}">${String(r.status || "pending").toUpperCase()}</small>
+                <small class="funds-tx-date">${fmtDateNice((r.date || "").slice(0, 10))}</small>
+              </small>
+            </div>`).join("") : `<p class="hint">${isDep ? "No deposits yet." : "No withdrawal requests yet."}</p>`}
         </div>
       </div>`;
     return;

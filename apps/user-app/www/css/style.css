@@ -2393,6 +2393,8 @@ html[data-theme="light"] .side-drawer { background: linear-gradient(180deg, #fff
 .f-add { background: linear-gradient(135deg, var(--green), #16a34a); }
 .f-withdraw { background: linear-gradient(135deg, var(--red), #b91c1c); }
 .f-bank { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.f-dephist { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.f-withhist { background: linear-gradient(135deg, #f97316, #c2410c); }
 .f-passbook { background: linear-gradient(135deg, var(--gold), var(--gold3)); color: #0a1535; }
 
 /* ============ NIGHT THEME (white / cyan) ============ */
