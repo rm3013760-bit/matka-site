@@ -6191,3 +6191,11 @@ publish-url: unchanged https://citysearch-architect-ultram-desired.trycloudflare
 [live] wrote "live_results.json" (542/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://lighter-usually-tough-placing.trycloudflare.com
+auto-push ok 20:54
+20:55:47 tunnel: public check failed after 6 tries, restarting tunnel
+20:56:17 tunnel: new url https://scripting-connected-adapter-frederick.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 464/29 markets
+[live] wrote "live_results.json" (464/29 markets, 280349 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://scripting-connected-adapter-frederick.trycloudflare.com
