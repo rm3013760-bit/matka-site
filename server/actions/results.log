@@ -6154,3 +6154,10 @@ auto-push ok 20:33
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://press-symantec-questions-generate.trycloudflare.com
 auto-push ok 20:36
+20:37:44 tunnel: public check failed after 6 tries, restarting tunnel
+20:38:05 tunnel: local server not healthy, waiting
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 479/29 markets
+[live] wrote "live_results.json" (479/29 markets, 280349 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://press-symantec-questions-generate.trycloudflare.com
