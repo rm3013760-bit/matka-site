@@ -6304,3 +6304,12 @@ auto-push ok 22:45
 [live] wrote "live_results.json" (420/29 markets, 280627 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://martin-kodak-accessed-indication.trycloudflare.com
+auto-push ok 22:48
+22:48:41 tunnel: new url https://centuries-done-blocked-myers.trycloudflare.com (published)
+22:50:12 tunnel: public check failed after 6 tries, restarting tunnel
+22:50:42 tunnel: new url https://col-circle-restricted-leon.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 505/29 markets
+[live] wrote "live_results.json" (505/29 markets, 280627 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://col-circle-restricted-leon.trycloudflare.com
