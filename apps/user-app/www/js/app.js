@@ -1139,7 +1139,7 @@ const BIDCENTER_TABS = [
 function bidSession(b) {
   const st = String(b.style || b.game || "");
   const close = /close/.test(st) || st === "half-sangam-b" || st === "full-sangam";
-  return close ? { cls: "s-close", txt: "CLOSE" } : { cls: "s-open", txt: "OPEN" };
+  return close ? { key: "close", cls: "s-close", txt: "CLOSE" } : { key: "open", cls: "s-open", txt: "OPEN" };
 }
 
 function bidMarket(b) {
@@ -1162,6 +1162,7 @@ function renderBidCenter(page, tab) {
     </section>
     <div class="bctab-bar">${tabs}</div>
     ${body}`;
+  if (active === "bid") bindBidHistoryFilters(page);
 }
 
 function bidCenterBody(tab) {
@@ -1173,12 +1174,53 @@ function bidCenterBody(tab) {
   return myBidsBody();
 }
 
-function myBidsBody() {
+function myBidsBody(f) {
+  f = f || {};
   const u = currentUser;
-  const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const allBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const bets = allBets.filter((b) =>
+    (f.session === "all" || bidSession(b).key === f.session) &&
+    (f.status === "all" || b.status === f.status) &&
+    (f.game === "all" || (b.game || b.style) === f.game)
+  );
   const won = bets.filter((b) => b.status === "won");
+  const gameIds = [...new Set(allBets.map((b) => b.game || b.style || "").filter(Boolean))];
+  const gameOpts = gameIds.map((id) => {
+    const s = BID_STYLES.find((x) => x.id === id);
+    return `<option value="${id}"${f.game === id ? " selected" : ""}>${(s && s.label) || id}</option>`;
+  }).join("");
+  const chip = (group, val, label) =>
+    `<button type="button" class="bf-chip${f[group] === val ? " on" : ""}" data-bf="${group}" data-val="${val}">${label}</button>`;
+  const fbar = `
+    <div class="bfilters">
+      <div class="bf-group">
+        <span class="bf-label">Session</span>
+        ${chip("session", "all", "All")}${chip("session", "open", "Open")}${chip("session", "close", "Close")}
+      </div>
+      <div class="bf-group">
+        <span class="bf-label">Status</span>
+        ${chip("status", "all", "All")}${chip("status", "won", "Won")}${chip("status", "lost", "Lost")}${chip("status", "pending", "Pending")}
+      </div>
+      <div class="bf-group">
+        <span class="bf-label">Game</span>
+        <select class="bf-select" data-bf="game">
+          <option value="all">All</option>
+          ${gameOpts}
+        </select>
+      </div>
+    </div>`;
   let rows = "";
-  if (bets.length) {
+  if (!allBets.length) {
+    rows = `<div class="bb-empty">
+      <p class="bb-empty-title">No Bid History Found</p>
+      <p class="bb-empty-sub">You haven't placed any bids yet</p>
+    </div>`;
+  } else if (!bets.length) {
+    rows = `<div class="bb-empty">
+      <p class="bb-empty-title">No Matching Bids</p>
+      <p class="bb-empty-sub">Try changing your filters</p>
+    </div>`;
+  } else {
     for (const b of bets.slice(0, 100)) {
       const num = b.game === "half-sangam" || b.game === "half-sangam-b" ? b.numbers.jodi + " - " + b.numbers.patti :
         b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
@@ -1199,21 +1241,47 @@ function myBidsBody() {
           <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
         </div>`;
     }
-  } else {
-    rows = `<div class="bb-empty">
-      <p class="bb-empty-title">No Bid History Found</p>
-      <p class="bb-empty-sub">You haven't placed any bids yet</p>
-    </div>`;
   }
   return `
-    <div class="hist-stats">
-      <div class="hist-stat"><b>${bets.length}</b><span>Total Bids</span></div>
-      <div class="hist-stat"><b>${bets.filter((b) => b.status === "pending").length}</b><span>In Play</span></div>
-      <div class="hist-stat"><b>₹ ${bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>In Play Amt</span></div>
-      <div class="hist-stat"><b>₹ ${won.reduce((s, b) => s + b.stake * b.odds, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Won</span></div>
-    </div>
-    <div class="hist-card"><div class="hist-list">${rows}</div></div>
-    <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>`;
+    <div id="mybids-body">
+      ${fbar}
+      <div class="hist-stats">
+        <div class="hist-stat"><b>${bets.length}</b><span>Total Bids</span></div>
+        <div class="hist-stat"><b>${bets.filter((b) => b.status === "pending").length}</b><span>In Play</span></div>
+        <div class="hist-stat"><b>₹ ${bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>In Play Amt</span></div>
+        <div class="hist-stat"><b>₹ ${won.reduce((s, b) => s + b.stake * b.odds, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b><span>Won</span></div>
+      </div>
+      <div class="hist-card"><div class="hist-list">${rows}</div></div>
+      <div class="bb-pager"><button type="button" disabled>PREV</button><span>1</span><button type="button" disabled>NEXT</button></div>
+    </div>`;
+}
+
+function bindBidHistoryFilters(page) {
+  const holder = page.querySelector("#mybids-body");
+  if (!holder) return;
+  const ff = { session: "all", status: "all", game: "all" };
+  const rebind = () => {
+    for (const el of holder.querySelectorAll("[data-bf]")) {
+      el.onclick = () => {
+        if (el.tagName === "SELECT") return;
+        const group = el.getAttribute("data-bf");
+        const val = el.getAttribute("data-val");
+        if (ff[group] === val) return;
+        ff[group] = val;
+        holder.querySelectorAll('.bf-chip[data-bf="' + group + '"]').forEach((c) => c.classList.remove("on"));
+        el.classList.add("on");
+        holder.innerHTML = myBidsBody(ff);
+        rebind();
+      };
+      el.onchange = () => {
+        if (el.tagName !== "SELECT") return;
+        ff.game = el.value;
+        holder.innerHTML = myBidsBody(ff);
+        rebind();
+      };
+    }
+  };
+  rebind();
 }
 
 function gameResultBody() {
