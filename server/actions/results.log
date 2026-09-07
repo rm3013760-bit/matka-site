@@ -6094,3 +6094,12 @@ publish-url: unchanged https://conscious-laugh-interval-colleague.trycloudflare.
 [live] wrote "live_results.json" (471/29 markets, 280048 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://conscious-laugh-interval-colleague.trycloudflare.com
+auto-push ok 20:13
+20:14:06 tunnel: new url https://dollars-division-patients-spa.trycloudflare.com (published)
+20:15:37 tunnel: public check failed after 6 tries, restarting tunnel
+20:16:08 tunnel: new url https://ranging-called-usd-recall.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 467/29 markets
+[live] wrote "live_results.json" (467/29 markets, 280048 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://ranging-called-usd-recall.trycloudflare.com

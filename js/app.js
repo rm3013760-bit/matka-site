@@ -779,6 +779,20 @@ function fmtDateNice(dateStr) {
   return dt.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
 }
 
+function fmtDateTime(isoStr) {
+  if (!isoStr) return "";
+  const dt = new Date(isoStr);
+  if (isNaN(dt.getTime())) return String(isoStr).slice(0, 16).replace("T", " ");
+  return dt.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  });
+}
+
 function histRowHTML(r, withMarket, isToday) {
   const jodi2 = r.jodi2 ? " · " + r.jodi2 : "";
   return `<div class="hist-row${isToday ? " today" : ""}">
