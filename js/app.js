@@ -2331,7 +2331,8 @@ function resolveBets() {
     } else if (b.game === "single-patti" || b.game === "double-patti" || b.game === "triple-patti") {
       won = String(b.numbers.num) === String(r.panel);
     } else if (b.game === "family-pair") {
-      const fam = FAMILY_PAIRS[Number(b.numbers.family) - 1] || [];
+      const famIdx = Number((b.numbers && (b.numbers.family || b.numbers.num)) || 0);
+      const fam = FAMILY_PAIRS[famIdx - 1] || [];
       const j = r.jodi + r.jodi2;
       const jr = r.jodi2 + r.jodi;
       won = fam.includes(j) || fam.includes(jr);
