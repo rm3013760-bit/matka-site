@@ -6052,3 +6052,12 @@ auto-push ok 19:48
 [live] wrote "live_results.json" (344/29 markets, 279853 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://stands-throughout-beats-arbitrary.trycloudflare.com
+auto-push ok 19:51
+19:51:55 tunnel: new url https://tissue-daily-myers-increases.trycloudflare.com (published)
+19:53:26 tunnel: public check failed after 6 tries, restarting tunnel
+19:53:55 tunnel: new url https://website-aye-filled-configuring.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 523/29 markets
+[live] wrote "live_results.json" (523/29 markets, 279853 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://website-aye-filled-configuring.trycloudflare.com
