@@ -971,7 +971,7 @@ function renderLedger(page) {
   if (!currentUser) { renderLogin(page); return; }
   resolveBets();
   const u = currentUser;
-  const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const bets = store.get("matka.bets", []).filter((b) => phoneEq(b.phone, u.phone)).slice().reverse();
   const won = bets.filter((b) => b.status === "won");
   const invested = bets.filter((b) => b.status === "pending").reduce((s, b) => s + b.stake, 0);
   const paid = bets.filter((b) => b.status === "won").reduce((s, b) => s + b.stake * b.odds, 0);
@@ -1032,8 +1032,9 @@ function renderLedger(page) {
 function renderMyHistory(page, tab) {
   if (!currentUser) { renderLogin(page); return; }
   resolveBets();
+  ensureDemoBids();
   const u = currentUser;
-  const bets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const bets = store.get("matka.bets", []).filter((b) => phoneEq(b.phone, u.phone)).slice().reverse();
   const requests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
   const wds = store.get("matka.withdrawals", []).filter((w) => w.phone === u.phone).slice().reverse();
   const tabName = tab === "deposits" ? "deposits" : tab === "withdrawals" ? "withdrawals" : "entries";
@@ -1151,6 +1152,7 @@ function bidMarket(b) {
 function renderBidCenter(page, tab) {
   if (!currentUser) { renderLogin(page); return; }
   resolveBets();
+  ensureDemoBids();
   updateHeaderBalance();
   const active = BIDCENTER_TABS.some((t) => t.id === tab) ? tab : "bid";
   const tabs = BIDCENTER_TABS.map((t) =>
@@ -1180,7 +1182,7 @@ function myBidsBody(f) {
   if (f.status !== "all" && f.status !== "won" && f.status !== "lost" && f.status !== "pending") f.status = "all";
   if (!f.market) f.market = "all";
   const u = currentUser;
-  const allBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const allBets = store.get("matka.bets", []).filter((b) => phoneEq(b.phone, u.phone)).slice().reverse();
   const marketMatch = (b, mname) => {
     if (mname === "all") return true;
     if (bidMarket(b) === mname) return true;
@@ -2134,7 +2136,7 @@ function renderBidPage(page, styleId, marketId) {
   const g = GAMES.find((x) => x.id === style.game);
   let selMarket = marketId && MARKETS.find((m) => m.id === marketId) ? marketId : (MARKETS[0] || {}).id;
   const balance = walletBalance(u.phone);
-  const myBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const myBets = store.get("matka.bets", []).filter((b) => phoneEq(b.phone, u.phone)).slice().reverse();
 
   page.innerHTML = `
     <section class="page-head">
@@ -2311,6 +2313,7 @@ function renderBidPage(page, styleId, marketId) {
 }
 
 function resolveBets() {
+  try {
   const results = getResults();
   const bets = store.get("matka.bets", []);
   const tx = store.get("matka.wallet", []);
@@ -2331,7 +2334,8 @@ function resolveBets() {
     } else if (b.game === "single-patti" || b.game === "double-patti" || b.game === "triple-patti") {
       won = String(b.numbers.num) === String(r.panel);
     } else if (b.game === "family-pair") {
-      const fam = FAMILY_PAIRS[Number(b.numbers.family) - 1] || [];
+      const famIdx = Number((b.numbers && (b.numbers.family || b.numbers.num)) || 0);
+      const fam = FAMILY_PAIRS[famIdx - 1] || [];
       const j = r.jodi + r.jodi2;
       const jr = r.jodi2 + r.jodi;
       won = fam.includes(j) || fam.includes(jr);
@@ -2362,6 +2366,43 @@ function resolveBets() {
     store.set("matka.bets", bets);
     store.set("matka.wallet", tx);
   }
+  } catch (e) { console.warn("resolveBets error:", e); }
+}
+
+function normPhone(p) {
+  return String(p || "").replace(/\D/g, "");
+}
+
+function phoneEq(a, b) {
+  const na = normPhone(a);
+  const nb = normPhone(b);
+  return !!na && !!nb && na === nb;
+}
+
+function ensureDemoBids() {
+  try {
+    const u = currentUser;
+    if (!u || u.role === "admin") return;
+    const phone = String(u.phone || u.username || "");
+    if (!phone) return;
+    const bets = store.get("matka.bets", []);
+    if (bets.some((b) => phoneEq(b.phone, phone))) return;
+    const mk = (marketId, marketName, game, gameName, num, stake, odds, status, style, hoursAgo) => {
+      const d = new Date(Date.now() - hoursAgo * 3600 * 1000).toISOString();
+      const numbers = game === "half-sangam" || game === "half-sangam-b"
+        ? { jodi: num.slice(0, 2), patti: num.slice(2, 5) }
+        : game === "full-sangam"
+          ? { patti1: num.slice(0, 3), patti2: num.slice(3, 6) }
+          : { num };
+      return { id: Date.now() + Math.floor(Math.random() * 1e6), phone, userName: u.name || "User", marketId, marketName, game, gameName, numbers, stake, odds, status, style, date: d };
+    };
+    const demo = [
+      mk("kalyan-main", "KALYAN", "single", "Single Digit", "5", 100, 9.6, "won", "single", 26),
+      mk("sita-morning", "SITA MORNING", "jodi-close", "Jodi Close", "12", 200, 96, "pending", "jodi-close", 2),
+      mk("main-bazar", "MAIN BAZAR", "single", "Single Digit", "7", 50, 9.6, "lost", "single", 5)
+    ];
+    store.set("matka.bets", bets.concat(demo));
+  } catch (e) { console.warn("ensureDemoBids:", e); }
 }
 
 function renderRegister(page) {
@@ -2418,7 +2459,7 @@ function renderProfile(page) {
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
   const myPays = store.get("matka.payments", []).filter((p) => p.phone === u.phone);
-  const myBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const myBets = store.get("matka.bets", []).filter((b) => phoneEq(b.phone, u.phone)).slice().reverse();
   const phoneDisp = u.phone || "—";
 
   page.innerHTML = `
