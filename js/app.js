@@ -1178,23 +1178,31 @@ function myBidsBody(f) {
   f = f || {};
   const u = currentUser;
   const allBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
+  const marketMatch = (b, mname) => {
+    if (mname === "all") return true;
+    if (bidMarket(b) === mname) return true;
+    const m = MARKETS.find((x) => x.name === mname);
+    return !!(m && m.id === b.marketId);
+  };
   const bets = allBets.filter((b) =>
     (f.session === "all" || bidSession(b).key === f.session) &&
     (f.status === "all" || b.status === f.status) &&
-    (f.game === "all" || (b.game || b.style) === f.game)
+    marketMatch(b, f.market)
   );
   const won = bets.filter((b) => b.status === "won");
-  const seenGames = new Set();
-  const gameOptsArr = [];
-  const pushGame = (id) => {
-    if (seenGames.has(id)) return;
-    seenGames.add(id);
-    const s = BID_STYLES.find((x) => x.id === id);
-    gameOptsArr.push(`<option value="${id}"${f.game === id ? " selected" : ""}>${(s && s.label) || id}</option>`);
+  const seenMarkets = new Set();
+  const marketOptsArr = [];
+  const pushMarket = (name) => {
+    if (seenMarkets.has(name)) return;
+    seenMarkets.add(name);
+    marketOptsArr.push(`<option value="${name}"${f.market === name ? " selected" : ""}>${name}</option>`);
   };
-  BID_STYLES.forEach((s) => pushGame(s.id));
-  allBets.forEach((b) => pushGame(b.game || b.style));
-  const gameOpts = gameOptsArr.join("");
+  MARKETS.forEach((x) => pushMarket(x.name));
+  allBets.forEach((b) => {
+    const n = bidMarket(b);
+    if (n && n !== "—") pushMarket(n);
+  });
+  const marketOpts = marketOptsArr.join("");
   const chip = (group, val, label) =>
     `<button type="button" class="bf-chip${f[group] === val ? " on" : ""}" data-bf="${group}" data-val="${val}">${label}</button>`;
   const fbar = `
@@ -1212,10 +1220,10 @@ function myBidsBody(f) {
           ${chip("status", "all", "All")}${chip("status", "won", "Won")}${chip("status", "lost", "Lost")}${chip("status", "pending", "Pending")}
         </div>
         <div class="bf-group">
-          <span class="bf-label">Game</span>
-          <select class="bf-select" data-bf="game">
+          <span class="bf-label">Market</span>
+          <select class="bf-select" data-bf="market">
             <option value="all">All</option>
-            ${gameOpts}
+            ${marketOpts}
           </select>
         </div>
       </div>
@@ -1270,7 +1278,7 @@ function myBidsBody(f) {
 function bindBidHistoryFilters(page) {
   const holder = page.querySelector("#mybids-body");
   if (!holder) return;
-  const ff = { session: "all", status: "all", game: "all" };
+  const ff = { session: "all", status: "all", market: "all" };
   let panelOpen = false;
   const apply = () => {
     holder.innerHTML = myBidsBody(ff);
@@ -1299,7 +1307,7 @@ function bindBidHistoryFilters(page) {
       };
       el.onchange = () => {
         if (el.tagName !== "SELECT") return;
-        ff.game = el.value;
+        ff.market = el.value;
         apply();
       };
     }
