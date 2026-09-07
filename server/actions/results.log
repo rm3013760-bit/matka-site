@@ -5959,3 +5959,10 @@ auto-push ok 19:08
 [live] wrote "live_results.json" (455/29 markets, 279790 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://registered-represent-guests-beast.trycloudflare.com
+auto-push ok 19:12
+19:14:49 tunnel: public check failed after 6 tries, restarting tunnel
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 375/29 markets
+[live] wrote "live_results.json" (375/29 markets, 279790 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://registered-represent-guests-beast.trycloudflare.com
