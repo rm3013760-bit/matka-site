@@ -6138,3 +6138,8 @@ auto-push ok 20:26
 [live] wrote "live_results.json" (465/29 markets, 280167 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://arbitrary-hill-exploration-wish.trycloudflare.com
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 560/29 markets
+[live] wrote "live_results.json" (560/29 markets, 280167 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=1 liveMarkets=57
+publish-url: published https://affiliates-argued-shame-cornwall.trycloudflare.com
