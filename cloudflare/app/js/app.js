@@ -995,20 +995,19 @@ function renderLedger(page) {
       b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
       b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
     const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-    const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+    const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
     const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
+    const session = bidSession(b);
+    const marketName = bidMarket(b);
     div.innerHTML = `
       <div class="hist-row">
         <div class="hist-date">
           <span class="hd-day">${b.gameName}</span>
           <span class="hd-date">${(b.date || "").slice(0, 10)}</span>
         </div>
-        <span class="hist-market">${b.marketName}</span>
+        <span class="hist-session ${session.cls}">${session.txt}</span>
+        <span class="hist-market">${marketName}</span>
         <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
-        <div class="hist-panels">
-          <div class="hpanel"><span class="hpanel-label">Stake</span><span class="hpanel-digits">₹ ${b.stake}</span></div>
-          <div class="hpanel"><span class="hpanel-label">Odds</span><span class="hpanel-digits">${b.odds}x</span></div>
-        </div>
         <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
       </div>`;
     list.appendChild(div.firstElementChild);
@@ -1061,21 +1060,20 @@ function renderMyHistory(page, tab) {
         b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
         b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
       const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
       const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
       const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
+      const session = bidSession(b);
+      const marketName = bidMarket(b);
       div.innerHTML = `
         <div class="hist-row">
           <div class="hist-date">
             <span class="hd-day">${styleLabel}</span>
             <span class="hd-date">${(b.date || "").slice(0, 10)}</span>
           </div>
-          <span class="hist-market">${b.marketName}</span>
+          <span class="hist-session ${session.cls}">${session.txt}</span>
+          <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
-          <div class="hist-panels">
-            <div class="hpanel"><span class="hpanel-label">Stake</span><span class="hpanel-digits">₹ ${b.stake}</span></div>
-            <div class="hpanel"><span class="hpanel-label">Odds</span><span class="hpanel-digits">${b.odds}x</span></div>
-          </div>
           <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
         </div>`;
       list.appendChild(div.firstElementChild);
@@ -1122,6 +1120,18 @@ const BIDCENTER_TABS = [
   { id: "jackpot-result", label: "JACKPOT RESULT" }
 ];
 
+function bidSession(b) {
+  const st = String(b.style || b.game || "");
+  const close = /close/.test(st) || st === "half-sangam-b" || st === "full-sangam";
+  return close ? { cls: "s-close", txt: "CLOSE" } : { cls: "s-open", txt: "OPEN" };
+}
+
+function bidMarket(b) {
+  if (b.marketName) return b.marketName;
+  const m = MARKETS.find((x) => x.id === b.marketId) || MARKETS.find((x) => x.name === b.marketName);
+  return (m && m.name) || b.marketName || "—";
+}
+
 function renderBidCenter(page, tab) {
   if (!currentUser) { renderLogin(page); return; }
   resolveBets();
@@ -1158,18 +1168,17 @@ function myBidsBody() {
         b.game === "full-sangam" ? b.numbers.patti1 + " - " + b.numbers.patti2 :
         b.game === "family-pair" ? "F" + b.numbers.num : b.numbers.num;
       const statusCls = b.status === "won" ? "l-win" : b.status === "lost" ? "l-lose" : "l-open";
-      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "OPEN";
+      const statusTxt = b.status === "won" ? "WON" : b.status === "lost" ? "LOST" : "PENDING";
       const winAmt = b.status === "won" ? " · +₹ " + (b.stake * b.odds).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "";
       const styleLabel = b.style ? (BID_STYLES.find((s) => s.id === b.style) || {}).label || b.gameName : b.gameName;
+      const session = bidSession(b);
+      const marketName = bidMarket(b);
       rows += `
         <div class="hist-row">
           <div class="hist-date"><span class="hd-day">${styleLabel}</span><span class="hd-date">${(b.date || "").slice(0, 10)}</span></div>
-          <span class="hist-market">${b.marketName}</span>
+          <span class="hist-session ${session.cls}">${session.txt}</span>
+          <span class="hist-market">${marketName}</span>
           <div class="hist-jodi"><span class="hpanel-label">Number</span><span class="jodi-pill">${num}</span></div>
-          <div class="hist-panels">
-            <div class="hpanel"><span class="hpanel-label">Stake</span><span class="hpanel-digits">₹ ${b.stake}</span></div>
-            <div class="hpanel"><span class="hpanel-label">Odds</span><span class="hpanel-digits">${b.odds}x</span></div>
-          </div>
           <span class="l-status ${statusCls}">${statusTxt}${winAmt}</span>
         </div>`;
     }

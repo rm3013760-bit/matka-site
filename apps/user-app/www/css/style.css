@@ -1264,6 +1264,17 @@ main { max-width: 1100px; margin: 0 auto; padding: 72px 16px 60px; }
   white-space: nowrap;
 }
 
+.hist-session {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  border-radius: 99px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.hist-session.s-open { color: #7fb8ff; border: 1px solid rgba(127, 184, 255, 0.45); }
+.hist-session.s-close { color: #ff9d7f; border: 1px solid rgba(255, 120, 80, 0.45); }
+
 .hist-panels {
   display: flex;
   align-items: center;
@@ -1722,7 +1733,7 @@ body { padding-bottom: 76px; }
 }
 
 .l-win { color: #0a1535; background: linear-gradient(135deg, #52c41a, #8fd14f); }
-.l-lose { color: var(--muted); border: 1px solid var(--line); }
+.l-lose { color: #fff; background: linear-gradient(135deg, #ef4444, #b91c1c); }
 .l-open { color: #7fb8ff; border: 1px solid rgba(127, 184, 255, 0.4); }
 .c-win { color: #8fd14f; }
 

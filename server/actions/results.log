@@ -6061,3 +6061,13 @@ auto-push ok 19:51
 [live] wrote "live_results.json" (523/29 markets, 279853 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://website-aye-filled-configuring.trycloudflare.com
+auto-push ok 19:54
+19:55:27 tunnel: public check failed after 6 tries, restarting tunnel
+19:55:58 tunnel: new url https://sand-wishing-addressed-appointed.trycloudflare.com (published)
+19:57:29 tunnel: public check failed after 6 tries, restarting tunnel
+19:58:00 tunnel: new url https://fitted-merchandise-commissioners-see.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 453/29 markets
+[live] wrote "live_results.json" (453/29 markets, 279972 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://fitted-merchandise-commissioners-see.trycloudflare.com
