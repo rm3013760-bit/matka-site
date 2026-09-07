@@ -5925,3 +5925,8 @@ publish-url: unchanged https://registered-represent-guests-beast.trycloudflare.c
 [live] wrote "live_results.json" (468/29 markets, 279714 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: published https://registered-represent-guests-beast.trycloudflare.com
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 408/29 markets
+[live] wrote "live_results.json" (408/29 markets, 279714 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://registered-represent-guests-beast.trycloudflare.com
