@@ -1184,11 +1184,17 @@ function myBidsBody(f) {
     (f.game === "all" || (b.game || b.style) === f.game)
   );
   const won = bets.filter((b) => b.status === "won");
-  const gameIds = [...new Set(allBets.map((b) => b.game || b.style || "").filter(Boolean))];
-  const gameOpts = gameIds.map((id) => {
+  const seenGames = new Set();
+  const gameOptsArr = [];
+  const pushGame = (id) => {
+    if (seenGames.has(id)) return;
+    seenGames.add(id);
     const s = BID_STYLES.find((x) => x.id === id);
-    return `<option value="${id}"${f.game === id ? " selected" : ""}>${(s && s.label) || id}</option>`;
-  }).join("");
+    gameOptsArr.push(`<option value="${id}"${f.game === id ? " selected" : ""}>${(s && s.label) || id}</option>`);
+  };
+  BID_STYLES.forEach((s) => pushGame(s.id));
+  allBets.forEach((b) => pushGame(b.game || b.style));
+  const gameOpts = gameOptsArr.join("");
   const chip = (group, val, label) =>
     `<button type="button" class="bf-chip${f[group] === val ? " on" : ""}" data-bf="${group}" data-val="${val}">${label}</button>`;
   const fbar = `
