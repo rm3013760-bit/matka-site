@@ -6161,3 +6161,8 @@ auto-push ok 20:36
 [live] wrote "live_results.json" (479/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://press-symantec-questions-generate.trycloudflare.com
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 455/29 markets
+[live] wrote "live_results.json" (455/29 markets, 280349 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: published https://art-destination-vendor-fifth.trycloudflare.com
