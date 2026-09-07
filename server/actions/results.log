@@ -6111,3 +6111,12 @@ auto-push ok 20:17
 [live] wrote "live_results.json" (440/29 markets, 280048 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: published https://volumes-marion-unlike-acdbentity.trycloudflare.com
+auto-push ok 20:19
+20:20:11 tunnel: new url https://geek-quiz-build-prevention.trycloudflare.com (published)
+20:21:42 tunnel: public check failed after 6 tries, restarting tunnel
+20:22:10 tunnel: new url https://custom-beats-conversion-file.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 456/29 markets
+[live] wrote "live_results.json" (456/29 markets, 280048 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://custom-beats-conversion-file.trycloudflare.com
