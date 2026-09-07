@@ -1176,6 +1176,9 @@ function bidCenterBody(tab) {
 
 function myBidsBody(f) {
   f = f || {};
+  if (f.session !== "all" && f.session !== "open" && f.session !== "close") f.session = "all";
+  if (f.status !== "all" && f.status !== "won" && f.status !== "lost" && f.status !== "pending") f.status = "all";
+  if (!f.market) f.market = "all";
   const u = currentUser;
   const allBets = store.get("matka.bets", []).filter((b) => b.phone === u.phone).slice().reverse();
   const marketMatch = (b, mname) => {
