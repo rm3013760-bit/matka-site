@@ -6313,3 +6313,11 @@ auto-push ok 22:48
 [live] wrote "live_results.json" (505/29 markets, 280627 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://col-circle-restricted-leon.trycloudflare.com
+auto-push ok 22:51
+22:52:13 tunnel: public check failed after 6 tries, restarting tunnel
+22:52:44 tunnel: new url https://numeric-personals-inkjet-southwest.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 381/29 markets
+[live] wrote "live_results.json" (381/29 markets, 280627 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://numeric-personals-inkjet-southwest.trycloudflare.com
