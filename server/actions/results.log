@@ -6183,3 +6183,11 @@ auto-push failed: To https://github.com/rm3013760-bit/matka-site.git
 [live] wrote "live_results.json" (452/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://citysearch-architect-ultram-desired.trycloudflare.com
+20:52:47 tunnel: public check failed after 6 tries, restarting tunnel
+20:53:07 tunnel: local server not healthy, waiting
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+20:54:16 tunnel: new url https://lighter-usually-tough-placing.trycloudflare.com (published)
+[live] sara567 fallback: 542/29 markets
+[live] wrote "live_results.json" (542/29 markets, 280349 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://lighter-usually-tough-placing.trycloudflare.com
