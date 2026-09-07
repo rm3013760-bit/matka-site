@@ -6130,3 +6130,11 @@ auto-push ok 20:23
 [live] wrote "live_results.json" (551/29 markets, 280167 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://shoe-moderators-mediterranean-resistance.trycloudflare.com
+auto-push ok 20:26
+20:27:40 tunnel: public check failed after 6 tries, restarting tunnel
+20:28:11 tunnel: new url https://arbitrary-hill-exploration-wish.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 465/29 markets
+[live] wrote "live_results.json" (465/29 markets, 280167 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://arbitrary-hill-exploration-wish.trycloudflare.com

@@ -1139,7 +1139,7 @@ const BIDCENTER_TABS = [
 function bidSession(b) {
   const st = String(b.style || b.game || "");
   const close = /close/.test(st) || st === "half-sangam-b" || st === "full-sangam";
-  return close ? { cls: "s-close", txt: "CLOSE" } : { cls: "s-open", txt: "OPEN" };
+  return close ? { key: "close", cls: "s-close", txt: "CLOSE" } : { key: "open", cls: "s-open", txt: "OPEN" };
 }
 
 function bidMarket(b) {
