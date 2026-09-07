@@ -1192,21 +1192,26 @@ function myBidsBody(f) {
   const chip = (group, val, label) =>
     `<button type="button" class="bf-chip${f[group] === val ? " on" : ""}" data-bf="${group}" data-val="${val}">${label}</button>`;
   const fbar = `
-    <div class="bfilters">
-      <div class="bf-group">
-        <span class="bf-label">Session</span>
-        ${chip("session", "all", "All")}${chip("session", "open", "Open")}${chip("session", "close", "Close")}
-      </div>
-      <div class="bf-group">
-        <span class="bf-label">Status</span>
-        ${chip("status", "all", "All")}${chip("status", "won", "Won")}${chip("status", "lost", "Lost")}${chip("status", "pending", "Pending")}
-      </div>
-      <div class="bf-group">
-        <span class="bf-label">Game</span>
-        <select class="bf-select" data-bf="game">
-          <option value="all">All</option>
-          ${gameOpts}
-        </select>
+    <div class="bfwrap">
+      <button type="button" class="bf-btn" title="Filter bids" aria-label="Filter bids">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+      </button>
+      <div class="bf-panel">
+        <div class="bf-group">
+          <span class="bf-label">Session</span>
+          ${chip("session", "all", "All")}${chip("session", "open", "Open")}${chip("session", "close", "Close")}
+        </div>
+        <div class="bf-group">
+          <span class="bf-label">Status</span>
+          ${chip("status", "all", "All")}${chip("status", "won", "Won")}${chip("status", "lost", "Lost")}${chip("status", "pending", "Pending")}
+        </div>
+        <div class="bf-group">
+          <span class="bf-label">Game</span>
+          <select class="bf-select" data-bf="game">
+            <option value="all">All</option>
+            ${gameOpts}
+          </select>
+        </div>
       </div>
     </div>`;
   let rows = "";
@@ -1260,7 +1265,21 @@ function bindBidHistoryFilters(page) {
   const holder = page.querySelector("#mybids-body");
   if (!holder) return;
   const ff = { session: "all", status: "all", game: "all" };
+  let panelOpen = false;
+  const apply = () => {
+    holder.innerHTML = myBidsBody(ff);
+    rebind();
+  };
   const rebind = () => {
+    const wrap = holder.querySelector(".bfwrap");
+    const panel = wrap ? wrap.querySelector(".bf-panel") : null;
+    const btn = wrap ? wrap.querySelector(".bf-btn") : null;
+    if (panel) panel.hidden = !panelOpen;
+    if (btn) btn.onclick = (e) => {
+      e.stopPropagation();
+      panelOpen = !panelOpen;
+      if (panel) panel.hidden = !panelOpen;
+    };
     for (const el of holder.querySelectorAll("[data-bf]")) {
       el.onclick = () => {
         if (el.tagName === "SELECT") return;
@@ -1270,15 +1289,20 @@ function bindBidHistoryFilters(page) {
         ff[group] = val;
         holder.querySelectorAll('.bf-chip[data-bf="' + group + '"]').forEach((c) => c.classList.remove("on"));
         el.classList.add("on");
-        holder.innerHTML = myBidsBody(ff);
-        rebind();
+        apply();
       };
       el.onchange = () => {
         if (el.tagName !== "SELECT") return;
         ff.game = el.value;
-        holder.innerHTML = myBidsBody(ff);
-        rebind();
+        apply();
       };
+    }
+  };
+  document.onclick = (e) => {
+    if (panelOpen && (!holder.contains(e.target) || !e.target.closest(".bfwrap"))) {
+      panelOpen = false;
+      const p = holder.querySelector(".bf-panel");
+      if (p) p.hidden = true;
     }
   };
   rebind();
