@@ -6033,3 +6033,13 @@ auto-push ok 19:41
 [live] wrote "live_results.json" (538/29 markets, 279853 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://lid-portal-amounts-bingo.trycloudflare.com
+auto-push ok 19:44
+19:45:21 tunnel: public check failed after 6 tries, restarting tunnel
+19:45:55 tunnel: new url https://surprising-intermediate-patio-tip.trycloudflare.com (published)
+19:47:27 tunnel: public check failed after 6 tries, restarting tunnel
+19:47:56 tunnel: new url https://culture-rainbow-nyc-circles.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 455/29 markets
+[live] wrote "live_results.json" (455/29 markets, 279853 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://culture-rainbow-nyc-circles.trycloudflare.com
