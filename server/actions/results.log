@@ -6166,20 +6166,11 @@ publish-url: unchanged https://press-symantec-questions-generate.trycloudflare.c
 [live] wrote "live_results.json" (455/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: published https://art-destination-vendor-fifth.trycloudflare.com
+auto-push ok 20:41
+20:42:49 tunnel: public check failed after 6 tries, restarting tunnel
+20:44:40 tunnel: public check failed after 6 tries, restarting tunnel
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 439/29 markets
+[live] wrote "live_results.json" (439/29 markets, 280349 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
-[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://art-destination-vendor-fifth.trycloudflare.com
