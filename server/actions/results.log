@@ -6120,3 +6120,13 @@ auto-push ok 20:19
 [live] wrote "live_results.json" (456/29 markets, 280048 bytes)
 [updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
 publish-url: unchanged https://custom-beats-conversion-file.trycloudflare.com
+auto-push ok 20:23
+20:23:41 tunnel: public check failed after 6 tries, restarting tunnel
+20:24:10 tunnel: new url https://program-expanding-epa-because.trycloudflare.com (published)
+20:25:41 tunnel: public check failed after 6 tries, restarting tunnel
+20:26:10 tunnel: new url https://shoe-moderators-mediterranean-resistance.trycloudflare.com (published)
+[live] api board failed: fetch failed (falling back to sara567 scrape)
+[live] sara567 fallback: 551/29 markets
+[live] wrote "live_results.json" (551/29 markets, 280167 bytes)
+[updater] today=2026-09-07 added starline=0 jackpot=0 liveMarkets=57
+publish-url: unchanged https://shoe-moderators-mediterranean-resistance.trycloudflare.com
