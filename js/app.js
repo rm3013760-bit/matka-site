@@ -1285,7 +1285,7 @@ function renderFunds(page, tab) {
   const balance = walletBalance(u.phone);
   const demoQr = store.get("matka.qr", null);
   const myRequests = store.get("matka.requests", []).filter((r) => r.phone === u.phone).slice().reverse();
-  const tabName = (tab === "add" || tab === "withdraw" || tab === "bank") ? tab : "hub";
+  const tabName = (tab === "add" || tab === "withdraw" || tab === "bank" || tab === "deposit-history" || tab === "withdrawal-history") ? tab : "hub";
   const savedBank = store.get("matka.bank." + u.phone, null);
   const accounts = store.get("matka.accounts." + u.phone, null) || {
     upi: (savedBank && savedBank.upi) || "",
